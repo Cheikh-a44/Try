@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Hacker Login Page</title>
+
+  <style>
+
+    * {
+
+      margin: 0;
+
+      padding: 0;
+
+      box-sizing: border-box;
+
+      font-family: "Courier New", monospace;
+
+    }
+
+    body {
+
+      height: 100vh;
+
+      display: flex;
+
+      justify-content: center;
+
+      align-items: center;
+
+      overflow: hidden;
+
+      background: radial-gradient(circle at center, #001a00 0%, #000 100%);
+
+      color: #00ff88;
+
+    }
+
+    /* Glitching background code effect */
+
+    .matrix {
+
+      position: absolute;
+
+      top: 0;
+
+      left: 0;
+
+      width: 100%;
+
+      height: 100%;
+
+      background: repeating-linear-gradient(
+
+        rgba(0, 255, 100, 0.1),
+
+        rgba(0, 255, 100, 0.1) 1px,
+
+        transparent 1px,
+
+        transparent 2px
+
+      );
+
+      animation: flicker 2s infinite alternate;
+
+      z-index: 0;
+
+    }
+
+    @keyframes flicker {
+
+      from { opacity: 0.2; }
+
+      to { opacity: 0.6; }
+
+    }
+
+    .login-container {
+
+      position: relative;
+
+      z-index: 2;
+
+      width: 380px;
+
+      padding: 40px;
+
+      background: rgba(0, 255, 100, 0.05);
+
+      border: 2px solid #00ff88;
+
+      border-radius: 10px;
+
+      text-align: center;
+
+      box-shadow: 0 0 25px #00ff88;
+
+      animation: fadeIn 1.2s ease forwards;
+
+      transform: translateY(-50px);
+
+      opacity: 0;
+
+    }
+
+    @keyframes fadeIn {
+
+      to {
+
+        transform: translateY(0);
+
+        opacity: 1;
+
+      }
+
+    }
+
+    h2 {
+
+      font-size: 28px;
+
+      font-weight: 700;
+
+      color: #00ff99;
+
+      margin-bottom: 25px;
+
+      text-shadow: 0 0 10px #00ff66;
+
+    }
+
+    .input-box {
+
+      margin-bottom: 20px;
+
+      position: relative;
+
+    }
+
+    .input-box input {
+
+      width: 100%;
+
+      padding: 12px 15px;
+
+      background: rgba(0, 255, 100, 0.1);
+
+      border: 1px solid #00ff99;
+
+      border-radius: 8px;
+
+      color: #00ffcc;
+
+      font-size: 16px;
+
+      outline: none;
+
+      text-shadow: 0 0 8px #00ff66;
+
+      transition: 0.3s;
+
+    }
+
+    .input-box input:focus {
+
+      background: rgba(0, 255, 100, 0.2);
+
+      box-shadow: 0 0 15px #00ff88;
+
+    }
+
+    .btn {
+
+      width: 100%;
+
+      padding: 12px;
+
+      border: none;
+
+      border-radius: 8px;
+
+      background: #00ff66;
+
+      color: #000;
+
+      font-size: 18px;
+
+      font-weight: bold;
+
+      cursor: pointer;
+
+      box-shadow: 0 0 25px #00ff66;
+
+      transition: 0.3s;
+
+      animation: pulse 1.5s infinite alternate;
+
+    }
+
+    @keyframes pulse {
+
+      from { box-shadow: 0 0 10px #00ff66; }
+
+      to { box-shadow: 0 0 30px #00ff99; }
+
+    }
+
+    .btn:hover {
+
+      background: #00ffaa;
+
+      transform: scale(1.05);
+
+    }
+
+    .extra-links {
+
+      margin-top: 15px;
+
+      font-size: 14px;
+
+    }
+
+    .extra-links a {
+
+      color: #00ffaa;
+
+      text-decoration: none;
+
+      transition: 0.3s;
+
+    }
+
+    .extra-links a:hover {
+
+      text-decoration: underline;
+
+    }
+
+    /* Green falling code effect */
+
+    canvas {
+
+      position: absolute;
+
+      top: 0;
+
+      left: 0;
+
+      z-index: 1;
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <canvas id="matrix"></canvas>
+
+  <div class="matrix"></div>
+
+  <div class="login-container">
+
+    <h2>🔐 SYSTEM LOGIN</h2>
+
+    <form>
+
+      <div class="input-box">
+
+        <input type="text" placeholder="Username" required />
+
+      </div>
+
+      <div class="input-box">
+
+        <input type="password" placeholder="Password" required />
+
+      </div>
+
+      <button class="btn" type="submit">ACCESS</button>
+
+      <div class="extra-links">
+
+        <p><a href="#">Forgot Password?</a></p>
+
+        <p><a href="#">Create Account</a></p>
+
+      </div>
+
+    </form>
+
+  </div>
+
+  <script>
+
+    // Matrix background animation
+
+    const canvas = document.getElementById('matrix');
+
+    const ctx = canvas.getContext('2d');
+
+    canvas.height = window.innerHeight;
+
+    canvas.width = window.innerWidth;
+
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    const fontSize = 16;
+
+    const columns = canvas.width / fontSize;
+
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function draw() {
+
+      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#00ff66";
+
+      ctx.font = fontSize + "px monospace";
+
+      for (let i = 0; i < drops.length; i++) {
+
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+
+          drops[i] = 0;
+
+        }
+
+        drops[i]++;
+
+      }
+
+    }
+
+    setInterval(draw, 35);
+
+  </script>
+
+</body>
+
+  </html>
