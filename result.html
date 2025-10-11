@@ -14,7 +14,8 @@
         
         body {
             background: white;
-            padding: 20px;
+            padding: 0;
+            margin: 0;
             font-size: 12px;
             line-height: 1.2;
         }
@@ -23,56 +24,82 @@
             width: 210mm;
             min-height: 297mm;
             margin: 0 auto;
-            padding: 15mm;
+            padding: 20mm 15mm;
             position: relative;
-            border: 1px solid #000;
         }
         
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
+        .bilingual-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+        
+        .french-header {
+            text-align: left;
+            flex: 1;
+        }
+        
+        .arabic-header {
+            text-align: right;
+            flex: 1;
+            direction: rtl;
+            font-family: 'Times New Roman', Times, serif;
         }
         
         .ministry {
             font-size: 11px;
             font-weight: bold;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
         
         .institute {
             font-size: 11px;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
         }
         
         .title {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: bold;
             text-decoration: underline;
+            text-align: center;
+            margin: 25px 0 15px 0;
+        }
+        
+        .subtitle {
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
             margin-bottom: 20px;
-        }
-        
-        .student-info {
-            margin-bottom: 15px;
-        }
-        
-        .info-line {
-            margin-bottom: 5px;
         }
         
         .declaration {
             margin-bottom: 15px;
             text-align: justify;
+            line-height: 1.4;
+        }
+        
+        .student-info {
+            margin-bottom: 15px;
+            padding-left: 10px;
+        }
+        
+        .info-line {
+            margin-bottom: 4px;
         }
         
         .semester-section {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         
         .semester-title {
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             text-decoration: underline;
+            font-size: 12px;
         }
         
         .module-table {
@@ -83,17 +110,18 @@
         }
         
         .module-table td {
-            padding: 2px 5px;
+            padding: 3px 8px;
             vertical-align: top;
+            border: none;
         }
         
         .module-code {
-            width: 15%;
+            width: 18%;
             font-weight: bold;
         }
         
         .module-name {
-            width: 70%;
+            width: 67%;
         }
         
         .module-credit {
@@ -102,88 +130,142 @@
         }
         
         .footer {
-            margin-top: 30px;
+            margin-top: 40px;
         }
         
         .date {
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        
+        .final-declaration {
             margin-bottom: 40px;
+            font-weight: bold;
         }
         
         .signature {
             text-align: right;
-            margin-top: 60px;
+            margin-top: 80px;
         }
         
         .signature-line {
             width: 200px;
             border-top: 1px solid #000;
-            margin-top: 40px;
+            margin-top: 5px;
             margin-left: auto;
         }
         
-        .arabic-text {
-            direction: rtl;
-            text-align: right;
-            font-family: 'Times New Roman', Times, serif;
+        .signature-title {
+            font-weight: bold;
+            margin-bottom: 5px;
         }
-        
+
         @media print {
             body {
                 padding: 0;
+                margin: 0;
                 background: white;
             }
             .attestation {
                 border: none;
                 box-shadow: none;
-                padding: 15mm;
+                padding: 20mm 15mm;
             }
+        }
+
+        /* تنسيق للوجو والصورة */
+        .logo-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        
+        .logo-container {
+            flex: 1;
+        }
+        
+        .student-photo-container {
+            width: 120px;
+            height: 150px;
+            border: 1px solid #999;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .student-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
     </style>
 </head>
 <body>
     <div class="attestation">
-        <!-- النص العربي -->
-        <div class="header arabic-text">
-            <div class="ministry">الجمهورية الإسلامية الموريتانية</div>
-            <div class="ministry">وزارة التعليم العالي والبحث العلمي</div>
-            <div class="institute">المعهد العالي للتعليم التكنولوجي بروصو</div>
+        <!-- القسم العلوي ثنائي اللغة -->
+        <div class="bilingual-header">
+            <!-- النص الفرنسي على اليسار -->
+            <div class="french-header">
+                <div class="ministry">République Islamique de Mauritanie</div>
+                <div class="ministry">Ministère de l'Enseignement Supérieur et de la Recherche Scientifique</div>
+                <div class="institute">Institut Supérieur d'Enseignement Technologique de Rosso</div>
+            </div>
+            
+            <!-- النص العربي على اليمين -->
+            <div class="arabic-header">
+                <div class="ministry">ﺍﻟﺠـﻤﻬــــــﻮﺭﻳـــﺔ ﺍﻻﺳــﻼﻣﻴـــﺔ ﺍﻟﻤـــﻮﺭﻳﺘــﺎﻧﻴـــﺔ</div>
+                <div class="ministry">ﻭﺯﺍﺭﺓ ﺍﻟﺘﻌﻠﻴﻢ ﺍﻟﻌﺎﻟﻲ ﻭﺍﻟﺒﺤﺚ ﺍﻟﻌﻠﻤﻲ</div>
+                <div class="institute">ﺍﻟﻤﻌﻬﺪ ﺍﻟﻌﺎﻟﻲ ﻟﻠﺘﻌﻠﻴﻢ ﺍﻟﺘﻜﻨﻮﻟﻮﺟﻲ ﺑﺮﻭﺻﻮ</div>
+            </div>
         </div>
-        
-        <!-- النص الفرنسي -->
-        <div class="header">
-            <div class="ministry">République Islamique de Mauritanie</div>
-            <div class="ministry">Ministère de l'Enseignement Supérieur et de la Recherche Scientifique</div>
-            <div class="institute">Institut Supérieur d'Enseignement Technologique de Rosso</div>
+
+        <!-- اللوجو والصورة -->
+        <div class="logo-section">
+            <div class="logo-container">
+                <img src="lset.jpg" alt="Logo ISET" style="max-width: 100px; height: auto;" onerror="this.style.display='none'">
+            </div>
+            <div class="student-photo-container">
+                <img src="User.jpg" alt="Photo étudiant" class="student-photo" onerror="this.style.display='none'">
+            </div>
         </div>
-        
+
+        <!-- العنوان الرئيسي -->
         <div class="title">INSCRIPTION ACADEMIQUE</div>
-        <div class="title" style="font-size: 11px;">Pour l'année académique : 2025-2026</div>
+        <div class="subtitle">Pour l'année académique : 2025-2026</div>
         
+        <!-- الإعلان -->
         <div class="declaration">
             Le Service de scolarité de l'Institut Supérieur d'Enseignement Technologique de Rosso, atteste que:
         </div>
         
+        <!-- معلومات الطالب -->
         <div class="student-info" id="studentInfo">
             <!-- سيتم ملء البيانات هنا -->
         </div>
         
+        <!-- معلومات التسجيل -->
         <div class="declaration">
-            est inscrit(e) sous le numéro : <span id="studentNumberDisplay"></span><br>
+            est inscrit(e) sous le numéro : <span id="studentNumberDisplay" style="font-weight: bold;"></span><br>
             En deuxième année L2 : Licence Production et Protection Végétales ( )<br>
             aux semestres, modules et éléments suivants :
         </div>
         
+        <!-- المواد والمساقات -->
         <div id="semestersContainer">
             <!-- سيتم عرض المواد هنا -->
         </div>
         
+        <!-- التذييل -->
         <div class="footer">
             <div class="date">Date : 08/10/2025</div>
-            <div class="declaration">
+            <div class="final-declaration">
                 Cette attestation lui est délivrée pour servir et valoir ce que de droit
             </div>
             <div class="signature">
-                Chef Service Scolarité
+                <div class="signature-title">Chef Service Scolarité</div>
                 <div class="signature-line"></div>
             </div>
         </div>
@@ -196,9 +278,9 @@
 
         // عرض بيانات الطالب
         document.getElementById('studentInfo').innerHTML = `
-            <div class="info-line">M(Mlle) : ${studentName}</div>
-            <div class="info-line">NNI : 0090875712</div>
-            <div class="info-line">Né(e) le : 20/04/2005 à Aoujeft</div>
+            <div class="info-line">M(Mlle) : <strong>${studentName}</strong></div>
+            <div class="info-line">NNI : <strong>0090875712</strong></div>
+            <div class="info-line">Né(e) le : <strong>20/04/2005 à Aoujeft</strong></div>
         `;
         
         document.getElementById('studentNumberDisplay').textContent = studentNumber;
@@ -261,9 +343,11 @@
 
         document.getElementById('semestersContainer').innerHTML = semestersHTML;
 
-        // طباعة تلقائية
+        // طباعة تلقائية بعد تحميل الصفحة
         window.onload = function() {
-            window.print();
+            setTimeout(() => {
+                window.print();
+            }, 500);
         };
     </script>
 </body>
