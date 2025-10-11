@@ -203,7 +203,7 @@
     <div class="certificate">
         <div class="header">
             <!-- اللوجو الرسمي -->
-            <img src="Iset.jpg" alt="شعار المعهد" class="logo">
+            <img src="lset.jpg" alt="شعار المعهد" class="logo">
             <div class="institute-name">
                 المعهد العالي للتعليم التكنولوجي بروصو<br>
                 Institut Supérieur d'Enseignement Technologique de Rosso
@@ -233,7 +233,7 @@
                 <div style="margin-top: 50px; width: 200px; border-top: 1px solid #2c3e50;"></div>
             </div>
             <button class="print-btn" onclick="window.print()">🖨 طباعة النتيجة</button>
-            <button class="back-btn" onclick="window.location.href='index.html'">↩ العودة</button>
+            <button class="back-btn" onclick="window.location.href='Index.html'">↩ العودة</button>
         </div>
     </div>
 
@@ -241,6 +241,11 @@
         // استرجاع البيانات من localStorage
         const studentNumber = localStorage.getItem('studentNumber');
         const studentName = localStorage.getItem('studentName');
+
+        // إذا لم توجد بيانات، ارجع إلى الصفحة الرئيسية
+        if (!studentNumber || !studentName) {
+            window.location.href = 'Index.html';
+        }
 
         // عرض بيانات الطالب
         document.getElementById('studentDetails').innerHTML = `
@@ -358,4 +363,4 @@
         document.getElementById('subjectsContainer').innerHTML = subjectsHTML;
     </script>
 </body>
-              </html>
+</html>
