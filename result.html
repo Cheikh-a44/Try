@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" dir="ltr">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,139 +17,142 @@
             padding: 0;
             margin: 0;
             font-size: 12px;
-            line-height: 1.2;
+            line-height: 1.3;
         }
         
-        .attestation {
+        .page {
             width: 210mm;
             min-height: 297mm;
             margin: 0 auto;
-            padding: 20mm 15mm;
+            padding: 25mm 20mm;
             position: relative;
         }
         
-        .bilingual-header {
+        .header-container {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 25px;
             border-bottom: 2px solid #000;
-            padding-bottom: 10px;
+            padding-bottom: 15px;
         }
         
-        .french-header {
+        .french-side {
             text-align: left;
             flex: 1;
         }
         
-        .arabic-header {
+        .arabic-side {
             text-align: right;
             flex: 1;
             direction: rtl;
-            font-family: 'Times New Roman', Times, serif;
         }
         
-        .ministry {
-            font-size: 11px;
+        .ministry-line {
+            font-size: 12px;
             font-weight: bold;
-            margin-bottom: 2px;
+            margin-bottom: 3px;
         }
         
-        .institute {
-            font-size: 11px;
+        .institute-line {
+            font-size: 12px;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-top: 8px;
         }
         
-        .title {
-            font-size: 14px;
+        .main-title {
+            font-size: 16px;
             font-weight: bold;
             text-decoration: underline;
             text-align: center;
-            margin: 25px 0 15px 0;
+            margin: 30px 0 10px 0;
         }
         
-        .subtitle {
-            font-size: 12px;
+        .academic-year {
+            font-size: 13px;
             font-weight: bold;
             text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .attestation-text {
             margin-bottom: 20px;
+            text-align: left;
+            line-height: 1.5;
         }
         
-        .declaration {
-            margin-bottom: 15px;
-            text-align: justify;
-            line-height: 1.4;
+        .student-details {
+            margin: 20px 0;
+            padding-left: 20px;
         }
         
-        .student-info {
-            margin-bottom: 15px;
-            padding-left: 10px;
+        .detail-line {
+            margin-bottom: 6px;
         }
         
-        .info-line {
-            margin-bottom: 4px;
+        .registration-info {
+            margin: 20px 0;
+            text-align: left;
+            line-height: 1.5;
         }
         
-        .semester-section {
-            margin-bottom: 12px;
+        .semester-block {
+            margin: 20px 0;
         }
         
         .semester-title {
             font-weight: bold;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             text-decoration: underline;
-            font-size: 12px;
+            font-size: 13px;
         }
         
-        .module-table {
+        .courses-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 8px;
-            font-size: 11px;
+            margin: 10px 0;
         }
         
-        .module-table td {
-            padding: 3px 8px;
+        .courses-table td {
+            padding: 4px 10px;
             vertical-align: top;
-            border: none;
         }
         
-        .module-code {
-            width: 18%;
+        .course-code {
+            width: 20%;
             font-weight: bold;
         }
         
-        .module-name {
-            width: 67%;
+        .course-name {
+            width: 65%;
         }
         
-        .module-credit {
+        .course-credit {
             width: 15%;
             text-align: right;
         }
         
-        .footer {
-            margin-top: 40px;
+        .footer-section {
+            margin-top: 50px;
         }
         
-        .date {
+        .date-line {
             margin-bottom: 30px;
             font-weight: bold;
         }
         
-        .final-declaration {
-            margin-bottom: 40px;
+        .purpose-text {
+            margin-bottom: 50px;
             font-weight: bold;
         }
         
-        .signature {
+        .signature-area {
             text-align: right;
             margin-top: 80px;
         }
         
         .signature-line {
-            width: 200px;
+            width: 250px;
             border-top: 1px solid #000;
             margin-top: 5px;
             margin-left: auto;
@@ -160,32 +163,18 @@
             margin-bottom: 5px;
         }
 
-        @media print {
-            body {
-                padding: 0;
-                margin: 0;
-                background: white;
-            }
-            .attestation {
-                border: none;
-                box-shadow: none;
-                padding: 20mm 15mm;
-            }
-        }
-
-        /* تنسيق للوجو والصورة */
-        .logo-section {
+        .logo-photo-section {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 20px;
+            margin: 20px 0;
         }
         
-        .logo-container {
+        .logo-box {
             flex: 1;
         }
         
-        .student-photo-container {
+        .photo-box {
             width: 120px;
             height: 150px;
             border: 1px solid #999;
@@ -193,7 +182,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
         }
         
         .student-photo {
@@ -201,70 +189,82 @@
             height: 100%;
             object-fit: cover;
         }
+
+        @media print {
+            body {
+                padding: 0;
+                margin: 0;
+                background: white;
+            }
+            .page {
+                border: none;
+                padding: 25mm 20mm;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="attestation">
-        <!-- القسم العلوي ثنائي اللغة -->
-        <div class="bilingual-header">
-            <!-- النص الفرنسي على اليسار -->
-            <div class="french-header">
-                <div class="ministry">République Islamique de Mauritanie</div>
-                <div class="ministry">Ministère de l'Enseignement Supérieur et de la Recherche Scientifique</div>
-                <div class="institute">Institut Supérieur d'Enseignement Technologique de Rosso</div>
+    <div class="page">
+        <!-- الرأس الثنائي اللغة -->
+        <div class="header-container">
+            <!-- الجانب الفرنسي -->
+            <div class="french-side">
+                <div class="ministry-line">République Islamique de Mauritanie</div>
+                <div class="ministry-line">Ministère de l'Enseignement Supérieur et de la Recherche Scientifique</div>
+                <div class="institute-line">Institut Supérieur d'Enseignement Technologique de Rosso</div>
             </div>
             
-            <!-- النص العربي على اليمين -->
-            <div class="arabic-header">
-                <div class="ministry">ﺍﻟﺠـﻤﻬــــــﻮﺭﻳـــﺔ ﺍﻻﺳــﻼﻣﻴـــﺔ ﺍﻟﻤـــﻮﺭﻳﺘــﺎﻧﻴـــﺔ</div>
-                <div class="ministry">ﻭﺯﺍﺭﺓ ﺍﻟﺘﻌﻠﻴﻢ ﺍﻟﻌﺎﻟﻲ ﻭﺍﻟﺒﺤﺚ ﺍﻟﻌﻠﻤﻲ</div>
-                <div class="institute">ﺍﻟﻤﻌﻬﺪ ﺍﻟﻌﺎﻟﻲ ﻟﻠﺘﻌﻠﻴﻢ ﺍﻟﺘﻜﻨﻮﻟﻮﺟﻲ ﺑﺮﻭﺻﻮ</div>
+            <!-- الجانب العربي -->
+            <div class="arabic-side">
+                <div class="ministry-line">ﺍﻟﺠـﻤﻬــــــﻮﺭﻳـــﺔ ﺍﻻﺳــﻼﻣﻴـــﺔ ﺍﻟﻤـــﻮﺭﻳﺘــﺎﻧﻴـــﺔ</div>
+                <div class="ministry-line">ﻭﺯﺍﺭﺓ ﺍﻟﺘﻌﻠﻴﻢ ﺍﻟﻌﺎﻟﻲ ﻭﺍﻟﺒﺤﺚ ﺍﻟﻌﻠﻤﻲ</div>
+                <div class="institute-line">ﺍﻟﻤﻌﻬﺪ ﺍﻟﻌﺎﻟﻲ ﻟﻠﺘﻌﻠﻴﻢ ﺍﻟﺘﻜﻨﻮﻟﻮﺟﻲ ﺑﺮﻭﺻﻮ</div>
             </div>
         </div>
 
         <!-- اللوجو والصورة -->
-        <div class="logo-section">
-            <div class="logo-container">
-                <img src="lset.jpg" alt="Logo ISET" style="max-width: 100px; height: auto;" onerror="this.style.display='none'">
+        <div class="logo-photo-section">
+            <div class="logo-box">
+                <img src="lset.jpg" alt="Logo ISET" style="max-width: 120px; height: auto;">
             </div>
-            <div class="student-photo-container">
-                <img src="User.jpg" alt="Photo étudiant" class="student-photo" onerror="this.style.display='none'">
+            <div class="photo-box">
+                <img src="User.jpg" alt="Photo étudiant" class="student-photo">
             </div>
         </div>
 
         <!-- العنوان الرئيسي -->
-        <div class="title">INSCRIPTION ACADEMIQUE</div>
-        <div class="subtitle">Pour l'année académique : 2025-2026</div>
+        <div class="main-title">INSCRIPTION ACADEMIQUE</div>
+        <div class="academic-year">Pour l'année académique : 2025-2026</div>
         
-        <!-- الإعلان -->
-        <div class="declaration">
+        <!-- نص الإثبات -->
+        <div class="attestation-text">
             Le Service de scolarité de l'Institut Supérieur d'Enseignement Technologique de Rosso, atteste que:
         </div>
         
         <!-- معلومات الطالب -->
-        <div class="student-info" id="studentInfo">
+        <div class="student-details" id="studentDetails">
             <!-- سيتم ملء البيانات هنا -->
         </div>
         
         <!-- معلومات التسجيل -->
-        <div class="declaration">
-            est inscrit(e) sous le numéro : <span id="studentNumberDisplay" style="font-weight: bold;"></span><br>
+        <div class="registration-info">
+            est inscrit(e) sous le numéro : <strong id="studentNumberDisplay"></strong><br>
             En deuxième année L2 : Licence Production et Protection Végétales ( )<br>
             aux semestres, modules et éléments suivants :
         </div>
         
-        <!-- المواد والمساقات -->
-        <div id="semestersContainer">
+        <!-- المواد الدراسية -->
+        <div id="coursesContainer">
             <!-- سيتم عرض المواد هنا -->
         </div>
         
         <!-- التذييل -->
-        <div class="footer">
-            <div class="date">Date : 08/10/2025</div>
-            <div class="final-declaration">
+        <div class="footer-section">
+            <div class="date-line">Date : 08/10/2025</div>
+            <div class="purpose-text">
                 Cette attestation lui est délivrée pour servir et valoir ce que de droit
             </div>
-            <div class="signature">
+            <div class="signature-area">
                 <div class="signature-title">Chef Service Scolarité</div>
                 <div class="signature-line"></div>
             </div>
@@ -272,24 +272,24 @@
     </div>
 
     <script>
-        // استرجاع البيانات
+        // استرجاع البيانات من localStorage
         const studentNumber = localStorage.getItem('studentNumber') || '24001581';
         const studentName = localStorage.getItem('studentName') || 'Cheikh Ahmedou Mohamed Lemine Cheikh Ahmedou';
 
         // عرض بيانات الطالب
-        document.getElementById('studentInfo').innerHTML = `
-            <div class="info-line">M(Mlle) : <strong>${studentName}</strong></div>
-            <div class="info-line">NNI : <strong>0090875712</strong></div>
-            <div class="info-line">Né(e) le : <strong>20/04/2005 à Aoujeft</strong></div>
+        document.getElementById('studentDetails').innerHTML = `
+            <div class="detail-line">M(Mlle) : <strong>${studentName}</strong></div>
+            <div class="detail-line">NNI : <strong>0090875712</strong></div>
+            <div class="detail-line">Né(e) le : <strong>20/04/2005 à Aoujeft</strong></div>
         `;
         
         document.getElementById('studentNumberDisplay').textContent = studentNumber;
 
-        // بيانات المواد - مطابقة تماماً للملف
+        // بيانات المواد الدراسية
         const semestersData = [
             {
                 name: "Semestre 3",
-                modules: [
+                courses: [
                     { code: "FRA211PPV", name: "Français 3", credit: "Crédit 3.0" },
                     { code: "GAG211PPV", name: "Introduction à l'Economie et à la Gestion", credit: "Crédit 3.0" },
                     { code: "PPV211", name: "Principes généraux d'agronomie", credit: "Crédit 4.0" },
@@ -302,7 +302,7 @@
             },
             {
                 name: "Semestre 4", 
-                modules: [
+                courses: [
                     { code: "GAG221PPV", name: "Technique de communication et vulgarisation", credit: "Crédit 3.0" },
                     { code: "PPV221", name: "Technique de Propagation des semences et Culture Fouragère", credit: "Crédit 4.0" },
                     { code: "PPV222", name: "Besoins en eau des cultures", credit: "Crédit 3.0" },
@@ -315,39 +315,39 @@
             }
         ];
 
-        // عرض المواد
-        let semestersHTML = '';
+        // عرض المواد الدراسية
+        let coursesHTML = '';
         
         semestersData.forEach(semester => {
-            semestersHTML += `
-                <div class="semester-section">
+            coursesHTML += `
+                <div class="semester-block">
                     <div class="semester-title">${semester.name}</div>
-                    <table class="module-table">
+                    <table class="courses-table">
             `;
             
-            semester.modules.forEach(module => {
-                semestersHTML += `
+            semester.courses.forEach(course => {
+                coursesHTML += `
                     <tr>
-                        <td class="module-code">${module.code}</td>
-                        <td class="module-name">${module.name}</td>
-                        <td class="module-credit">${module.credit}</td>
+                        <td class="course-code">${course.code}</td>
+                        <td class="course-name">${course.name}</td>
+                        <td class="course-credit">${course.credit}</td>
                     </tr>
                 `;
             });
             
-            semestersHTML += `
+            coursesHTML += `
                     </table>
                 </div>
             `;
         });
 
-        document.getElementById('semestersContainer').innerHTML = semestersHTML;
+        document.getElementById('coursesContainer').innerHTML = coursesHTML;
 
-        // طباعة تلقائية بعد تحميل الصفحة
+        // طباعة تلقائية
         window.onload = function() {
             setTimeout(() => {
                 window.print();
-            }, 500);
+            }, 1000);
         };
     </script>
 </body>
