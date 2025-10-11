@@ -9,57 +9,58 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
         }
         
         body {
-            background: #f5f6fa;
+            background: #f0f2f5;
             padding: 20px;
+            font-size: 12px;
         }
         
         .certificate {
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            max-width: 1000px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 30px;
+            padding: 25px;
             position: relative;
-            border: 2px solid #3498db;
+            border: 1px solid #ccc;
+            line-height: 1.4;
         }
         
         .header {
             text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 3px double #3498db;
-            padding-bottom: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #2c5e8a;
         }
         
         .logo {
-            max-width: 120px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-        }
-        
-        .institute-name {
-            font-size: 20px;
-            font-weight: bold;
-            color: #2c3e50;
+            max-width: 70px;
             margin-bottom: 10px;
         }
         
-        .certificate-title {
-            font-size: 24px;
+        .institute-name {
+            font-size: 14px;
             font-weight: bold;
-            color: #e74c3c;
-            margin: 20px 0;
+            color: #2c5e8a;
+            margin-bottom: 5px;
+        }
+        
+        .certificate-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin: 15px 0;
+            text-decoration: underline;
         }
         
         .student-info {
+            margin-bottom: 25px;
             display: grid;
             grid-template-columns: 1fr auto;
-            gap: 30px;
-            margin-bottom: 30px;
+            gap: 20px;
+            align-items: start;
         }
         
         .info-details {
@@ -67,11 +68,10 @@
         }
         
         .student-photo {
-            width: 150px;
-            height: 180px;
-            border: 2px solid #bdc3c7;
-            border-radius: 10px;
-            background: #ecf0f1;
+            width: 120px;
+            height: 150px;
+            border: 1px solid #999;
+            background: #f5f5f5;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -85,131 +85,138 @@
         }
         
         .info-row {
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ecf0f1;
+            margin-bottom: 8px;
+            display: flex;
         }
         
         .info-label {
             font-weight: bold;
-            color: #2c3e50;
-            display: inline-block;
-            width: 150px;
+            color: #333;
+            width: 140px;
+            flex-shrink: 0;
+        }
+        
+        .info-value {
+            flex: 1;
         }
         
         .semester {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+            page-break-inside: avoid;
         }
         
         .semester-title {
-            background: #3498db;
+            background: #2c5e8a;
             color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
+            padding: 8px 12px;
+            margin-bottom: 10px;
             font-weight: bold;
+            font-size: 13px;
+            border-radius: 3px;
         }
         
         .subjects-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 5px;
+            font-size: 11px;
         }
         
         .subjects-table th {
-            background: #34495e;
-            color: white;
-            padding: 12px;
+            background: #e8e8e8;
+            padding: 6px 8px;
             text-align: right;
+            border: 1px solid #ccc;
+            font-weight: bold;
         }
         
         .subjects-table td {
-            padding: 12px;
-            border-bottom: 1px solid #ecf0f1;
+            padding: 6px 8px;
+            border: 1px solid #ccc;
         }
         
         .subjects-table tr:nth-child(even) {
-            background: #f8f9fa;
+            background: #f9f9f9;
         }
         
         .footer {
             text-align: center;
-            margin-top: 40px;
+            margin-top: 30px;
             padding-top: 20px;
-            border-top: 2px solid #bdc3c7;
+            border-top: 1px solid #ccc;
         }
         
         .signature {
-            margin-top: 30px;
+            margin-top: 40px;
             text-align: left;
         }
         
-        .print-btn {
-            background: #27ae60;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
+        .button-group {
+            text-align: center;
             margin-top: 20px;
-            transition: all 0.3s ease;
         }
         
-        .print-btn:hover {
-            background: #219a52;
-            transform: translateY(-2px);
+        .print-btn, .back-btn {
+            background: #2c5e8a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            margin: 0 5px;
         }
         
         .back-btn {
-            background: #95a5a6;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 20px;
-            margin-right: 10px;
-            transition: all 0.3s ease;
-        }
-        
-        .back-btn:hover {
-            background: #7f8c8d;
+            background: #666;
         }
         
         @media print {
-            body * {
-                visibility: hidden;
-            }
-            .certificate, .certificate * {
-                visibility: visible;
+            body {
+                background: white;
+                padding: 0;
             }
             .certificate {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                box-shadow: none;
                 border: none;
+                box-shadow: none;
+                padding: 15px;
             }
-            .print-btn, .back-btn {
+            .button-group {
                 display: none;
             }
+        }
+
+        /* إصلاح مشكلة اللوجو */
+        .logo-fallback {
+            width: 70px;
+            height: 70px;
+            background: #2c5e8a;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            border-radius: 5px;
+            margin: 0 auto 10px auto;
         }
     </style>
 </head>
 <body>
     <div class="certificate">
         <div class="header">
-            <!-- اللوجو الرسمي -->
-            <img src="lset.jpg" alt="شعار المعهد" class="logo">
+            <!-- اللوجو مع بديل في حالة عدم الظهور -->
+            <div id="logoContainer">
+                <div class="logo-fallback">ISET<br>ROSSO</div>
+            </div>
             <div class="institute-name">
+                الجمهورية الإسلامية الموريتانية<br>
+                وزارة التعليم العالي والبحث العلمي<br>
                 المعهد العالي للتعليم التكنولوجي بروصو<br>
                 Institut Supérieur d'Enseignement Technologique de Rosso
             </div>
             <div class="certificate-title">
-                البطاقة الأكاديمية - السنة الدراسية 2025-2026
+                INSCRIPTION ACADEMIQUE - Pour l'année académique : 2025-2026
             </div>
         </div>
         
@@ -218,98 +225,112 @@
                 <!-- سيتم ملء البيانات بواسطة JavaScript -->
             </div>
             <div class="student-photo">
-                <!-- الصورة الشخصية -->
-                <img src="User.jpg" alt="صورة الطالب">
+                <img src="User.jpg" alt="صورة الطالب" onerror="this.style.display='none'; this.parentElement.innerHTML='<span>No Photo</span>';">
             </div>
+        </div>
+        
+        <div style="margin: 15px 0; font-weight: bold;">
+            Le Service de scolarité de l'Institut Supérieur d'Enseignement Technologique de Rosso, atteste que:
         </div>
         
         <div id="subjectsContainer">
             <!-- سيتم عرض المواد هنا -->
         </div>
-        
-        <div class="footer">
-            <div class="signature">
-                <strong>رئيس قسم الشؤون الأكاديمية</strong><br>
-                <div style="margin-top: 50px; width: 200px; border-top: 1px solid #2c3e50;"></div>
+
+        <div style="margin-top: 25px; text-align: left;">
+            <div style="margin-bottom: 40px;">
+                <strong>Date : 08/10/2025</strong>
             </div>
-            <button class="print-btn" onclick="window.print()">🖨 طباعة النتيجة</button>
-            <button class="back-btn" onclick="window.location.href='Index.html'">↩ العودة</button>
+            <div>
+                <strong>Cette attestation lui est délivrée pour servir et valoir ce que de droit</strong><br><br>
+                <div style="margin-top: 50px;">
+                    <strong>Chef Service Scolarité</strong>
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="print-btn" onclick="window.print()">🖨 طباعة</button>
+            <button class="back-btn" onclick="window.location.href='Index.html'">↩ عودة</button>
         </div>
     </div>
 
     <script>
+        // محاولة تحميل اللوجو
+        const logoImg = new Image();
+        logoImg.src = 'lset.jpg';
+        logoImg.className = 'logo';
+        logoImg.alt = 'شعار المعهد';
+        logoImg.onload = function() {
+            document.getElementById('logoContainer').innerHTML = '';
+            document.getElementById('logoContainer').appendChild(logoImg);
+        };
+
         // استرجاع البيانات من localStorage
         const studentNumber = localStorage.getItem('studentNumber');
         const studentName = localStorage.getItem('studentName');
 
-        // إذا لم توجد بيانات، ارجع إلى الصفحة الرئيسية
         if (!studentNumber || !studentName) {
             window.location.href = 'Index.html';
+            throw new Error('No student data');
         }
 
         // عرض بيانات الطالب
         document.getElementById('studentDetails').innerHTML = `
             <div class="info-row">
-                <span class="info-label">الاسم الكامل:</span>
-                <span>${studentName}</span>
+                <span class="info-label">M(Mlle) :</span>
+                <span class="info-value">${studentName}</span>
             </div>
             <div class="info-row">
-                <span class="info-label">رقم الطالب:</span>
-                <span>${studentNumber}</span>
+                <span class="info-label">NNI :</span>
+                <span class="info-value">0090875712</span>
             </div>
             <div class="info-row">
-                <span class="info-label">رقم الهوية:</span>
-                <span>0090875712</span>
+                <span class="info-label">Né(e) le :</span>
+                <span class="info-value">20/04/2005 à Aoujeft</span>
             </div>
             <div class="info-row">
-                <span class="info-label">تاريخ الميلاد:</span>
-                <span>20/04/2005 - أوجفت</span>
+                <span class="info-label">Numéro :</span>
+                <span class="info-value">${studentNumber}</span>
             </div>
             <div class="info-row">
-                <span class="info-label">التخصص:</span>
-                <span>الإنتاج وحماية النباتات - السنة الثانية</span>
+                <span class="info-label">Niveau :</span>
+                <span class="info-value">Deuxième année L2 : Licence Production et Protection Végétales</span>
             </div>
         `;
 
-        // بيانات المواد
+        // بيانات المواد باللغة الفرنسية كما في الملف
         const subjectsData = {
             semester3: [
-                { code: "FRA211PPV", name: "اللغة الفرنسية 3", credit: "3.0" },
-                { code: "GAG211PPV", name: "مقدمة في الاقتصاد والإدارة", credit: "3.0" },
-                { code: "PPV211", name: "المبادئ العامة للزراعة", credit: "4.0" },
-                { code: "PPV212", name: "المبادئ العامة للبستنة", credit: "4.0" },
-                { code: "PPV213", name: "مقدمة في المبيدات الزراعية", credit: "4.0" },
-                { code: "PPV214", name: "علم الحشرات 1 والديدان الخيطية 1", credit: "4.0" },
-                { code: "PPV217", name: "مقدمة في علم التربة", credit: "4.0" },
-                { code: "PPV218", name: "مقدمة في علم النبات", credit: "4.0" }
+                { code: "FRA211PPV", name: "Français 3", credit: "Crédit 3.0" },
+                { code: "GAG211PPV", name: "Introduction à l'Economie et à la Gestion", credit: "Crédit 3.0" },
+                { code: "PPV211", name: "Principes généraux d'agronomie", credit: "Crédit 4.0" },
+                { code: "PPV212", name: "Principes généraux d'horticulture", credit: "Crédit 4.0" },
+                { code: "PPV213", name: "Introduction aux pesticides agricoles", credit: "Crédit 4.0" },
+                { code: "PPV214", name: "Entomologie1 et Nematologie1", credit: "Crédit 4.0" },
+                { code: "PPV217", name: "Introduction à la science des sols", credit: "Crédit 4.0" },
+                { code: "PPV218", name: "Introduction à la science des plantes", credit: "Crédit 4.0" }
             ],
             semester4: [
-                { code: "GAG221PPV", name: "تقنيات التواصل والإرشاد", credit: "3.0" },
-                { code: "PPV221", name: "تقنيات إكثار البذور وزراعة الأعلاف", credit: "4.0" },
-                { code: "PPV222", name: "احتياجات المياه للمحاصيل", credit: "3.0" },
-                { code: "PPV223", name: "الفيزيولوجيا البيئية النباتية والكيمياء الحيوية", credit: "4.0" },
-                { code: "PPV224", name: "خصوبة التربة", credit: "3.0" },
-                { code: "PPV225", name: "طرق التشخيص في وقاية النبات", credit: "3.0" },
-                { code: "PPV226", name: "علم الحشائش", credit: "3.0" },
-                { code: "PPV227", name: "التدريب الميداني", credit: "7.0" }
+                { code: "GAG221PPV", name: "Technique de communication et vulgarisation", credit: "Crédit 3.0" },
+                { code: "PPV221", name: "Technique de Propagation des semences et Culture Fouragère", credit: "Crédit 4.0" },
+                { code: "PPV222", name: "Besoins en eau des cultures", credit: "Crédit 3.0" },
+                { code: "PPV223", name: "Ecophysiologie Végétale et Complément en Biochimie", credit: "Crédit 4.0" },
+                { code: "PPV224", name: "Fertilité des sols", credit: "Crédit 3.0" },
+                { code: "PPV225", name: "Méthodes de Diagnostics en Phytoprotection", credit: "Crédit 3.0" },
+                { code: "PPV226", name: "Malherbologie", credit: "Crédit 3.0" },
+                { code: "PPV227", name: "Stage", credit: "Crédit 7.0" }
             ]
         };
 
         // عرض المواد
         let subjectsHTML = '';
 
-        // الفصل الثالث
         subjectsHTML += `
             <div class="semester">
-                <div class="semester-title">الفصل الثالث (Semestre 3)</div>
+                <div class="semester-title">est inscrit(e) aux semestres, modules et éléments suivants :</div>
+                <div class="semester-title">Semestre 3</div>
                 <table class="subjects-table">
-                    <thead>
-                        <tr>
-                            <th>رمز المادة</th>
-                            <th>اسم المادة</th>
-                            <th>الوحدات</th>
-                        </tr>
-                    </thead>
                     <tbody>
         `;
         
@@ -327,20 +348,10 @@
                     </tbody>
                 </table>
             </div>
-        `;
-
-        // الفصل الرابع
-        subjectsHTML += `
+            
             <div class="semester">
-                <div class="semester-title">الفصل الرابع (Semestre 4)</div>
+                <div class="semester-title">Semestre 4</div>
                 <table class="subjects-table">
-                    <thead>
-                        <tr>
-                            <th>رمز المادة</th>
-                            <th>اسم المادة</th>
-                            <th>الوحدات</th>
-                        </tr>
-                    </thead>
                     <tbody>
         `;
         
