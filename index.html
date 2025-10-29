@@ -1,722 +1,147 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>To-Do List Pro - الإصدار المتقدم</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+<meta charset="UTF-8">
+<title>حاسبة نقاط بيلوت</title>
 
+<style>
     body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: url('https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=1600&q=80') no-repeat center center/cover;
-      backdrop-filter: blur(6px);
-      transition: background 0.5s ease;
+        font-family: Arial, sans-serif;
+        background: #1e3c72;
+        color: #fff;
+        text-align: center;
+        padding: 20px;
     }
 
-    body.light-mode {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    .teams {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        margin-bottom: 30px;
     }
 
-    .todo-container {
-      background: rgba(0, 0, 0, 0.75);
-      border-radius: 20px;
-      box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
-      padding: 25px;
-      width: 450px;
-      max-width: 95vw;
-      color: white;
-      text-align: center;
-      animation: fadeIn 0.8s ease-in;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(0, 255, 255, 0.2);
+    .team {
+        text-align: center;
     }
 
-    body.light-mode .todo-container {
-      background: rgba(255, 255, 255, 0.95);
-      color: #333;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+    .team input {
+        width: 120px;
+        padding: 8px;
+        font-size: 18px;
+        text-align: center;
+        border-radius: 8px;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
+    .circle {
+        width: 120px;
+        height: 120px;
+        background: #ffffff;
+        color: #1e3c72;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 10px auto;
+        font-size: 40px;
+        font-weight: bold;
+        border: 4px solid #f7dc11;
     }
 
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
+    .inputs {
+        margin-bottom: 15px;
     }
 
-    h2 {
-      color: #00ffff;
-      margin: 0;
-      font-size: 1.5em;
-    }
-
-    body.light-mode h2 {
-      color: #667eea;
-    }
-
-    .theme-toggle {
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      font-size: 1.2em;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .theme-toggle:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: rotate(30deg);
-    }
-
-    .input-group {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 15px;
-      flex-wrap: wrap;
-    }
-
-    input, select {
-      padding: 10px 15px;
-      border-radius: 10px;
-      border: none;
-      outline: none;
-      background: rgba(255, 255, 255, 0.15);
-      color: white;
-      font-size: 0.9em;
-      transition: 0.3s;
-    }
-
-    body.light-mode input,
-    body.light-mode select {
-      background: rgba(0, 0, 0, 0.1);
-      color: #333;
-    }
-
-    input:focus, select:focus {
-      background: rgba(255, 255, 255, 0.25);
-      box-shadow: 0 0 10px #00ffff;
-    }
-
-    body.light-mode input:focus,
-    body.light-mode select:focus {
-      background: rgba(255, 255, 255, 0.8);
-      box-shadow: 0 0 10px #667eea;
-    }
-
-    #taskInput {
-      flex: 1;
-      min-width: 200px;
+    .inputs input {
+        width: 140px;
+        padding: 10px;
+        font-size: 18px;
+        text-align: center;
+        border-radius: 8px;
     }
 
     button {
-      background: #00ffff;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 15px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-      color: #000;
+        padding: 12px 20px;
+        font-size: 18px;
+        margin: 8px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
     }
 
-    body.light-mode button {
-      background: #667eea;
-      color: white;
-    }
+    .add { background: #4caf50; color: #fff; }
+    .undo { background: #f44336; color: #fff; }
+    .init { background: #2196f3; color: #fff; }
 
-    button:hover {
-      background: #00cccc;
-      transform: scale(1.05);
-    }
-
-    body.light-mode button:hover {
-      background: #5a6fd8;
-    }
-
-    .controls {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .controls input,
-    .controls select {
-      flex: 1;
-      min-width: 120px;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 15px;
-      border-radius: 10px;
-    }
-
-    body.light-mode .stats {
-      background: rgba(0, 0, 0, 0.05);
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-number {
-      font-size: 1.5em;
-      font-weight: bold;
-      color: #00ffff;
-    }
-
-    body.light-mode .stat-number {
-      color: #667eea;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
-      overflow: hidden;
-      margin-bottom: 20px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #00ffff, #00cccc);
-      transition: width 0.5s ease;
-      border-radius: 4px;
-    }
-
-    body.light-mode .progress-fill {
-      background: linear-gradient(90deg, #667eea, #764ba2);
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      text-align: right;
-      max-height: 400px;
-      overflow-y: auto;
-    }
-
-    li {
-      background: rgba(255, 255, 255, 0.1);
-      margin-bottom: 10px;
-      padding: 15px;
-      border-radius: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: 0.3s;
-      border-right: 4px solid #666;
-      animation: slideIn 0.3s ease;
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(20px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-
-    body.light-mode li {
-      background: rgba(0, 0, 0, 0.05);
-      border-right-color: #ddd;
-    }
-
-    li.low-priority { border-right-color: #00ff00; }
-    li.medium-priority { border-right-color: #ffaa00; }
-    li.high-priority { border-right-color: #ff4444; }
-
-    li.completed {
-      text-decoration: line-through;
-      color: #aaa;
-      opacity: 0.7;
-      background: rgba(0, 255, 0, 0.1);
-    }
-
-    .task-content {
-      flex: 1;
-      text-align: right;
-      cursor: pointer;
-    }
-
-    .task-meta {
-      font-size: 0.8em;
-      color: #aaa;
-      margin-top: 5px;
-    }
-
-    .task-actions {
-      display: flex;
-      gap: 5px;
-      align-items: center;
-    }
-
-    .delete-btn {
-      background: transparent;
-      border: none;
-      color: #ff5555;
-      font-size: 1.2em;
-      cursor: pointer;
-      transition: 0.2s;
-      padding: 5px;
-    }
-
-    .delete-btn:hover {
-      transform: scale(1.2);
-      color: #ff2222;
-    }
-
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #00ffaa;
-      color: #000;
-      padding: 15px 20px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      animation: slideInRight 0.3s ease;
-      z-index: 1000;
-    }
-
-    @keyframes slideInRight {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    .template-buttons {
-      display: flex;
-      gap: 5px;
-      margin-bottom: 15px;
-      flex-wrap: wrap;
-    }
-
-    .template-btn {
-      background: rgba(0, 255, 255, 0.2);
-      border: 1px solid #00ffff;
-      color: #00ffff;
-      padding: 8px 12px;
-      border-radius: 20px;
-      font-size: 0.8em;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    body.light-mode .template-btn {
-      background: rgba(102, 126, 234, 0.2);
-      border-color: #667eea;
-      color: #667eea;
-    }
-
-    .template-btn:hover {
-      background: #00ffff;
-      color: #000;
-    }
-
-    body.light-mode .template-btn:hover {
-      background: #667eea;
-      color: white;
-    }
-
-    .overdue {
-      animation: pulse 2s infinite;
-      border-right-color: #ff0000 !important;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.7; }
-      100% { opacity: 1; }
-    }
-  </style>
+</style>
 </head>
 <body>
-  <div class="todo-container">
-    <div class="header">
-      <h2>📝 قائمة المهام المتقدمة</h2>
-      <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+
+<h1>حاسبة نقاط بيلوت</h1>
+
+<div class="teams">
+    <div class="team">
+        <input type="text" id="ourName" placeholder="اسم فريقنا" value="نحن">
+        <div class="circle" id="ourScore">0</div>
     </div>
 
-    <!-- قوالب سريعة -->
-    <div class="template-buttons">
-      <button class="template-btn" onclick="loadTemplate('shopping')">🛒 تسوق</button>
-      <button class="template-btn" onclick="loadTemplate('work')">💼 عمل</button>
-      <button class="template-btn" onclick="loadTemplate('morning')">🌅 صباح</button>
-      <button class="template-btn" onclick="loadTemplate('study')">📚 دراسة</button>
+    <div class="team">
+        <input type="text" id="theirName" placeholder="اسم فريقهم" value="هم">
+        <div class="circle" id="theirScore">0</div>
     </div>
+</div>
 
-    <!-- إدخال المهمة -->
-    <div class="input-group">
-      <input type="text" id="taskInput" placeholder="أضف مهمة جديدة..." onkeypress="handleEnterKey(event)" />
-      <button onclick="addTask()">إضافة</button>
-    </div>
+<div class="inputs">
+    <input type="number" id="ourInput" placeholder="نقاطنا" min="0">
+    <input type="number" id="theirInput" placeholder="نقاطهم" min="0">
+</div>
 
-    <!-- خيارات متقدمة -->
-    <div class="controls">
-      <select id="prioritySelect">
-        <option value="medium">⬅️ أولوية متوسطة</option>
-        <option value="high">⬆️ أولوية عالية</option>
-        <option value="low">⬇️ أولوية منخفضة</option>
-      </select>
-      <input type="date" id="dueDate">
-      <select id="repeatSelect">
-        <option value="none">لا تكرر</option>
-        <option value="daily">يومي</option>
-        <option value="weekly">أسبوعي</option>
-      </select>
-    </div>
+<button class="add" onclick="addPoints()">➕ إضافة النقاط</button>
+<button class="undo" onclick="undoLast()">↩ تراجع</button>
+<button class="init" onclick="start26()">بدء بـ 26 نقطة</button>
 
-    <!-- البحث والتصفية -->
-    <div class="controls">
-      <input type="text" id="searchInput" placeholder="🔍 بحث في المهام..." oninput="filterTasks()" />
-      <select id="filterSelect" onchange="filterTasks()">
-        <option value="all">جميع المهام</option>
-        <option value="active">غير مكتملة</option>
-        <option value="completed">مكتملة</option>
-        <option value="high">عالية الأولوية</option>
-      </select>
-    </div>
+<script>
+let ourScore = 0;
+let theirScore = 0;
+let history = [];
 
-    <!-- الإحصائيات -->
-    <div class="stats">
-      <div class="stat-item">
-        <div class="stat-number" id="totalTasks">0</div>
-        <div>المجموع</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number" id="completedTasks">0</div>
-        <div>مكتملة</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number" id="completionRate">0%</div>
-        <div>النسبة</div>
-      </div>
-    </div>
+function updateDisplay() {
+    document.getElementById("ourScore").textContent = ourScore;
+    document.getElementById("theirScore").textContent = theirScore;
+}
 
-    <!-- شريط التقدم -->
-    <div class="progress-bar">
-      <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-    </div>
+function addPoints() {
+    let our = parseInt(document.getElementById("ourInput").value) || 0;
+    let their = parseInt(document.getElementById("theirInput").value) || 0;
 
-    <!-- قائمة المهام -->
-    <ul id="taskList"></ul>
+    history.push({our: ourScore, their: theirScore});
 
-    <!-- أزرار التحكم -->
-    <div style="margin-top: 15px; display: flex; gap: 10px;">
-      <button onclick="clearCompleted()" style="background: #ffaa00;">مسح المكتملة</button>
-      <button onclick="shareTasks()" style="background: #00aaff;">مشاركة القائمة</button>
-    </div>
-  </div>
+    ourScore += our;
+    theirScore += their;
 
-  <script>
-    // العناصر الرئيسية
-    const taskInput = document.getElementById('taskInput');
-    const taskList = document.getElementById('taskList');
-    const prioritySelect = document.getElementById('prioritySelect');
-    const dueDate = document.getElementById('dueDate');
-    const repeatSelect = document.getElementById('repeatSelect');
-    const searchInput = document.getElementById('searchInput');
-    const filterSelect = document.getElementById('filterSelect');
+    updateDisplay();
 
-    // تعيين تاريخ اليوم كحد أدنى
-    dueDate.min = new Date().toISOString().split('T')[0];
+    document.getElementById("ourInput").value = "";
+    document.getElementById("theirInput").value = "";
+}
 
-    // القوالب الجاهزة
-    const templates = {
-      shopping: ["🍎 شراء الفواكه", "🥛 شراء الحليب", "🍞 شراء الخبز", "🥚 شراء البيض"],
-      work: ["📧 الرد على الإيميلات", "📊 إعداد التقارير", "👥 اجتماع الفريق", "📞 المكالمات المهمة"],
-      morning: ["☕ تحضير القهوة", "📖 قراءة 10 صفحات", "🏃 التمارين الصباحية", "🛀 الاستحمام"],
-      study: ["📘 مراجعة الدروس", "✍️ حل الواجبات", "🔬 البحث العلمي", "📝 كتابة الملاحظات"]
-    };
+function undoLast() {
+    if (history.length === 0) return alert("لا يوجد ما يمكن التراجع عنه!");
 
-    // تحميل المهام عند بدء التشغيل
-    window.onload = function() {
-      loadTasks();
-      updateStats();
-      setupKeyboardShortcuts();
-    };
+    let last = history.pop();
+    ourScore = last.our;
+    theirScore = last.their;
 
-    // إضافة مهمة جديدة
-    function addTask() {
-      const taskText = taskInput.value.trim();
-      if (taskText === '') {
-        showNotification('⚠️ الرجاء إدخال مهمة!', 'warning');
-        return;
-      }
+    updateDisplay();
+}
 
-      const task = {
-        text: taskText,
-        priority: prioritySelect.value,
-        dueDate: dueDate.value,
-        repeat: repeatSelect.value,
-        completed: false,
-        createdAt: new Date().toISOString()
-      };
+function start26() {
+    history.push({our: ourScore, their: theirScore});
+    ourScore = 26;
+    theirScore = 26;
+    updateDisplay();
+}
+</script>
 
-      const li = createTaskElement(task);
-      taskList.appendChild(li);
-      saveTasks();
-      updateStats();
-      taskInput.value = '';
-      
-      showNotification('✅ تمت إضافة المهمة بنجاح!');
-      playSound('add');
-    }
-
-    // إنشاء عنصر المهمة
-    function createTaskElement(task) {
-      const li = document.createElement('li');
-      li.className = `${task.priority}-priority ${task.completed ? 'completed' : ''}`;
-      
-      const dueDateText = task.dueDate ? 
-        new Date(task.dueDate).toLocaleDateString('ar-EG') : 'لا يوجد';
-      
-      const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && !task.completed;
-      if (isOverdue) li.classList.add('overdue');
-
-      li.innerHTML = `
-        <div class="task-content" onclick="toggleTask(this)">
-          <div>${task.text}</div>
-          <div class="task-meta">
-            ${getPriorityIcon(task.priority)} | 
-            📅 ${dueDateText} | 
-            ${task.repeat !== 'none' ? '🔄 ' + task.repeat : '❌ لا تكرر'}
-            ${isOverdue ? ' | ⚠️ متأخرة' : ''}
-          </div>
-        </div>
-        <div class="task-actions">
-          <button class="delete-btn" onclick="deleteTask(this)">✖</button>
-        </div>
-      `;
-      
-      return li;
-    }
-
-    // تبديل حالة المهمة
-    function toggleTask(element) {
-      const li = element.closest('li');
-      li.classList.toggle('completed');
-      saveTasks();
-      updateStats();
-      playSound('complete');
-    }
-
-    // حذف المهمة
-    function deleteTask(button) {
-      const li = button.closest('li');
-      li.style.animation = 'slideIn 0.3s ease reverse';
-      setTimeout(() => {
-        li.remove();
-        saveTasks();
-        updateStats();
-        playSound('delete');
-        showNotification('🗑️ تم حذف المهمة');
-      }, 300);
-    }
-
-    // حفظ المهام في localStorage
-    function saveTasks() {
-      const tasks = [];
-      document.querySelectorAll('#taskList li').forEach(li => {
-        const taskText = li.querySelector('.task-content div:first-child').textContent;
-        const metaText = li.querySelector('.task-meta').textContent;
-        
-        tasks.push({
-          text: taskText,
-          priority: li.classList.contains('high-priority') ? 'high' : 
-                   li.classList.contains('low-priority') ? 'low' : 'medium',
-          dueDate: extractDateFromMeta(metaText),
-          repeat: extractRepeatFromMeta(metaText),
-          completed: li.classList.contains('completed'),
-          createdAt: new Date().toISOString()
-        });
-      });
-      localStorage.setItem('tasks', JSON.stringify(tasks));
-    }
-
-    // تحميل المهام
-    function loadTasks() {
-      const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-      taskList.innerHTML = '';
-      tasks.forEach(task => {
-        const li = createTaskElement(task);
-        taskList.appendChild(li);
-      });
-      filterTasks(); // تطبيق الفلاتر الحالية
-    }
-
-    // تحديث الإحصائيات
-    function updateStats() {
-      const total = document.querySelectorAll('#taskList li').length;
-      const completed = document.querySelectorAll('#taskList li.completed').length;
-      const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-      document.getElementById('totalTasks').textContent = total;
-      document.getElementById('completedTasks').textContent = completed;
-      document.getElementById('completionRate').textContent = rate + '%';
-      document.getElementById('progressFill').style.width = rate + '%';
-    }
-
-    // البحث والتصفية
-    function filterTasks() {
-      const searchText = searchInput.value.toLowerCase();
-      const filterType = filterSelect.value;
-      
-      document.querySelectorAll('#taskList li').forEach(li => {
-        const text = li.querySelector('.task-content div:first-child').textContent.toLowerCase();
-        const isCompleted = li.classList.contains('completed');
-        const isHighPriority = li.classList.contains('high-priority');
-        const matchesSearch = text.includes(searchText);
-        
-        let matchesFilter = true;
-        if (filterType === 'completed') matchesFilter = isCompleted;
-        else if (filterType === 'active') matchesFilter = !isCompleted;
-        else if (filterType === 'high') matchesFilter = isHighPriority;
-        
-        li.style.display = (matchesSearch && matchesFilter) ? 'flex' : 'none';
-      });
-    }
-
-    // تحميل القوالب
-    function loadTemplate(templateName) {
-      if (confirm(`هل تريد تحميل قالب "${templateName}"؟ سيتم مسح المهام الحالية.`)) {
-        taskList.innerHTML = '';
-        templates[templateName].forEach(taskText => {
-          const task = {
-            text: taskText,
-            priority: 'medium',
-            dueDate: '',
-            repeat: 'none',
-            completed: false,
-            createdAt: new Date().toISOString()
-          };
-          const li = createTaskElement(task);
-          taskList.appendChild(li);
-        });
-        saveTasks();
-        updateStats();
-        showNotification(`📋 تم تحميل قالب ${templateName}`);
-      }
-    }
-
-    // تبديل الوضع الليلي/النهاري
-    function toggleTheme() {
-      document.body.classList.toggle('light-mode');
-      const themeBtn = document.querySelector('.theme-toggle');
-      themeBtn.textContent = document.body.classList.contains('light-mode') ? '🌞' : '🌙';
-      localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
-    }
-
-    // تحميل theme من الذاكرة
-    if (localStorage.getItem('theme') === 'light') {
-      document.body.classList.add('light-mode');
-      document.querySelector('.theme-toggle').textContent = '🌞';
-    }
-
-    // الإشعارات
-    function showNotification(message, type = 'success') {
-      const notification = document.createElement('div');
-      notification.className = `notification ${type}`;
-      notification.textContent = message;
-      document.body.appendChild(notification);
-      
-      setTimeout(() => {
-        notification.remove();
-      }, 3000);
-    }
-
-    // الأصوات (محاكاة)
-    function playSound(type) {
-      // في تطبيق حقيقي، يمكن إضافة ملفات صوتية
-      console.log(`Playing ${type} sound`);
-    }
-
-    // مسح المهام المكتملة
-    function clearCompleted() {
-      const completedTasks = document.querySelectorAll('#taskList li.completed');
-      if (completedTasks.length === 0) {
-        showNotification('ℹ️ لا توجد مهام مكتملة', 'info');
-        return;
-      }
-      
-      if (confirm(`هل تريد مسح ${completedTasks.length} مهمة مكتملة؟`)) {
-        completedTasks.forEach(task => task.remove());
-        saveTasks();
-        updateStats();
-        showNotification(`🧹 تم مسح ${completedTasks.length} مهمة مكتملة`);
-      }
-    }
-
-    // مشاركة المهام
-    function shareTasks() {
-      const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-      const shareText = tasks.map(task => 
-        `${task.completed ? '✅' : '⭕'} ${task.text}`
-      ).join('\n');
-      
-      if (navigator.share) {
-        navigator.share({
-          title: 'قائمة مهامي',
-          text: shareText
-        });
-      } else {
-        navigator.clipboard.writeText(shareText);
-        showNotification('📋 تم نسخ القائمة إلى الحافظة');
-      }
-    }
-
-    // اختصارات لوحة المفاتيح
-    function setupKeyboardShortcuts() {
-      document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.key === 'n') {
-          e.preventDefault();
-          taskInput.focus();
-        }
-        if (e.key === 'Escape') {
-          taskInput.blur();
-        }
-      });
-    }
-
-    function handleEnterKey(event) {
-      if (event.key === 'Enter') addTask();
-    }
-
-    // دوال مساعدة
-    function getPriorityIcon(priority) {
-      const icons = { high: '⬆️ عالي', medium: '⬅️ متوسط', low: '⬇️ منخفض' };
-      return icons[priority] || '⬅️ متوسط';
-    }
-
-    function extractDateFromMeta(meta) {
-      const match = meta.match(/📅 (.+?) \|/);
-      return match && match[1] !== 'لا يوجد' ? match[1] : '';
-    }
-
-    function extractRepeatFromMeta(meta) {
-      if (meta.includes('يومي')) return 'daily';
-      if (meta.includes('أسبوعي')) return 'weekly';
-      return 'none';
-    }
-  </script>
 </body>
 </html>
