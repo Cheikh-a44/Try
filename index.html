@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Système de Calcul des Moyennes - ISET</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -610,7 +609,7 @@
             'M14': 'Module 14'
         };
 
-        // تعريف الائتمانات لكل مادة مع القيم الصحيحة
+        // تعريف الائتمانات لكل مادة (مطلوب للدالة الجديدة)
         const CREDITS_CONFIG = {
             // S1
             'ANG1': 3, 
@@ -621,7 +620,7 @@
             'CHIM': 4, 
             'BIO': 4, 
             'MICRO': 4,
-            // S2 - كل المواد لديها 3
+            // S2
             'GEM': 3, 
             'GAB': 3, 
             'TIC': 3, 
@@ -908,6 +907,7 @@
             saveToLocalStorage();
         }
 
+        // دالة calculateStudentResults من الكود الأول
         function calculateStudentResults(student, modulesConfig, semester) {
             let totalMatiere = 0;
             let countMatiere = 0;
@@ -945,19 +945,22 @@
                 const moduleSubjects = modulesConfig[moduleCode];
                 let moduleTotal = 0;
                 let moduleCount = 0;
+                let moduleCreditTotal = 0;
 
-                // حساب معدل الوحدة
+                // حساب معدل الوحدة وائتماناتها
                 moduleSubjects.forEach(subjectCode => {
                     const subject = matiereTemp[subjectCode];
                     if (subject) {
                         moduleTotal += subject.moyenne;
                         moduleCount++;
+                        moduleCreditTotal += CREDITS_CONFIG[subjectCode] || 3;
                     }
                 });
 
                 if (moduleCount > 0) {
                     const moyenneModule = moduleTotal / moduleCount;
                     moduleAverages[moduleCode] = moyenneModule;
+                    moduleCredits[moduleCode] = moduleCreditTotal;
                     
                     // تحديد المواد الأقل من 7
                     let hasSubjectBelow7 = false;
@@ -981,17 +984,14 @@
                 }
             });
 
-            // الخطوة 2: تحديد حالة كل مادة
+            // الخطوة 2: تحديد حالة كل مادة أولاً
             Object.keys(modulesConfig).forEach(moduleCode => {
                 const moduleSubjects = modulesConfig[moduleCode];
-                let moduleCreditTotal = 0;
 
                 moduleSubjects.forEach(subjectCode => {
                     const subject = matiereTemp[subjectCode];
                     if (subject) {
                         const credit = CREDITS_CONFIG[subjectCode] || 3;
-                        moduleCreditTotal += credit;
-                        
                         let status = "NC";
                         
                         if (subject.moyenne >= 10) {
@@ -1011,8 +1011,6 @@
                         subjectStatuses[subjectCode] = { status, credit, moyenne: subject.moyenne };
                     }
                 });
-                
-                moduleCredits[moduleCode] = moduleCreditTotal;
             });
 
             // الخطوة 3: تطبيق قواعد التعويض (مع مراعاة قاعدة الوحدات الأقل من 9)
@@ -1371,14 +1369,14 @@
                         doc.text(moduleCode, 22, y+5);
                         doc.text(moduleNames[moduleCode], 40, y+5);
                         doc.text(module.moyenne.toFixed(2), 135, y+5);
-                        doc.text(module.credit.toFixed(1), 155, y+5);
+                        doc.text(`${module.creditEarned}/${module.creditTotal}`, 155, y+5);
                         doc.text(module.status, 170, y+5);
                         y += 8;
 
                         modulesConfig[moduleCode].forEach(subjectCode => {
                             const subject = student.subjects[subjectCode];
                             if (subject) {
-                                const subjectCredit = subject.status === "C" ? "3.0" : "0.0";
+                                const subjectCredit = subject.status === "C" ? subject.credit : "0";
                                 
                                 doc.text('', 22, y+5);
                                 doc.text(subjectsConfig[subjectCode], 40, y+5);
