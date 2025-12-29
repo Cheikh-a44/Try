@@ -7,6 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* نفس الـ CSS السابق */
         * {
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -897,7 +898,7 @@
             
             students.forEach(student => {
                 if (!student.calculated) {
-                    calculateStudentResults(student, modulesConfig, semester);
+                    calculateStudentResults(student, modulesConfig);
                 }
             });
             
@@ -907,8 +908,8 @@
             saveToLocalStorage();
         }
 
-        // دالة calculateStudentResults من الكود الأول
-        function calculateStudentResults(student, modulesConfig, semester) {
+        // دالة calculateStudentResults المصححة (معلمين فقط)
+        function calculateStudentResults(student, modulesConfig) {
             let totalMatiere = 0;
             let countMatiere = 0;
             const matiereTemp = {};
@@ -935,8 +936,6 @@
             // حساب الوحدات
             const modStatus = {};
             const moduleAverages = {};
-            const moduleCredits = {};
-            const subjectStatuses = {};
 
             // الخطوة 1: فحص إذا كانت هناك أي وحدة أقل من 9
             let hasModuleBelow9 = false;
@@ -945,22 +944,19 @@
                 const moduleSubjects = modulesConfig[moduleCode];
                 let moduleTotal = 0;
                 let moduleCount = 0;
-                let moduleCreditTotal = 0;
 
-                // حساب معدل الوحدة وائتماناتها
+                // حساب معدل الوحدة
                 moduleSubjects.forEach(subjectCode => {
                     const subject = matiereTemp[subjectCode];
                     if (subject) {
                         moduleTotal += subject.moyenne;
                         moduleCount++;
-                        moduleCreditTotal += CREDITS_CONFIG[subjectCode] || 3;
                     }
                 });
 
                 if (moduleCount > 0) {
                     const moyenneModule = moduleTotal / moduleCount;
                     moduleAverages[moduleCode] = moyenneModule;
-                    moduleCredits[moduleCode] = moduleCreditTotal;
                     
                     // تحديد المواد الأقل من 7
                     let hasSubjectBelow7 = false;
@@ -984,7 +980,8 @@
                 }
             });
 
-            // الخطوة 2: تحديد حالة كل مادة أولاً
+            // الخطوة 2: تحديد حالة كل مادة أولياً
+            const subjectStatuses = {};
             Object.keys(modulesConfig).forEach(moduleCode => {
                 const moduleSubjects = modulesConfig[moduleCode];
 
@@ -1083,7 +1080,7 @@
 
             student.statusSemestre = (allModulesValid && student.moyenneGenerale >= 10) ? 'Validé' : 'Non Validé';
 
-            // حفظ نتائج الوحدات
+            // حساب ائتمانات الوحدات
             student.modules = {};
             Object.keys(modulesConfig).forEach(moduleCode => {
                 if (moduleAverages[moduleCode]) {
