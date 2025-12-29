@@ -908,6 +908,7 @@
 
             // المعدل العام
             student.moyenneGenerale = countMatiere > 0 ? totalMatiere / countMatiere : 0;
+            student.statusSemestre = student.moyenneGenerale >= 10 ? 'Validé' : 'Non Validé';
 
             // حساب الوحدات
             const modStatus = {};
@@ -941,17 +942,7 @@
                     if (hasLowGrade) {
                         modStatus[moduleCode] = "NV";
                     } else {
-                        // الشرط الجديد: إذا كان الموديل بين 7 و 10 ويمكن تعويضه بالمعدل العام
-                        if (moyenneModule >= 7 && moyenneModule < 10) {
-                            const requiredMoyenne = 10 + (10 - moyenneModule);
-                            if (student.moyenneGenerale >= requiredMoyenne) {
-                                modStatus[moduleCode] = "V";
-                            } else {
-                                modStatus[moduleCode] = "NV";
-                            }
-                        } else {
-                            modStatus[moduleCode] = moyenneModule >= 10 ? "V" : "NV";
-                        }
+                        modStatus[moduleCode] = moyenneModule >= 10 ? "V" : "NV";
                     }
                 }
             });
@@ -979,16 +970,6 @@
                 student.subjects[subjectCode].moyenne = moyenne;
                 student.subjects[subjectCode].status = status;
             });
-
-            // تحديد حالة السيمستر: جميع الموديلات يجب أن تكون V والمعدل العام ≥ 10
-            let allModulesValid = true;
-            Object.keys(modStatus).forEach(moduleCode => {
-                if (modStatus[moduleCode] !== "V") {
-                    allModulesValid = false;
-                }
-            });
-
-            student.statusSemestre = (allModulesValid && student.moyenneGenerale >= 10) ? 'Validé' : 'Non Validé';
 
             // حفظ نتائج الوحدات
             student.modules = {};
