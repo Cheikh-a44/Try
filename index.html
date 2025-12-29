@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Système de Calcul des Moyennes - ISET</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -557,7 +558,7 @@
     <script>
         const { jsPDF } = window.jspdf;
         
-        // تعريف المواد والوحدات لـ S2 (باستخدام الاختصارات فقط)
+        // تعريف المواد والوحدات لـ S2
         const SUBJECTS_S2 = {
             'GEM': 'GEM',
             'GAB': 'GAB', 
@@ -583,7 +584,7 @@
             'M24': 'Module 24'
         };
 
-        // تعريف المواد والوحدات لـ S1 (بدون اختصارات)
+        // تعريف المواد والوحدات لـ S1
         const SUBJECTS_S1 = {
             'ANG1': 'Anglais',
             'FRA1': 'Français',
@@ -607,6 +608,28 @@
             'M12': 'Module 12',
             'M13': 'Module 13',
             'M14': 'Module 14'
+        };
+
+        // تعريف الائتمانات لكل مادة مع القيم الصحيحة
+        const CREDITS_CONFIG = {
+            // S1
+            'ANG1': 3, 
+            'FRA1': 3, 
+            'INFO': 3, 
+            'MATH': 5, 
+            'PHY': 4, 
+            'CHIM': 4, 
+            'BIO': 4, 
+            'MICRO': 4,
+            // S2 - كل المواد لديها 3
+            'GEM': 3, 
+            'GAB': 3, 
+            'TIC': 3, 
+            'PPV': 3, 
+            'PSA': 3, 
+            'STA': 3, 
+            'ANG': 3, 
+            'FRA': 3
         };
 
         let studentsS1 = [];
@@ -660,7 +683,7 @@
             btnPDF.addEventListener('click', () => generatePDF('s1'));
             btnClear.addEventListener('click', () => clearAllStudents('s1'));
 
-            // إضافة مواد S1 مع إزالة TP من المواد المحددة وإزالة الاختصارات
+            // إضافة مواد S1
             document.getElementById('s1-subjects').innerHTML = `
                 <div class="grid-header">Matière</div>
                 <div class="grid-header">TP</div>
@@ -736,7 +759,7 @@
             btnPDF.addEventListener('click', () => generatePDF('s2'));
             btnClear.addEventListener('click', () => clearAllStudents('s2'));
 
-            // إضافة مواد S2 مع إزالة TP من المواد المحددة
+            // إضافة مواد S2
             document.getElementById('s2-subjects').innerHTML = `
                 <div class="grid-header">Matière</div>
                 <div class="grid-header">TP</div>
@@ -875,7 +898,7 @@
             
             students.forEach(student => {
                 if (!student.calculated) {
-                    calculateStudentResults(student, modulesConfig);
+                    calculateStudentResults(student, modulesConfig, semester);
                 }
             });
             
@@ -885,7 +908,7 @@
             saveToLocalStorage();
         }
 
-        function calculateStudentResults(student, modulesConfig) {
+        function calculateStudentResults(student, modulesConfig, semester) {
             let totalMatiere = 0;
             let countMatiere = 0;
             const matiereTemp = {};
@@ -908,17 +931,22 @@
 
             // المعدل العام
             student.moyenneGenerale = countMatiere > 0 ? totalMatiere / countMatiere : 0;
-            student.statusSemestre = student.moyenneGenerale >= 10 ? 'Validé' : 'Non Validé';
 
             // حساب الوحدات
             const modStatus = {};
             const moduleAverages = {};
+            const moduleCredits = {};
+            const subjectStatuses = {};
 
+            // الخطوة 1: فحص إذا كانت هناك أي وحدة أقل من 9
+            let hasModuleBelow9 = false;
+            
             Object.keys(modulesConfig).forEach(moduleCode => {
                 const moduleSubjects = modulesConfig[moduleCode];
                 let moduleTotal = 0;
                 let moduleCount = 0;
 
+                // حساب معدل الوحدة
                 moduleSubjects.forEach(subjectCode => {
                     const subject = matiereTemp[subjectCode];
                     if (subject) {
@@ -931,62 +959,154 @@
                     const moyenneModule = moduleTotal / moduleCount;
                     moduleAverages[moduleCode] = moyenneModule;
                     
-                    // تحديد حالة الوحدة
-                    let hasLowGrade = false;
+                    // تحديد المواد الأقل من 7
+                    let hasSubjectBelow7 = false;
+                    
                     moduleSubjects.forEach(subjectCode => {
-                        if (matiereTemp[subjectCode] && matiereTemp[subjectCode].moyenne < 7) {
-                            hasLowGrade = true;
+                        const subject = matiereTemp[subjectCode];
+                        if (subject && subject.moyenne < 7) {
+                            hasSubjectBelow7 = true;
                         }
                     });
                     
-                    if (hasLowGrade) {
+                    // الحالة الأولية للوحدة
+                    if (hasSubjectBelow7 || moyenneModule < 9) {
                         modStatus[moduleCode] = "NV";
+                        if (moyenneModule < 9) {
+                            hasModuleBelow9 = true;
+                        }
                     } else {
-                        modStatus[moduleCode] = moyenneModule >= 10 ? "V" : "NV";
+                        modStatus[moduleCode] = "Pending";
                     }
                 }
             });
 
-            // تحديد status المواد
-            Object.keys(student.subjects).forEach(subjectCode => {
-                const subjectData = student.subjects[subjectCode];
-                const moyenne = matiereTemp[subjectCode].moyenne;
+            // الخطوة 2: تحديد حالة كل مادة
+            Object.keys(modulesConfig).forEach(moduleCode => {
+                const moduleSubjects = modulesConfig[moduleCode];
+                let moduleCreditTotal = 0;
 
-                let moduleCode = null;
-                Object.keys(modulesConfig).forEach(modCode => {
-                    if (modulesConfig[modCode].includes(subjectCode)) {
-                        moduleCode = modCode;
+                moduleSubjects.forEach(subjectCode => {
+                    const subject = matiereTemp[subjectCode];
+                    if (subject) {
+                        const credit = CREDITS_CONFIG[subjectCode] || 3;
+                        moduleCreditTotal += credit;
+                        
+                        let status = "NC";
+                        
+                        if (subject.moyenne >= 10) {
+                            status = "C";
+                        } else if (subject.moyenne < 7) {
+                            status = "NC";
+                        } else {
+                            // المواد بين 7 و 10
+                            if (modStatus[moduleCode] === "NV") {
+                                // إذا كانت الوحدة NV من البداية
+                                status = "NC";
+                            } else {
+                                status = "Pending";
+                            }
+                        }
+                        
+                        subjectStatuses[subjectCode] = { status, credit, moyenne: subject.moyenne };
                     }
                 });
-
-                let status = "NC";
                 
-                if (moyenne >= 10) {
-                    status = "C";
-                } else if (moduleCode && moyenne >= 7 && moduleAverages[moduleCode] >= 10) {
-                    status = "C";
+                moduleCredits[moduleCode] = moduleCreditTotal;
+            });
+
+            // الخطوة 3: تطبيق قواعد التعويض (مع مراعاة قاعدة الوحدات الأقل من 9)
+            Object.keys(modulesConfig).forEach(moduleCode => {
+                const moduleSubjects = modulesConfig[moduleCode];
+                const moyenneModule = moduleAverages[moduleCode];
+                
+                // إذا كانت هناك وحدة أقل من 9، لا يمكن تعويض أي وحدة
+                if (hasModuleBelow9 && modStatus[moduleCode] === "Pending") {
+                    modStatus[moduleCode] = "NV";
+                    // جميع المواد في هذه الوحدة تصبح NC
+                    moduleSubjects.forEach(subjectCode => {
+                        const subjectStatus = subjectStatuses[subjectCode];
+                        if (subjectStatus && subjectStatus.moyenne < 10) {
+                            subjectStatus.status = "NC";
+                        }
+                    });
+                    return;
                 }
 
-                student.subjects[subjectCode].moyenne = moyenne;
-                student.subjects[subjectCode].status = status;
+                // إذا كانت الوحدة بين 9 و 10
+                if (modStatus[moduleCode] === "Pending" && moyenneModule >= 9 && moyenneModule < 10) {
+                    // يمكن التعويض فقط إذا كان المعدل العام > 10
+                    if (student.moyenneGenerale > 10) {
+                        modStatus[moduleCode] = "V";
+                        // جميع المواد في الوحدة تصبح C
+                        moduleSubjects.forEach(subjectCode => {
+                            const subjectStatus = subjectStatuses[subjectCode];
+                            if (subjectStatus && subjectStatus.moyenne >= 7) {
+                                subjectStatus.status = "C";
+                            }
+                        });
+                    } else {
+                        modStatus[moduleCode] = "NV";
+                        moduleSubjects.forEach(subjectCode => {
+                            const subjectStatus = subjectStatuses[subjectCode];
+                            if (subjectStatus && subjectStatus.moyenne < 10) {
+                                subjectStatus.status = "NC";
+                            }
+                        });
+                    }
+                } 
+                // إذا كانت الوحدة ≥ 10
+                else if (modStatus[moduleCode] === "Pending" && moyenneModule >= 10) {
+                    modStatus[moduleCode] = "V";
+                }
+                // إذا كانت الوحدة < 9 (تم التعامل معها في الخطوة 1)
+                else if (modStatus[moduleCode] === "NV") {
+                    // لا تفعل شيئاً - تم التعامل معها
+                }
             });
+
+            // حفظ نتائج المواد في student object
+            Object.keys(student.subjects).forEach(subjectCode => {
+                const subjectStatus = subjectStatuses[subjectCode];
+                if (subjectStatus) {
+                    student.subjects[subjectCode].moyenne = subjectStatus.moyenne;
+                    student.subjects[subjectCode].status = subjectStatus.status;
+                    student.subjects[subjectCode].credit = subjectStatus.credit;
+                }
+            });
+
+            // تحديد حالة السيمستر: جميع الموديلات يجب أن تكون V والمعدل العام ≥ 10
+            let allModulesValid = true;
+            Object.keys(modStatus).forEach(moduleCode => {
+                if (modStatus[moduleCode] !== "V") {
+                    allModulesValid = false;
+                }
+            });
+
+            student.statusSemestre = (allModulesValid && student.moyenneGenerale >= 10) ? 'Validé' : 'Non Validé';
 
             // حفظ نتائج الوحدات
             student.modules = {};
             Object.keys(modulesConfig).forEach(moduleCode => {
                 if (moduleAverages[moduleCode]) {
-                    let totalCredit = 0;
+                    let totalCreditEarned = 0;
+                    let totalCreditPossible = 0;
+                    
                     modulesConfig[moduleCode].forEach(subjectCode => {
                         const subject = student.subjects[subjectCode];
                         if (subject) {
-                            totalCredit += subject.status === "C" ? 3 : 0;
+                            totalCreditPossible += CREDITS_CONFIG[subjectCode] || 3;
+                            if (subject.status === "C") {
+                                totalCreditEarned += CREDITS_CONFIG[subjectCode] || 3;
+                            }
                         }
                     });
                     
                     student.modules[moduleCode] = {
                         moyenne: moduleAverages[moduleCode],
                         status: modStatus[moduleCode],
-                        credit: totalCredit
+                        creditEarned: totalCreditEarned,
+                        creditTotal: totalCreditPossible
                     };
                 }
             });
@@ -1086,7 +1206,7 @@
                                     <td></td>
                                     <td></td>
                                     <td>${module.moyenne.toFixed(2)}</td>
-                                    <td>${module.credit.toFixed(1)}</td>
+                                    <td>${module.creditEarned}/${module.creditTotal}</td>
                                     <td class="${module.status === 'V' ? 'status-valid' : 'status-non-valid'}">${module.status}</td>
                                 </tr>
                             `;
@@ -1094,7 +1214,7 @@
                             modulesConfig[moduleCode].forEach(subjectCode => {
                                 const subject = student.subjects[subjectCode];
                                 if (subject) {
-                                    const subjectCredit = subject.status === "C" ? "3.0" : "0.0";
+                                    const subjectCredit = subject.status === "C" ? subject.credit : "0";
                                     
                                     html += `
                                         <tr>
