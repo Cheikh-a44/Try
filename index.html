@@ -1251,7 +1251,7 @@ if (hasNVModules && student.moyenneGenerale < 10) {
                         doc.setFillColor(232, 244, 252);
                         doc.rect(margin, currentY, tableWidth, 8, 'F');
                         doc.text(moduleCode, margin + 2, currentY + 5);
-                        // اسم الوحدة بخط غامق وحجم أكبر قليلاً doc.setFont('helvetica', 'bold'); doc.setFontSize(12); // زيادة من 10 إلى 12 doc.text(moduleNames[moduleCode], margin + colWidths[0] + 2, currentY + 5); doc.setFont('helvetica', 'normal'); // العودة للخط العادي doc.setFontSize(10); // العودة للحجم العادي
+                        // محاولة استخدام helvetica، إذا لم يعمل استخدم الافتراضي try {     doc.setFont("helvetica", "bold"); } catch(e) {     doc.setFont(undefined, "bold"); } doc.setFontSize(12); doc.text(moduleNames[moduleCode], margin + colWidths[0] + 2, currentY + 5); // العودة doc.setFont(undefined, "normal"); doc.setFontSize(10);
                         doc.text(module.moyenne.toFixed(2), margin + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 2, currentY + 5);
                         doc.text(module.credit.toFixed(1), margin + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5] + 2, currentY + 5);
                         doc.text(module.status, margin + tableWidth - colWidths[7] + 2, currentY + 5);
