@@ -3,168 +3,197 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Coordinateur PPV - Gestion</title>
+<title>Résultats PPV - Consultation des notes</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   :root {
     --primary: #0077b6;
     --primary-dark: #005f87;
     --primary-light: #caf0f8;
+    --secondary: #0096c7;
     --light: #f5f7fa;
     --white: #ffffff;
     --text: #333333;
+    --text-light: #666666;
     --shadow: 0 4px 12px rgba(0,0,0,0.1);
     --radius: 10px;
+    --transition: all 0.3s ease;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:var(--light); color:var(--text); line-height:1.4; min-height:100vh; }
-  header { background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:var(--white); padding:1rem; text-align:center; }
-  .container { max-width:1000px; margin:0 auto; padding:1rem; }
-  
-  .admin-btn {
-    padding:0.6rem 1.2rem; background:#f0f0f0; color:#333; border:1px solid #ccc;
-    border-radius:var(--radius); font-size:0.9rem; font-weight:600; cursor:pointer; margin:0.2rem;
-  }
-  .admin-btn.primary { background:var(--primary); color:white; border-color:var(--primary-dark); }
-  .admin-btn.success { background:#d4edda; color:#155724; border-color:#28a745; }
-  .admin-btn.danger { background:#f8d7da; color:#721c24; border-color:#dc3545; }
-  .admin-btn.warning { background:#fff3cd; color:#856404; border-color:#ffc107; }
-  .admin-btn.secondary { background:#e9ecef; border-color:#adb5bd; }
-  
-  .login-container { max-width:400px; margin:2rem auto; background:white; padding:2rem; border-radius:var(--radius); box-shadow:var(--shadow); }
-  .dashboard { display:none; }
-  .dashboard.active { display:block; }
-  
-  .card { background:white; border-radius:var(--radius); padding:1.5rem; margin:1rem 0; box-shadow:var(--shadow); }
-  .card h3, .card h4 { color:var(--primary); margin-bottom:1rem; border-bottom:2px solid var(--primary-light); padding-bottom:0.5rem; }
-  
-  .form-group { margin-bottom:1rem; }
-  .form-group label { display:block; font-weight:600; margin-bottom:0.2rem; }
-  .form-group select, .form-group input, .form-group textarea {
-    width:100%; padding:0.6rem; border:2px solid var(--primary-light); border-radius:var(--radius); font-size:0.9rem;
+  html, body { height: 100%; }
+  body { 
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background:var(--light); 
+    color:var(--text); 
+    line-height:1.2;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
   
-  .message { padding:0.6rem 0.8rem; border-radius:var(--radius); margin:0.8rem 0; display:none; }
-  .message.success { background:#d4edda; color:#155724; }
-  .message.error { background:#f8d7da; color:#721c24; }
-  .message.info { background:#caf0f8; color:#005f87; }
+  header { 
+    background:linear-gradient(135deg,var(--primary),var(--secondary)); 
+    color:var(--white); 
+    padding:1.5rem 1rem; 
+    text-align:center; 
+  }
+  header h1 { font-size:2rem; margin-bottom:0.3rem; }
+  header p { font-size:1rem; opacity:0.9; }
   
-  .file-format-info { background:var(--primary-light); padding:0.8rem; border-radius:var(--radius); margin-bottom:0.8rem; font-size:0.85rem; }
+  .main-content { flex: 1 0 auto; }
+  .container { max-width:1000px; margin:0 auto; padding:0 1rem; }
   
-  .simple-table { width:100%; border-collapse:collapse; font-size:13px; }
-  .simple-table th, .simple-table td { border:1px solid #ddd; padding:5px; text-align:center; }
-  .simple-table th { background:var(--primary-light); font-weight:bold; }
+  .annonce-container {
+    margin-bottom: 0.8rem; padding: 0; border-radius: var(--radius); overflow: hidden;
+  }
+  .annonce-bloc {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7); border-left: 6px solid #ffc107;
+    padding: 0.8rem 1rem; display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 0.8rem; box-shadow: var(--shadow);
+  }
+  .annonce-texte { flex: 1; font-size: 0.9rem; color: #856404; }
+  .annonce-icone { font-size: 1.3rem; margin-right: 0.5rem; vertical-align: middle; }
+  .annonce-date { font-size: 0.7rem; color: #856404; margin-top: 0.2rem; }
   
-  .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center; }
-  .modal-content { background:white; padding:1.5rem; border-radius:var(--radius); max-width:500px; width:90%; }
+  .section-title { padding:1rem 0 0.8rem; font-size:1.3rem; color:var(--primary); text-align:center; }
   
-  .footer { text-align:center; padding:1rem; color:#666; border-top:1px solid #ddd; margin-top:2rem; }
+  .search-box { display:flex; max-width:500px; margin:0 auto; }
+  .search-box input { 
+    flex:1; padding:0.8rem 1rem; border:2px solid var(--primary-light); 
+    border-radius:var(--radius) 0 0 var(--radius); font-size:0.9rem; outline:none; 
+  }
+  .search-box input:focus { border-color:var(--primary); }
+  .search-box button { 
+    background:var(--primary); color:var(--white); border:none; padding:0 1.2rem;
+    border-radius:0 var(--radius) var(--radius) 0; cursor:pointer; font-size:1rem; min-width:50px;
+  }
+  .search-box button:hover { background:var(--primary-dark); }
   
-  .releve-table { width:100%; border-collapse:collapse; font-size:12px; }
-  .releve-table th { border:1px solid #aaa; padding:3px 4px; background:var(--primary-light); font-weight:bold; }
-  .releve-table td { padding:2px 4px; text-align:center; }
-  .releve-table tbody tr:not(.module-row):not(.student-info-row):not(.moyenne-row) td { border:1px solid #aaa; }
-  .releve-table .student-info-row { background:#f0f8ff; font-weight:bold; }
-  .releve-table .student-info-row td { border-top:1px solid #aaa; border-bottom:1px solid #aaa; border-left:none; border-right:none; }
-  .releve-table .student-info-row td:first-child { border-left:1px solid #aaa; }
-  .releve-table .student-info-row td:last-child { border-right:1px solid #aaa; }
-  .releve-table .module-row { background:#d0e8f7; font-weight:bold; }
-  .releve-table .module-row td { border-top:1px solid #aaa; border-bottom:1px solid #aaa; border-left:none; border-right:none; }
-  .releve-table .module-row td:first-child { border-left:1px solid #aaa; }
-  .releve-table .module-row td:last-child { border-right:1px solid #aaa; }
-  .status-C, .status-V { color:#27ae60; font-weight:bold; }
-  .status-NC, .status-NV { color:#e74c3c; font-weight:bold; }
-  .moyenne-row td { border:none !important; padding:6px 4px 2px; }
+  .result-card {
+    background:var(--white); border-radius:var(--radius); padding:1.2rem;
+    margin:1.5rem 0; box-shadow:var(--shadow);
+  }
+  
+  .student-header {
+    text-align:center; margin-bottom:1rem; padding-bottom:0.8rem;
+    border-bottom:2px solid var(--primary-light);
+  }
+  .student-header h3 { font-size:1.2rem; color:var(--text); }
+  .student-header p { color:var(--text-light); font-size:0.85rem; }
+  
+  .empty-state { text-align:center; padding:2rem 1rem; color:var(--text-light); }
+  .loading { text-align:center; padding:2rem; color:var(--text-light); }
+  .loading i { font-size:2rem; animation:spin 1s linear infinite; margin-bottom:0.8rem; }
+  @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  
+  .pdf-link {
+    display: inline-block; padding: 0.6rem 1.2rem; background: #28a745; color: white;
+    text-decoration: none; border-radius: var(--radius); font-weight: bold; margin-top: 0.8rem;
+  }
+  .pdf-link:hover { background: #218838; }
+  
+  .neutral-message {
+    text-align: center; margin-top: 0.8rem; padding: 0.6rem; background: #e9ecef;
+    color: #6c757d; border-radius: var(--radius);
+  }
+  
+  .simple-table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 13px; }
+  .simple-table th, .simple-table td { border: 1px solid #ddd; padding: 5px; text-align: center; }
+  .simple-table th { background: var(--primary-light); font-weight: bold; }
+  .simple-table td:first-child { text-align: left; }
+  
+  .releve-table { width: 100%; border-collapse: collapse; margin: 0.5rem 0; font-size: 12px; }
+  .releve-table th {
+    border: 1px solid #aaa; padding: 3px 4px; text-align: center;
+    background: var(--primary-light); font-weight: bold;
+  }
+  .releve-table td { padding: 2px 4px; text-align: center; }
+  .releve-table tbody tr:not(.module-row):not(.student-info-row):not(.moyenne-row) td { border: 1px solid #aaa; }
+  
+  .releve-table .student-info-row { background: #f0f8ff; font-weight: bold; }
+  .releve-table .student-info-row td {
+    border-top: 1px solid #aaa; border-bottom: 1px solid #aaa;
+    border-left: none; border-right: none; padding: 2px 4px;
+  }
+  .releve-table .student-info-row td:first-child { border-left: 1px solid #aaa; }
+  .releve-table .student-info-row td:last-child { border-right: 1px solid #aaa; }
+  
+  .releve-table .module-row { background: #d0e8f7; font-weight: bold; }
+  .releve-table .module-row td {
+    border-top: 1px solid #aaa; border-bottom: 1px solid #aaa;
+    border-left: none; border-right: none; padding: 2px 4px;
+  }
+  .releve-table .module-row td:first-child { border-left: 1px solid #aaa; }
+  .releve-table .module-row td:last-child { border-right: 1px solid #aaa; }
+  
+  .releve-table .subject-row td:first-child { text-align: left; padding-left: 20px; }
+  .releve-table .subject-row td { padding: 1px 4px; }
+  
+  .status-C, .status-V { color: #27ae60; font-weight: bold; }
+  .status-NC, .status-NV { color: #e74c3c; font-weight: bold; }
+  
+  .moyenne-row td { border: none !important; padding: 6px 4px 2px 4px; background: transparent; }
+  
+  .section-subtitle {
+    font-size: 1rem; color: var(--primary); margin: 0.8rem 0 0.3rem 0;
+    padding-bottom: 0.2rem; border-bottom: 2px solid var(--primary-light);
+  }
+  
+  .footer {
+    flex-shrink: 0; text-align:center; padding:1.5rem; color:var(--text-light);
+    font-size:0.85rem; background:var(--light); border-top:1px solid #ddd; margin-top:2rem;
+  }
+  .footer a { color: var(--primary); text-decoration: none; margin: 0 0.5rem; }
+  .footer a:hover { text-decoration: underline; }
+  
+  @media (max-width:600px) {
+    header h1 { font-size:1.6rem; }
+    .releve-table { font-size: 10px; }
+    .simple-table { font-size: 11px; }
+    .search-box button { padding:0 1rem; }
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <h1><i class="fas fa-user-shield"></i> Coordinateur PPV</h1>
-  <p>Département de Production et Protection Végétales</p>
+  <div class="container">
+    <h1>Résultats PPV</h1>
+    <p>Département de Production et Protection Végétales</p>
+  </div>
 </header>
 
-<div class="container">
-  <!-- Login -->
-  <div id="loginForm" class="login-container">
-    <h2 style="text-align:center; margin-bottom:1.5rem; color:var(--primary);">Connexion</h2>
-    <div id="loginMessage" class="message error"></div>
-    <div class="form-group"><label>Mot de passe</label><input type="password" id="adminPassword" placeholder="••••••••"></div>
-    <button class="admin-btn primary" onclick="login()" style="width:100%;">Se connecter</button>
-    <p style="text-align:center; margin-top:1rem;"><a href="index.html">← Retour au site</a></p>
-  </div>
-  
-  <!-- Dashboard -->
-  <div id="dashboard" class="dashboard">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-      <h2>Panneau de coordination - PPV</h2>
-      <button class="admin-btn danger" onclick="logout()">Déconnexion</button>
-    </div>
-    <div id="dashboardMessage" class="message success"></div>
+<div class="main-content">
+  <div class="container">
+    <div id="annonceContainer" class="annonce-container"></div>
     
-    <div style="display:grid; gap:0.8rem; margin:1rem 0;">
-      <button class="admin-btn success" onclick="showImportForm()"><i class="fas fa-upload"></i> Importer des résultats</button>
-      <button class="admin-btn danger" onclick="showManageSubjects()"><i class="fas fa-trash-alt"></i> Gérer les matières</button>
-      <button class="admin-btn warning" onclick="openAnnonceModal()"><i class="fas fa-bullhorn"></i> Gérer l'annonce</button>
-      <button class="admin-btn primary" onclick="openChangePasswordModal()"><i class="fas fa-key"></i> Changer le mot de passe</button>
-      <button class="admin-btn danger" onclick="showResetDataForm()" style="background:#f8d7da;"><i class="fas fa-database"></i> Supprimer données S3</button>
-      <button class="admin-btn primary" onclick="showViewResultsForm()"><i class="fas fa-eye"></i> Voir résultats étudiants</button>
-    </div>
-    
-    <!-- Import Form -->
-    <div id="importForm" class="card" style="display:none;">
-      <h4>Importer des résultats</h4>
-      <div class="file-format-info"><i class="fas fa-info-circle"></i> <strong>Formats :</strong> Excel, ODS, Word, PDF - Colonnes : NUMERO, NOM, NOTE/20</div>
-      <div class="form-group"><label>Semestre</label><select id="importSemester"><option value="S3">S3</option><option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option></select></div>
-      <div class="form-group"><label>Type</label><select id="importType"><option value="Examen">Examen</option><option value="Contrôle continu">Contrôle continu</option><option value="Rattrapage">Rattrapage</option><option value="TP">TP</option></select></div>
-      <div class="form-group"><label>Matière</label><select id="importSubject"></select></div>
-      <div class="form-group"><label>Fichier</label><input type="file" id="importFile" accept=".xlsx,.xls,.ods,.docx,.pdf"></div>
-      <button class="admin-btn success" onclick="processImport()">Importer</button>
-      <button class="admin-btn secondary" onclick="hideImportForm()">Fermer</button>
-    </div>
-    
-    <!-- Manage Subjects -->
-    <div id="manageSubjects" class="card" style="display:none;">
-      <h4>Gérer les matières</h4>
-      <div class="form-group"><label>Semestre</label><select id="manageSemester"><option value="S3">S3</option><option value="S4">S4</option></select></div>
-      <button class="admin-btn" onclick="loadSubjectsList()">Afficher</button>
-      <div id="subjectsListContainer" style="margin-top:1rem;"></div>
-      <button class="admin-btn secondary" onclick="hideManageSubjects()">Fermer</button>
-    </div>
-    
-    <!-- Reset Data -->
-    <div id="resetDataForm" class="card" style="display:none; background:#f8d7da;">
-      <h4 style="color:#721c24;">Supprimer données S3</h4>
-      <p style="color:#721c24;">Attention : Action irréversible.</p>
-      <button class="admin-btn danger" onclick="resetAllData()" style="background:#dc3545; color:white;">Confirmer</button>
-      <button class="admin-btn secondary" onclick="hideResetDataForm()">Annuler</button>
-    </div>
-    
-    <!-- View Results -->
-    <div id="viewResultsForm" class="card" style="display:none;">
-      <h4>Résultats des étudiants</h4>
-      <div class="form-group"><label>Semestre</label><select id="viewSemester"><option value="S3">S3</option><option value="S4">S4</option></select></div>
-      <button class="admin-btn primary" onclick="loadAllStudents()">Afficher</button>
-      <button class="admin-btn success" onclick="downloadCompletePDF()">Télécharger PDF</button>
-      <button class="admin-btn secondary" onclick="hideViewResultsForm()">Fermer</button>
-      <div id="resultsContainer" style="margin-top:1rem; max-height:400px; overflow:auto;"></div>
+    <div class="result-card">
+      <h2 class="section-title"><i class="fas fa-search"></i> Consulter votre résultat</h2>
+      
+      <div class="search-box">
+        <input type="text" id="studentIdInput" placeholder="Entrez votre numéro d'étudiant...">
+        <button onclick="searchStudentResult()" title="Rechercher"><i class="fas fa-search"></i></button>
+      </div>
+      
+      <div id="studentResultContainer" style="display:none;"></div>
+      <div id="noResultMessage" style="display:none;" class="empty-state">
+        <h3>Aucun résultat trouvé</h3>
+        <p>Vérifiez votre numéro d'étudiant</p>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Modals -->
-<div id="annonceModal" class="modal"><div class="modal-content"><h3>Publier une annonce</h3><textarea id="annonceTexte" rows="3" placeholder="Ex: Les résultats du S3 sont disponibles !"></textarea><div style="display:flex; gap:0.5rem; justify-content:flex-end; margin-top:1rem;"><button class="admin-btn" onclick="publierAnnonce()">Publier</button><button class="admin-btn secondary" onclick="closeAnnonceModal()">Annuler</button></div></div></div>
-<div id="changePasswordModal" class="modal"><div class="modal-content"><h3>Changer mot de passe</h3><div id="changePasswordMessage" class="message error"></div><div class="form-group"><label>Actuel</label><input type="password" id="currentPassword"></div><div class="form-group"><label>Nouveau</label><input type="password" id="newPassword"></div><div class="form-group"><label>Confirmer</label><input type="password" id="confirmNewPassword"></div><div style="display:flex; gap:0.5rem; justify-content:flex-end;"><button class="admin-btn success" onclick="changePassword()">Enregistrer</button><button class="admin-btn secondary" onclick="closeChangePasswordModal()">Annuler</button></div></div></div>
-
-<footer class="footer"><p>© 2026 Département PPV | <a href="index.html">Accueil</a></p></footer>
+<footer class="footer">
+  <p>© 2026 Département de Production et Protection Végétales</p>
+  <p style="margin-top:0.3rem; font-size:0.75rem;">
+    <a href="Reco.html"><i class="fas fa-lock"></i> Accès Coordinateur</a>
+  </p>
+</footer>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, set, remove, get, child, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDnrW6WnmbEFpbWzlW9IGglxAafajt2Kyo",
@@ -178,227 +207,187 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
-  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-  const DEFAULT_CREDENTIALS = { PPV: { passwordHash: "13b34364b6022a2cd99414b5a0f9e5c3d86036b2e248b000c0f001e10928a26a" } };
-  let ADMIN_CREDENTIALS = { ...DEFAULT_CREDENTIALS };
+  const SUBJECTS_BY_DEPT = {
+    PPV: {
+      S3: ["Français_s3", "Economie", "I_Agronomie", "I_Horticulture", "Pesticides_agricoles", "Entomologie_et_Nemato", "Science_des_sols", "Science_des_plantes"],
+      S4: ["Vulgarisation", "Technique_de_propagation", "Technique_d_irrigation_et_BEC", "Ecophysiologie_et_Biochimie", "Fertilite_du_sol", "Methodes_de_diagnostic", "Malherbologie"],
+      S5: [], S6: []
+    }
+  };
 
-  const SUBJECTS = { PPV: { S3: ["Français_s3","Economie","I_Agronomie","I_Horticulture","Pesticides_agricoles","Entomologie_et_Nemato","Science_des_sols","Science_des_plantes"], S4: ["Vulgarisation","Technique_de_propagation","Technique_d_irrigation_et_BEC","Ecophysiologie_et_Biochimie","Fertilite_du_sol","Methodes_de_diagnostic","Malherbologie"] } };
-  const NO_TP = ["Anglais","Anglais_2","Français","Français_2","Français_s3","Math_et_Statistique","Economie","Vulgarisation"];
-  const MODULES = { PPV: { S3: { M31:{name:"Module 31",credit:6,subjects:["Français_s3","Economie"]}, M32:{name:"Module 32",credit:8,subjects:["I_Agronomie","I_Horticulture"]}, M33:{name:"Module 33",credit:8,subjects:["Pesticides_agricoles","Entomologie_et_Nemato"]}, M34:{name:"Module 34",credit:8,subjects:["Science_des_sols","Science_des_plantes"]} }, S4: { M41:{name:"Module 41",credit:3,subjects:["Vulgarisation"]}, M42:{name:"Module 42",credit:7,subjects:["Technique_de_propagation","Technique_d_irrigation_et_BEC"]}, M43:{name:"Module 43",credit:7,subjects:["Ecophysiologie_et_Biochimie","Fertilite_du_sol"]}, M44:{name:"Module 44",credit:6,subjects:["Methodes_de_diagnostic","Malherbologie"]} } } };
-  const CREDITS = { PPV: { S3:{"Français_s3":3,"Economie":3,"I_Agronomie":4,"I_Horticulture":4,"Pesticides_agricoles":4,"Entomologie_et_Nemato":4,"Science_des_sols":4,"Science_des_plantes":4}, S4:{"Vulgarisation":3,"Technique_de_propagation":4,"Technique_d_irrigation_et_BEC":3,"Ecophysiologie_et_Biochimie":4,"Fertilite_du_sol":3,"Methodes_de_diagnostic":3,"Malherbologie":3} } };
+  const SUBJECTS_WITHOUT_TP = [
+    "Anglais", "Anglais_2", "Français", "Français_2", "Français_s3",
+    "Math_et_Statistique", "Economie", "Vulgarisation"
+  ];
 
-  function hasTP(s) { return !NO_TP.includes(s); }
-  function cleanSubject(s) { return s.replace(/\./g,'_').replace(/\s+/g,'_').replace(/[éèêë]/g,'e').replace(/[ç]/g,'c'); }
-  function displaySubject(s) { return s.replace(/_/g,' ').replace(/I_/g,'I.').replace(/et_/g,'et '); }
-  async function hash(p) { const m=new TextEncoder().encode(p); const h=await crypto.subtle.digest('SHA-256',m); return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+  const MODULES_STRUCTURE = {
+    PPV: {
+      S3: { M31: { name: "Module 31", credit: 6.0, subjects: ["Français_s3", "Economie"] }, M32: { name: "Module 32", credit: 8.0, subjects: ["I_Agronomie", "I_Horticulture"] }, M33: { name: "Module 33", credit: 8.0, subjects: ["Pesticides_agricoles", "Entomologie_et_Nemato"] }, M34: { name: "Module 34", credit: 8.0, subjects: ["Science_des_sols", "Science_des_plantes"] } },
+      S4: { M41: { name: "Module 41", credit: 3.0, subjects: ["Vulgarisation"] }, M42: { name: "Module 42", credit: 7.0, subjects: ["Technique_de_propagation", "Technique_d_irrigation_et_BEC"] }, M43: { name: "Module 43", credit: 7.0, subjects: ["Ecophysiologie_et_Biochimie", "Fertilite_du_sol"] }, M44: { name: "Module 44", credit: 6.0, subjects: ["Methodes_de_diagnostic", "Malherbologie"] } }
+    }
+  };
 
-  let currentAdmin = null;
-  let currentResults = null, currentSem = null;
+  const SUBJECT_CREDITS = {
+    PPV: { S3: { "Français_s3": 3.0, "Economie": 3.0, "I_Agronomie": 4.0, "I_Horticulture": 4.0, "Pesticides_agricoles": 4.0, "Entomologie_et_Nemato": 4.0, "Science_des_sols": 4.0, "Science_des_plantes": 4.0 }, S4: { "Vulgarisation": 3.0, "Technique_de_propagation": 4.0, "Technique_d_irrigation_et_BEC": 3.0, "Ecophysiologie_et_Biochimie": 4.0, "Fertilite_du_sol": 3.0, "Methodes_de_diagnostic": 3.0, "Malherbologie": 3.0 } }
+  };
 
-  async function loadCreds() { try{ const s=await get(child(ref(db),'admin_credentials')); if(s.exists()){ const c=s.val(); ADMIN_CREDENTIALS={PPV:{...DEFAULT_CREDENTIALS.PPV,...(c.PPV||{})}}; } }catch(e){} }
-  async function saveCreds() { try{ await set(ref(db,'admin_credentials'),{PPV:{passwordHash:ADMIN_CREDENTIALS.PPV.passwordHash}}); return true; }catch(e){ return false; } }
+  function hasTP(s) { return !SUBJECTS_WITHOUT_TP.includes(s); }
+  function displaySubjectName(s) { return s.replace(/_/g, ' ').replace(/I_/g, 'I.').replace(/et_/g, 'et '); }
 
-  function showMsg(t,type){ const e=document.getElementById('dashboardMessage'); e.textContent=t; e.className=`message ${type}`; e.style.display='block'; setTimeout(()=>e.style.display='none',4000); }
-
-  function updateSubjectList(){
-    const sem=document.getElementById('importSemester')?.value||'S3';
-    const type=document.getElementById('importType')?.value||'Examen';
-    const sel=document.getElementById('importSubject');
-    if(!sel) return;
-    sel.innerHTML='<option value="">-- Sélectionner --</option>';
-    let subs=SUBJECTS.PPV[sem]||[];
-    if(type==='TP') subs=subs.filter(s=>hasTP(s));
-    subs.forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=displaySubject(s); sel.appendChild(o); });
+  async function loadAnnonce() {
+    try {
+      const snap = await get(child(ref(db), 'annonces/active'));
+      if (snap.exists()) {
+        const a = snap.val();
+        if (a.expiration && Date.now() < a.expiration) return a;
+      }
+      return null;
+    } catch (e) { return null; }
   }
 
-  document.getElementById('importSemester')?.addEventListener('change',updateSubjectList);
-  document.getElementById('importType')?.addEventListener('change',updateSubjectList);
-
-  window.login=async function(){
-    const p=document.getElementById('adminPassword').value;
-    if(!p){ document.getElementById('loginMessage').textContent='Mot de passe requis'; document.getElementById('loginMessage').style.display='block'; return; }
-    await loadCreds();
-    if(await hash(p)===ADMIN_CREDENTIALS.PPV.passwordHash){
-      document.getElementById('loginForm').style.display='none';
-      document.getElementById('dashboard').classList.add('active');
-      updateSubjectList();
-    }else{ document.getElementById('loginMessage').textContent='Mot de passe incorrect'; document.getElementById('loginMessage').style.display='block'; }
-  };
-  window.logout=function(){ document.getElementById('loginForm').style.display='block'; document.getElementById('dashboard').classList.remove('active'); };
-
-  function hideAll(){ document.getElementById('importForm').style.display='none'; document.getElementById('manageSubjects').style.display='none'; document.getElementById('resetDataForm').style.display='none'; document.getElementById('viewResultsForm').style.display='none'; }
-  window.showImportForm=()=>{ hideAll(); document.getElementById('importForm').style.display='block'; updateSubjectList(); };
-  window.hideImportForm=()=>{ document.getElementById('importForm').style.display='none'; };
-  window.showManageSubjects=()=>{ hideAll(); document.getElementById('manageSubjects').style.display='block'; };
-  window.hideManageSubjects=()=>{ document.getElementById('manageSubjects').style.display='none'; };
-  window.showResetDataForm=()=>{ hideAll(); document.getElementById('resetDataForm').style.display='block'; };
-  window.hideResetDataForm=()=>{ document.getElementById('resetDataForm').style.display='none'; };
-  window.showViewResultsForm=()=>{ hideAll(); document.getElementById('viewResultsForm').style.display='block'; };
-  window.hideViewResultsForm=()=>{ document.getElementById('viewResultsForm').style.display='none'; };
-
-  window.openAnnonceModal=()=>document.getElementById('annonceModal').style.display='flex';
-  window.closeAnnonceModal=()=>{ document.getElementById('annonceModal').style.display='none'; document.getElementById('annonceTexte').value=''; };
-  window.openChangePasswordModal=()=>{ document.getElementById('changePasswordModal').style.display='flex'; };
-  window.closeChangePasswordModal=()=>{ document.getElementById('changePasswordModal').style.display='none'; };
-
-  window.publierAnnonce=async function(){
-    const t=document.getElementById('annonceTexte').value.trim();
-    if(!t){ alert('Texte requis'); return; }
-    await set(ref(db,'annonces/active'),{texte:t,expiration:Date.now()+86400000});
-    showMsg('Annonce publiée','success'); closeAnnonceModal();
-  };
-
-  window.changePassword=async function(){
-    const curr=document.getElementById('currentPassword').value;
-    const np=document.getElementById('newPassword').value;
-    const conf=document.getElementById('confirmNewPassword').value;
-    if(!curr||!np||!conf){ showMsg('Tous les champs requis','error'); return; }
-    if(np!==conf){ showMsg('Mots de passe différents','error'); return; }
-    if(await hash(curr)!==ADMIN_CREDENTIALS.PPV.passwordHash){ showMsg('Mot de passe actuel incorrect','error'); return; }
-    ADMIN_CREDENTIALS.PPV.passwordHash=await hash(np);
-    await saveCreds();
-    showMsg('Mot de passe changé','success'); closeChangePasswordModal();
-  };
-
-  window.resetAllData=async function(){
-    if(!confirm('Supprimer TOUTES les données du S3 ?')) return;
-    try{
-      const snap=await get(child(ref(db),'results/PPV/S3'));
-      if(!snap.exists()){ showMsg('Aucune donnée','info'); return; }
-      const students=snap.val();
-      for(let id in students) await remove(ref(db,`results/PPV/S3/${id}`));
-      showMsg('Données S3 supprimées','success'); hideResetDataForm();
-    }catch(e){ showMsg('Erreur','error'); }
-  };
-
-  function calculate(notes,dept,sem){
-    const mods=MODULES[dept]?.[sem]; if(!mods) return null;
-    const req=[]; for(let m in mods) for(let s of mods[m].subjects) if(!req.includes(s)) req.push(s);
-    const subjAvg={}, subjStatus={}, subjSR={};
-    for(let s of req){
-      const n=notes[s]||{}; const exam=n['Examen']||0, cc=n['Contrôle continu']||0, tp=n['TP']||0, ratt=n['Rattrapage'];
-      const useSR=ratt!==undefined&&ratt>exam; subjSR[s]=useSR;
-      const final=useSR?ratt:exam;
-      subjAvg[s]=hasTP(s)?(tp+cc*2+final*3)/6:(cc*2+final*3)/5;
-      subjStatus[s]=subjAvg[s]>=10?'C':'NC';
-    }
-    const modAvg={}, modStatus={}, modCredits={};
-    for(let m in mods){
-      let w=0,c=0,earned=0;
-      for(let s of mods[m].subjects){ const cr=CREDITS[dept][sem][s]||3; w+=(subjAvg[s]||0)*cr; c+=cr; if(subjStatus[s]==='C') earned+=cr; }
-      modAvg[m]=c>0?w/c:0;
-      modStatus[m]=mods[m].subjects.every(s=>subjStatus[s]==='C')&&modAvg[m]>=10?'V':'NV';
-      modCredits[m]=earned;
-    }
-    let tw=0,tc=0; for(let s of req){ const cr=CREDITS[dept][sem][s]||3; tw+=(subjAvg[s]||0)*cr; tc+=cr; }
-    const genMoy=tc>0?tw/tc:0;
-    const hasNV=Object.values(modStatus).some(s=>s==='NV');
-    const semStatus=hasNV?'Non Validé':(genMoy>=10?'Validé':'Non Validé');
-    const hasSR=Object.values(subjSR).some(v=>v);
-    return { genMoy, semStatus, modStatus, modCredits, modAvg, subjAvg, subjStatus, hasSR, modules:mods };
+  async function afficherAnnonce() {
+    const a = await loadAnnonce();
+    const c = document.getElementById('annonceContainer');
+    if (!a || !a.texte) { c.innerHTML = ''; return; }
+    const d = new Date(a.expiration).toLocaleString('fr-FR');
+    c.innerHTML = `<div class="annonce-bloc"><div style="flex:1"><span class="annonce-icone"><i class="fas fa-bullhorn"></i></span><span class="annonce-texte"><strong>Annonce :</strong> ${a.texte.replace(/</g,'&lt;')}</span><div class="annonce-date">Visible jusqu'au ${d}</div></div></div>`;
   }
 
-  window.loadAllStudents=async function(){
-    const sem=document.getElementById('viewSemester').value;
-    currentSem=sem;
-    const cont=document.getElementById('resultsContainer');
-    cont.innerHTML='<p style="text-align:center;">Chargement...</p>';
-    const snap=await get(child(ref(db),`results/PPV/${sem}`));
-    if(!snap.exists()){ cont.innerHTML='<p>Aucun résultat</p>'; return; }
-    const students=snap.val(); const results=[];
-    for(let id in students){
-      const data=students[id]; let name=''; const notes={};
-      for(let k in data){ if(data[k].name) name=data[k].name; if(!notes[data[k].subject]) notes[data[k].subject]={}; notes[data[k].subject][data[k].type]=data[k].grade; }
-      const req=SUBJECTS.PPV[sem]||[]; let complete=true;
-      for(let s of req){ const htp=hasTP(s); if(!notes[s]?.['Examen']||!notes[s]?.['Contrôle continu']||(htp&&!notes[s]?.['TP'])){ complete=false; break; } }
-      if(complete){ const calc=calculate(notes,'PPV',sem); if(calc) results.push({id,name,notes,calc}); }
+  function calculateResults(notes, dept, sem) {
+    const mods = MODULES_STRUCTURE[dept]?.[sem];
+    if (!mods) return null;
+    const req = [];
+    for (let m in mods) for (let s of mods[m].subjects) if (!req.includes(s)) req.push(s);
+    
+    const subjAvg = {}, subjStatus = {}, subjSR = {};
+    for (let s of req) {
+      const n = notes[s] || {};
+      const exam = n['Examen'] || 0, cc = n['Contrôle continu'] || 0, tp = n['TP'] || 0;
+      const ratt = n['Rattrapage'];
+      const useSR = ratt !== undefined && ratt > exam;
+      subjSR[s] = useSR;
+      const final = useSR ? ratt : exam;
+      subjAvg[s] = hasTP(s) ? (tp + cc * 2 + final * 3) / 6 : (cc * 2 + final * 3) / 5;
+      subjStatus[s] = subjAvg[s] >= 10 ? 'C' : 'NC';
     }
-    results.sort((a,b)=>a.id.localeCompare(b.id));
-    currentResults=results;
-    let html='<table class="simple-table"><thead><tr><th>N°</th><th>Nom</th><th>Moyenne</th><th>Statut</th></tr></thead><tbody>';
-    for(let r of results) html+=`<tr><td>${r.id}</td><td style="text-align:left;">${r.name}</td><td>${r.calc.genMoy.toFixed(2)}</td><td class="${r.calc.semStatus==='Validé'?'status-V':'status-NV'}">${r.calc.semStatus}</td></tr>`;
-    html+='</tbody></table>'; cont.innerHTML=html;
-  };
+    
+    const modAvg = {}, modStatus = {}, modCredits = {};
+    for (let m in mods) {
+      let w = 0, c = 0, earned = 0;
+      for (let s of mods[m].subjects) {
+        const cr = SUBJECT_CREDITS[dept][sem][s] || 3;
+        w += (subjAvg[s] || 0) * cr; c += cr;
+        if (subjStatus[s] === 'C') earned += cr;
+      }
+      modAvg[m] = c > 0 ? w / c : 0;
+      modStatus[m] = mods[m].subjects.every(s => subjStatus[s] === 'C') && modAvg[m] >= 10 ? 'V' : 'NV';
+      modCredits[m] = earned;
+    }
+    
+    let tw = 0, tc = 0;
+    for (let s of req) { const cr = SUBJECT_CREDITS[dept][sem][s] || 3; tw += (subjAvg[s] || 0) * cr; tc += cr; }
+    const genMoy = tc > 0 ? tw / tc : 0;
+    const hasNV = Object.values(modStatus).some(s => s === 'NV');
+    const semStatus = hasNV ? 'Non Validé' : (genMoy >= 10 ? 'Validé' : 'Non Validé');
+    const hasSR = Object.values(subjSR).some(v => v);
+    
+    return { genMoy, semStatus, modStatus, modCredits, modAvg, subjAvg, subjStatus, hasSR, modules: mods };
+  }
 
-  function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-  window.downloadCompletePDF=async function(){
-    if(!currentResults||currentResults.length===0){ alert('Affichez d\'abord les résultats'); return; }
-    const sem=currentSem, results=currentResults;
-    let content='';
-    for(let i=0; i<results.length; i++){
-      const r=results[i], calc=r.calc, showSR=calc.hasSR;
-      content+=`<div style="padding:5mm; font-family:Arial; font-size:10pt; page-break-after:${i<results.length-1?'always':'auto'};">`;
-      content+=`<div style="font-weight:bold; font-size:12pt;">Institut Supérieur d'Enseignement Technologique de Rosso</div>`;
-      content+=`<div style="display:flex; justify-content:space-between;"><span style="font-weight:bold; font-size:13pt;">Résultats du ${sem}</span><span>Année : 2025-2026</span></div>`;
-      content+=`<div><span style="font-weight:bold;">Filière :</span> L2PPV-L2 Licence PPV</div>`;
-      content+=`<table style="width:100%; border-collapse:collapse; border:1px solid #000; margin-top:8px;"><thead><tr style="background:#e8f4fc;"><th style="border:1px solid #000; padding:2px;">Numéro</th><th style="border:1px solid #000; padding:2px;">Nom et Prénom</th><th style="border:1px solid #000; padding:2px;">TP</th><th style="border:1px solid #000; padding:2px;">CC</th><th style="border:1px solid #000; padding:2px;">Examen</th>${showSR?'<th style="border:1px solid #000; padding:2px;">SR</th>':''}<th style="border:1px solid #000; padding:2px;">NFe</th><th style="border:1px solid #000; padding:2px;">Crédit</th><th style="border:1px solid #000; padding:2px;">Obs</th></tr></thead><tbody>`;
-      content+=`<tr class="student-info-row"><td style="border:1px solid #000; padding:2px;">${r.id}</td><td style="border:1px solid #000; padding:2px; text-align:left;">${escapeHtml(r.name)}</td><td style="border:1px solid #000; padding:2px;"></td><td style="border:1px solid #000; padding:2px;"></td><td style="border:1px solid #000; padding:2px;"></td>${showSR?'<td style="border:1px solid #000; padding:2px;"></td>':''}<td style="border:1px solid #000; padding:2px;"></td><td style="border:1px solid #000; padding:2px;"></td><td style="border:1px solid #000; padding:2px;"></td></tr>`;
-      for(let m in calc.modules){
-        const mod=calc.modules[m];
-        content+=`<tr class="module-row"><td style="border:1px solid #000; padding:2px;">${m}</td><td style="border:1px solid #000; padding:2px; text-align:left;">${mod.name}</td><td style="border:1px solid #000; padding:2px;"></td><td style="border:1px solid #000; padding:2px;"></td><td style="border:1px solid #000; padding:2px;"></td>${showSR?'<td style="border:1px solid #000; padding:2px;"></td>':''}<td style="border:1px solid #000; padding:2px; font-weight:bold;">${calc.modAvg[m].toFixed(2)}</td><td style="border:1px solid #000; padding:2px;">${calc.modCredits[m].toFixed(1)}</td><td style="border:1px solid #000; padding:2px;">${calc.modStatus[m]}</td></tr>`;
-        for(let s of mod.subjects){
-          const notes=r.notes[s]||{};
-          const tp=hasTP(s)?(notes['TP']?.toFixed(2)||''):'';
-          const cc=notes['Contrôle continu']?.toFixed(2)||'';
-          const exam=notes['Examen']?.toFixed(2)||'';
-          const ratt=notes['Rattrapage']; const sr=(ratt!==undefined&&ratt>(notes['Examen']||0))?ratt.toFixed(2):'';
-          content+=`<tr><td style="border:1px solid #000; padding:1px;"></td><td style="border:1px solid #000; padding:1px; text-align:left; padding-left:15px;">${displaySubject(s)}</td><td style="border:1px solid #000; padding:1px;">${tp}</td><td style="border:1px solid #000; padding:1px;">${cc}</td><td style="border:1px solid #000; padding:1px;">${exam}</td>${showSR?`<td style="border:1px solid #000; padding:1px;">${sr}</td>`:''}<td style="border:1px solid #000; padding:1px; font-weight:bold;">${calc.subjAvg[s].toFixed(2)}</td><td style="border:1px solid #000; padding:1px;">${(CREDITS.PPV[sem][s]||3).toFixed(1)}</td><td style="border:1px solid #000; padding:1px;">${calc.subjStatus[s]}</td></tr>`;
+  window.searchStudentResult = async () => {
+    const id = document.getElementById('studentIdInput').value.trim();
+    const cont = document.getElementById('studentResultContainer');
+    const noRes = document.getElementById('noResultMessage');
+    
+    if (!id) { alert('Veuillez entrer votre numéro d\'étudiant'); return; }
+    
+    cont.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i><p>Chargement...</p></div>';
+    cont.style.display = 'block'; noRes.style.display = 'none';
+    
+    const sems = ['S3', 'S4', 'S5', 'S6'];
+    
+    let data = null, sem = null;
+    for (let s of sems) {
+      const snap = await get(child(ref(db), `results/PPV/${s}/${id}`));
+      if (snap.exists()) { data = snap.val(); sem = s; break; }
+    }
+    
+    if (!data) { cont.style.display = 'none'; noRes.style.display = 'block'; return; }
+    
+    let name = '';
+    const notes = {};
+    for (let k in data) {
+      if (data[k].name) name = data[k].name;
+      if (!notes[data[k].subject]) notes[data[k].subject] = {};
+      notes[data[k].subject][data[k].type] = data[k].grade;
+    }
+    
+    const req = SUBJECTS_BY_DEPT.PPV[sem] || [];
+    let complete = req.length > 0;
+    for (let s of req) {
+      const htp = hasTP(s);
+      if (!notes[s]?.['Examen'] || !notes[s]?.['Contrôle continu'] || (htp && !notes[s]?.['TP'])) { complete = false; break; }
+    }
+    
+    let html = `<div class="student-header"><h3>${name || 'Étudiant'}</h3><p>N° ${id} | PPV | ${sem}</p></div>`;
+    
+    if (complete) {
+      const res = calculateResults(notes, 'PPV', sem);
+      const showSR = res.hasSR;
+      
+      html += '<div style="overflow-x:auto;"><table class="releve-table"><thead><tr><th>Numéro</th><th>Nom et Prénom</th><th>TP</th><th>CC</th><th>Examen</th>' + (showSR ? '<th>SR</th>' : '') + '<th>NFe</th><th>Crédit</th><th>Obs</th></tr></thead><tbody>';
+      html += `<tr class="student-info-row"><td>${id}</td><td style="text-align:left; padding-left:15px;">${name}</td><td></td><td></td><td></td>${showSR ? '<td></td>' : ''}<td></td><td></td><td></td></tr>`;
+      
+      for (let m in res.modules) {
+        const mod = res.modules[m];
+        html += `<tr class="module-row"><td>${m}</td><td style="text-align:left; padding-left:15px;">${mod.name}</td><td></td><td></td><td></td>${showSR ? '<td></td>' : ''}<td style="font-weight:bold;">${res.modAvg[m].toFixed(2)}</td><td>${res.modCredits[m].toFixed(1)}</td><td class="${res.modStatus[m]==='V'?'status-V':'status-NV'}">${res.modStatus[m]}</td></tr>`;
+        for (let s of mod.subjects) {
+          const n = notes[s] || {};
+          const tp = hasTP(s) ? (n['TP']?.toFixed(2) || '') : '';
+          const cc = n['Contrôle continu']?.toFixed(2) || '';
+          const exam = n['Examen']?.toFixed(2) || '';
+          const ratt = n['Rattrapage'];
+          const sr = (ratt !== undefined && ratt > (n['Examen'] || 0)) ? ratt.toFixed(2) : '';
+          const cr = SUBJECT_CREDITS.PPV[sem][s] || 3;
+          
+          html += `<tr class="subject-row"><td></td><td style="text-align:left; padding-left:30px;">${displaySubjectName(s)}</td><td>${tp}</td><td>${cc}</td><td>${exam}</td>${showSR?`<td>${sr}</td>`:''}<td style="font-weight:bold;">${res.subjAvg[s].toFixed(2)}</td><td>${cr.toFixed(1)}</td><td class="${res.subjStatus[s]==='C'?'status-C':'status-NC'}">${res.subjStatus[s]}</td></tr>`;
         }
       }
-      const colspan=showSR?6:5;
-      content+=`<tr class="moyenne-row"><td colspan="${colspan}" style="border:none; padding:4px; text-align:right; font-weight:bold;">Moyenne Semestre :</td><td style="border:none; padding:4px; font-weight:bold;">${calc.genMoy.toFixed(2)}</td><td style="border:none; padding:4px;"></td><td style="border:none; padding:4px; font-weight:bold;">${calc.semStatus}</td></tr></tbody></table></div>`;
+      
+      const colspan = showSR ? 6 : 5;
+      html += `<tr class="moyenne-row"><td colspan="${colspan}" style="text-align:right; font-weight:bold;">Moyenne Semestre :</td><td style="font-weight:bold;">${res.genMoy.toFixed(2)}</td><td></td><td class="${res.semStatus==='Validé'?'status-V':'status-NV'}" style="font-weight:bold;">${res.semStatus}</td></tr>`;
+      html += '</tbody></table></div>';
+      html += `<div style="text-align:center;"><a href="result.html?dept=PPV&sem=${sem}&id=${id}&name=${encodeURIComponent(name)}" class="pdf-link" target="_blank"><i class="fas fa-file-pdf"></i> Télécharger mon relevé PDF</a></div>`;
+    } else {
+      let hasTP = false, hasCC = false, hasExam = false;
+      for (let s of req) {
+        if (notes[s]?.['TP'] !== undefined) hasTP = true;
+        if (notes[s]?.['Contrôle continu'] !== undefined) hasCC = true;
+        if (notes[s]?.['Examen'] !== undefined) hasExam = true;
+      }
+      if (hasTP) {
+        html += `<h4 class="section-subtitle">Résultats TP</h4><table class="simple-table"><thead><tr><th>Matière</th><th>Note TP</th></tr></thead><tbody>`;
+        for (let s of req) if (hasTP(s)) { const n = notes[s]?.['TP']; html += `<tr><td>${displaySubjectName(s)}</td><td>${n!==undefined?n.toFixed(2):''}</td></tr>`; }
+        html += `</tbody></table>`;
+      }
+      if (hasCC) {
+        html += `<h4 class="section-subtitle">Résultats Contrôle continu</h4><table class="simple-table"><thead><tr><th>Matière</th><th>Note CC</th></tr></thead><tbody>`;
+        for (let s of req) { const n = notes[s]?.['Contrôle continu']; html += `<tr><td>${displaySubjectName(s)}</td><td>${n!==undefined?n.toFixed(2):''}</td></tr>`; }
+        html += `</tbody></table>`;
+      }
+      if (hasExam) {
+        html += `<h4 class="section-subtitle">Résultats Examen</h4><table class="simple-table"><thead><tr><th>Matière</th><th>Note Examen</th></tr></thead><tbody>`;
+        for (let s of req) { const n = notes[s]?.['Examen']; html += `<tr><td>${displaySubjectName(s)}</td><td>${n!==undefined?n.toFixed(2):''}</td></tr>`; }
+        html += `</tbody></table>`;
+      }
+      html += `<div class="neutral-message"><i class="fas fa-info-circle"></i> Les résultats ne sont pas encore finalisés.</div>`;
     }
-    const el=document.createElement('div'); el.innerHTML=content; document.body.appendChild(el);
-    html2pdf().set({ margin:[3,3,3,3], filename:`Resultats_PPV_${sem}.pdf` }).from(el).save().then(()=>document.body.removeChild(el));
+    cont.innerHTML = html;
   };
 
-  // Import functions
-  async function extractPDF(f){ const b=await f.arrayBuffer(); const p=await pdfjsLib.getDocument({data:b}).promise; let t=''; for(let i=1;i<=p.numPages;i++){ const pg=await p.getPage(i); const c=await pg.getTextContent(); t+=c.items.map(it=>it.str).join(' ')+'\n'; } return t; }
-  async function extractWord(f){ const b=await f.arrayBuffer(); const r=await mammoth.extractRawText({arrayBuffer:b}); return r.value; }
-  function parseText(t){ const lines=t.split('\n').filter(l=>l.trim()&&!l.match(/num|nom|note/i)); const d=[]; for(let l of lines){ const m=l.match(/(\d+)\s+([A-Za-zÀ-ÿ\s\-]+?)\s+(\d{1,2}(?:[.,]\d{1,2})?)/); if(m){ const g=parseFloat(m[3].replace(',','.')); if(g>=0&&g<=20) d.push({NUMERO:m[1].trim(),NOM:m[2].trim(),NOTE:g}); } } return d; }
-  async function readODS(f){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=e=>{ const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'}); const sh=wb.Sheets[wb.SheetNames[0]]; const json=XLSX.utils.sheet_to_json(sh,{header:1}); const h=json[0]||[]; let nc=0,na=1,gc=2; h.forEach((v,i)=>{ const s=String(v).toLowerCase(); if(s.includes('num')) nc=i; if(s.includes('nom')) na=i; if(s.includes('note')) gc=i; }); const d=[]; for(let i=1;i<json.length;i++){ const row=json[i]; if(!row?.length) continue; const g=parseFloat(String(row[gc]).replace(',','.')); if(row[nc]&&!isNaN(g)&&g>=0&&g<=20) d.push({NUMERO:String(row[nc]).trim(),NOM:String(row[na]||'').trim(),NOTE:g}); } res(d); }; r.onerror=rej; r.readAsArrayBuffer(f); }); }
-  async function parseFile(f){ const n=f.name.toLowerCase(); if(n.endsWith('.pdf')) return parseText(await extractPDF(f)); if(n.endsWith('.docx')) return parseText(await extractWord(f)); if(n.endsWith('.xlsx')||n.endsWith('.xls')){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=e=>{ const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'}); const json=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]); const d=json.map(row=>{ const k=Object.keys(row); const nk=k.find(x=>x.toLowerCase().includes('num'))||k[0]; const nak=k.find(x=>x.toLowerCase().includes('nom'))||k[1]; const gk=k.find(x=>x.toLowerCase().includes('note'))||k[2]; return {NUMERO:String(row[nk]).trim(),NOM:String(row[nak]||'').trim(),NOTE:parseFloat(String(row[gk]).replace(',','.'))}; }).filter(r=>r.NUMERO&&!isNaN(r.NOTE)&&r.NOTE>=0&&r.NOTE<=20); res(d); }; r.onerror=rej; r.readAsArrayBuffer(f); }); } if(n.endsWith('.ods')) return readODS(f); throw new Error('Format non supporté'); }
-
-  window.processImport=async function(){
-    const sem=document.getElementById('importSemester').value, type=document.getElementById('importType').value;
-    const subj=document.getElementById('importSubject').value, file=document.getElementById('importFile').files[0];
-    if(!sem||!subj||!file){ alert('Tous les champs requis'); return; }
-    if(type==='TP'&&!hasTP(subj)){ alert('Pas de TP'); return; }
-    showMsg('Importation...','info');
-    try{
-      const snap=await get(child(ref(db),`results/PPV/${sem}`)); const exist=new Set();
-      if(snap.exists()){ const st=snap.val(); for(let id in st) if(st[id][`${cleanSubject(subj)}_${type}`]) exist.add(id); }
-      const data=await parseFile(file); const updates={}; let imp=0, dup=0, err=0;
-      for(let r of data){ const id=r.NUMERO; if(!id){ err++; continue; } if(exist.has(id)){ dup++; continue; }
-        updates[`results/PPV/${sem}/${id}/${cleanSubject(subj)}_${type}`]={grade:r.NOTE,name:r.NOM,subject:subj,type,dateAdded:Date.now()}; imp++; exist.add(id); }
-      if(Object.keys(updates).length) await update(ref(db),updates);
-      let msg=`${imp} ajoutés`; if(dup) msg+=`, ${dup} ignorés`; if(err) msg+=`, ${err} erreurs`; showMsg(msg,'success');
-    }catch(e){ showMsg('Erreur import','error'); }
-  };
-
-  window.loadSubjectsList=async function(){
-    const sem=document.getElementById('manageSemester').value, cont=document.getElementById('subjectsListContainer');
-    cont.innerHTML='<p>Chargement...</p>'; const snap=await get(child(ref(db),`results/PPV/${sem}`));
-    if(!snap.exists()){ cont.innerHTML='<p>Aucune matière</p>'; return; }
-    const st=snap.val(), map=new Map();
-    for(let id in st) for(let k in st[id]){ const d=st[id][k], key=`${d.subject}_${d.type}`; if(!map.has(key)) map.set(key,{subject:d.subject,type:d.type,count:0}); map.get(key).count++; }
-    if(map.size===0){ cont.innerHTML='<p>Aucune matière</p>'; return; }
-    let h='<table class="simple-table"><thead><tr><th>Matière</th><th>Type</th><th>Étudiants</th><th>Action</th></tr></thead><tbody>';
-    for(let [k,d] of map) h+=`<tr><td><strong>${displaySubject(d.subject)}</strong></td><td>${d.type}</td><td>${d.count}</td><td><button class="admin-btn danger" style="padding:0.2rem 0.6rem;" onclick="deleteSubject('${sem}','${d.subject}','${d.type}')">Supprimer</button></td></tr>`;
-    h+='</tbody></table>'; cont.innerHTML=h;
-  };
-
-  window.deleteSubject=async function(sem,subj,type){
-    if(!confirm(`Supprimer ${displaySubject(subj)} (${type}) ?`)) return;
-    const snap=await get(child(ref(db),`results/PPV/${sem}`)); if(!snap.exists()) return;
-    const st=snap.val(), cs=cleanSubject(subj), key=`${cs}_${type}`;
-    for(let id in st) if(st[id][key]) await remove(ref(db,`results/PPV/${sem}/${id}/${key}`));
-    showMsg('Matière supprimée','success'); loadSubjectsList();
-  };
-
-  loadCreds(); updateSubjectList();
+  document.getElementById('studentIdInput').addEventListener('keyup', e => { if (e.key === 'Enter') searchStudentResult(); });
+  afficherAnnonce();
 </script>
 </body>
 </html>
