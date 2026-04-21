@@ -11,17 +11,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   :root {
-    --primary: #0077b6;
-    --primary-dark: #005f87;
-    --primary-light: #caf0f8;
-    --secondary: #0096c7;
+    --primary: #2c5f2d;
+    --primary-light: #e8f5e9;
+    --secondary: #4a7c59;
     --light: #f5f7fa;
     --white: #ffffff;
     --text: #333333;
     --text-light: #666666;
-    --shadow: 0 4px 12px rgba(0,0,0,0.1);
-    --radius: 10px;
-    --transition: all 0.3s ease;
+    --shadow: 0 2px 8px rgba(0,0,0,0.1);
+    --radius: 6px;
+    --transition: all 0.2s ease;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body { 
@@ -40,33 +39,38 @@
     padding:1rem; 
     text-align:center; 
   }
-  header h1 { font-size:1.8rem; margin-bottom:0.2rem; }
+  header h1 { font-size:1.8rem; margin-bottom:0.2rem; font-weight:500; }
   header p { font-size:0.9rem; opacity:0.9; }
   
-  .container { max-width:1000px; margin:0 auto; padding:1rem; flex:1; }
+  .container { max-width:900px; margin:0 auto; padding:1rem; flex:1; }
   
+  /* أزرار ممتلئة بألوان هادئة */
   .admin-btn {
-    padding:0.6rem 1.2rem;
-    background:#f0f0f0;
-    color:#333;
-    border:1px solid #ccc;
+    padding:0.7rem 1.2rem;
+    border:none;
     border-radius:var(--radius);
     font-size:0.9rem;
-    font-weight:600;
+    font-weight:500;
     cursor:pointer;
     transition:var(--transition);
     margin:0.2rem;
+    color:white;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:0.5rem;
   }
-  .admin-btn:hover { background:#e0e0e0; transform:translateY(-1px); }
-  .admin-btn.primary { background:var(--primary); color:white; border-color:var(--primary-dark); }
-  .admin-btn.primary:hover { background:var(--primary-dark); }
-  .admin-btn.success { background:#d4edda; color:#155724; border-color:#28a745; }
-  .admin-btn.success:hover { background:#c3e6cb; }
-  .admin-btn.danger { background:#f8d7da; color:#721c24; border-color:#dc3545; }
-  .admin-btn.danger:hover { background:#f5c6cb; }
-  .admin-btn.warning { background:#fff3cd; color:#856404; border-color:#ffc107; }
-  .admin-btn.warning:hover { background:#ffeaa7; }
-  .admin-btn.secondary { background:#e9ecef; border-color:#adb5bd; }
+  .admin-btn i { font-size:1rem; }
+  .admin-btn.primary { background:#2c5f2d; }
+  .admin-btn.primary:hover { background:#1e4420; }
+  .admin-btn.success { background:#4a7c59; }
+  .admin-btn.success:hover { background:#3a6347; }
+  .admin-btn.danger { background:#c0392b; }
+  .admin-btn.danger:hover { background:#a93226; }
+  .admin-btn.warning { background:#d4a017; }
+  .admin-btn.warning:hover { background:#b8860b; }
+  .admin-btn.secondary { background:#7f8c8d; color:white; }
+  .admin-btn.secondary:hover { background:#6c7a7a; }
   
   .login-container {
     max-width:400px;
@@ -88,24 +92,27 @@
     box-shadow:var(--shadow);
   }
   
-  .card h3 {
+  .card h3, .card h4 {
     color:var(--primary);
     margin-bottom:1rem;
-    display:flex;
-    align-items:center;
-    gap:0.5rem;
-    border-bottom:2px solid var(--primary-light);
+    font-weight:500;
+    border-bottom:1px solid #ddd;
     padding-bottom:0.5rem;
   }
   
   .form-group { margin-bottom:1rem; }
-  .form-group label { display:block; font-weight:600; margin-bottom:0.2rem; }
+  .form-group label { display:block; font-weight:500; margin-bottom:0.2rem; color:#555; }
   .form-group select, .form-group input, .form-group textarea {
     width:100%;
     padding:0.6rem;
-    border:2px solid var(--primary-light);
+    border:1px solid #ddd;
     border-radius:var(--radius);
     font-size:0.9rem;
+    background:white;
+  }
+  .form-group select:focus, .form-group input:focus, .form-group textarea:focus {
+    border-color:var(--primary);
+    outline:none;
   }
   
   .message {
@@ -116,29 +123,15 @@
   }
   .message.success { background:#d4edda; color:#155724; }
   .message.error { background:#f8d7da; color:#721c24; }
-  .message.info { background:#caf0f8; color:#005f87; }
-  
-  .progress-bar {
-    width:100%;
-    height:6px;
-    background:var(--primary-light);
-    border-radius:3px;
-    margin:0.8rem 0;
-    overflow:hidden;
-  }
-  .progress-fill {
-    height:100%;
-    background:var(--primary);
-    width:0%;
-    transition:width 0.3s ease;
-  }
+  .message.info { background:#e8f5e9; color:#2c5f2d; }
   
   .file-format-info {
-    background:var(--primary-light);
+    background:#f8f9fa;
     padding:0.8rem;
     border-radius:var(--radius);
     margin-bottom:0.8rem;
     font-size:0.85rem;
+    border-left:3px solid var(--primary);
   }
   
   .simple-table {
@@ -148,10 +141,10 @@
   }
   .simple-table th, .simple-table td {
     border:1px solid #ddd;
-    padding:5px;
+    padding:6px;
     text-align:center;
   }
-  .simple-table th { background:var(--primary-light); font-weight:bold; }
+  .simple-table th { background:#f0f0f0; font-weight:500; }
   
   .modal {
     display:none;
@@ -185,27 +178,25 @@
     margin-top:2rem;
   }
   
-  .footer a { color:var(--primary); text-decoration:none; margin:0 0.5rem; }
-  
-  .status-V { color:#27ae60; font-weight:bold; }
-  .status-NV { color:#e74c3c; font-weight:bold; }
+  .footer a { color:var(--primary); text-decoration:none; }
   
   @media (max-width:768px) {
     header h1 { font-size:1.5rem; }
+    .admin-btn { padding:0.5rem 1rem; font-size:0.85rem; }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <h1><i class="fas fa-user-shield"></i> Coordinateur PPV</h1>
-  <p>Département de Production et Protection Végétales</p>
+  <h1>Coordinateur PPV</h1>
+  <p>Departement de Production et Protection Vegetales</p>
 </header>
 
 <div class="container">
   <!-- Login Form -->
   <div id="loginForm" class="login-container">
-    <h2 style="text-align:center; margin-bottom:1.5rem; color:var(--primary);"><i class="fas fa-lock"></i> Connexion</h2>
+    <h2 style="text-align:center; margin-bottom:1.5rem; color:var(--primary); font-weight:500;">Connexion</h2>
     <div id="loginMessage" class="message error"></div>
     <div class="form-group">
       <label>Mot de passe</label>
@@ -213,81 +204,80 @@
     </div>
     <button class="admin-btn primary" onclick="login()" style="width:100%;">Se connecter</button>
     <p style="text-align:center; margin-top:1rem;">
-      <a href="index.html" style="color:var(--primary); text-decoration:none;"><i class="fas fa-arrow-left"></i> Retour au site</a>
+      <a href="index.html" style="color:var(--primary); text-decoration:none;">← Retour au site</a>
     </p>
   </div>
   
   <!-- Dashboard -->
   <div id="dashboard" class="dashboard">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-      <h2><i class="fas fa-tachometer-alt"></i> Panneau de coordination - PPV</h2>
-      <button class="admin-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
+      <h2 style="color:var(--primary); font-weight:500;">Panneau de coordination - PPV</h2>
+      <button class="admin-btn danger" onclick="logout()">Deconnexion</button>
     </div>
     
     <div id="dashboardMessage" class="message success"></div>
     
-    <div style="display:grid; gap:0.8rem; margin:1rem 0;">
-      <button class="admin-btn success" onclick="showImportForm()"><i class="fas fa-upload"></i> Importer des résultats</button>
-      <button class="admin-btn danger" onclick="showManageSubjects()"><i class="fas fa-trash-alt"></i> Gérer les matières</button>
-      <button class="admin-btn warning" onclick="openAnnonceModal()"><i class="fas fa-bullhorn"></i> Gérer l'annonce</button>
-      <button class="admin-btn primary" onclick="openChangePasswordModal()"><i class="fas fa-key"></i> Changer le mot de passe</button>
-      <button class="admin-btn danger" onclick="showResetDataForm()" style="background:#f8d7da; border-color:#dc3545; color:#721c24;"><i class="fas fa-database"></i> Supprimer les données d'un semestre</button>
-      <button class="admin-btn primary" onclick="showViewResultsForm()"><i class="fas fa-eye"></i> Voir les résultats des étudiants</button>
+    <div style="display:grid; gap:0.6rem; margin:1rem 0;">
+      <button class="admin-btn success" onclick="showImportForm()">Importer des resultats</button>
+      <button class="admin-btn danger" onclick="showManageSubjects()">Gerer les matieres</button>
+      <button class="admin-btn warning" onclick="openAnnonceModal()">Gerer l'annonce</button>
+      <button class="admin-btn primary" onclick="openChangePasswordModal()">Changer le mot de passe</button>
+      <button class="admin-btn danger" onclick="showResetDataForm()">Supprimer les donnees d'un semestre</button>
+      <button class="admin-btn primary" onclick="showViewResultsForm()">Voir les resultats des etudiants</button>
     </div>
     
     <!-- Import Form -->
     <div id="importForm" class="card" style="display:none;">
-      <h4><i class="fas fa-file-import"></i> Importer des résultats</h4>
+      <h4>Importer des resultats</h4>
       <div class="file-format-info">
-        <i class="fas fa-info-circle"></i> <strong>Formats acceptés :</strong> Excel (.xlsx, .xls), ODS (.ods), Word (.docx), PDF (.pdf)
-        <ul><li><strong>Colonnes attendues :</strong> NUMERO, NOM&PRENOM, NOTE/20</li></ul>
+        <strong>Formats acceptes :</strong> Excel (.xlsx, .xls), ODS (.ods), Word (.docx), PDF (.pdf)
+        <ul style="margin-left:1.5rem; margin-top:0.3rem;"><li>Colonnes attendues : NUMERO, NOM&PRENOM, NOTE/20</li></ul>
       </div>
       <div class="form-group"><label>Semestre</label><select id="importSemester"><option value="S3">S3</option><option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option></select></div>
-      <div class="form-group"><label>Type d'évaluation</label>
+      <div class="form-group"><label>Type d'evaluation</label>
         <select id="importType">
-          <option value="Examen">Examen</option><option value="Contrôle continu">Contrôle continu</option>
+          <option value="Examen">Examen</option><option value="Controle continu">Controle continu</option>
           <option value="Rattrapage">Rattrapage</option><option value="TP">TP</option>
         </select>
       </div>
-      <div class="form-group"><label>Nom de la matière</label><select id="importSubject"></select></div>
-      <div class="form-group"><label>Fichier à importer</label><input type="file" id="importFile" accept=".xlsx, .xls, .ods, .docx, .pdf"></div>
-      <div id="importProgress" style="display:none;"><div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div><p id="progressText" style="text-align:center;">Analyse du fichier...</p></div>
+      <div class="form-group"><label>Nom de la matiere</label><select id="importSubject"></select></div>
+      <div class="form-group"><label>Fichier a importer</label><input type="file" id="importFile" accept=".xlsx, .xls, .ods, .docx, .pdf"></div>
       <button class="admin-btn success" onclick="processImport()">Importer</button>
       <button class="admin-btn secondary" onclick="hideImportForm()">Fermer</button>
     </div>
     
     <!-- Manage Subjects -->
     <div id="manageSubjects" class="card" style="display:none;">
-      <h4><i class="fas fa-list"></i> Gérer les matières</h4>
+      <h4>Gerer les matieres</h4>
       <div class="form-group"><label>Semestre</label><select id="manageSemester"><option value="S3">S3</option><option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option></select></div>
-      <button class="admin-btn" onclick="loadSubjectsList()">Afficher les matières</button>
+      <button class="admin-btn primary" onclick="loadSubjectsList()">Afficher les matieres</button>
       <div id="subjectsListContainer" style="margin-top:1rem;"></div>
       <button class="admin-btn secondary" onclick="hideManageSubjects()" style="margin-top:0.8rem;">Fermer</button>
     </div>
     
     <!-- Reset Data Form -->
-    <div id="resetDataForm" class="card" style="display:none; background:#f8d7da; border:1px solid #dc3545;">
-      <h4 style="color:#721c24;"><i class="fas fa-exclamation-triangle"></i> Supprimer les données d'un semestre</h4>
-      <p style="margin-bottom:0.8rem; color:#721c24;">Attention : Cette action supprimera définitivement toutes les données des étudiants pour le semestre sélectionné.</p>
+    <div id="resetDataForm" class="card" style="display:none; background:#fef5f5; border-left:4px solid #c0392b;">
+      <h4 style="color:#c0392b;">Supprimer les donnees d'un semestre</h4>
+      <p style="margin-bottom:0.8rem; color:#721c24;">Attention : Cette action supprimera definitivement toutes les donnees des etudiants pour le semestre selectionne.</p>
       <div class="form-group">
         <label>Semestre</label>
         <select id="resetSemesterSelect"><option value="S3">S3</option><option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option></select>
       </div>
-      <button class="admin-btn danger" onclick="resetAllData()" style="background:#dc3545; color:white;">Confirmer la suppression</button>
+      <button class="admin-btn danger" onclick="resetAllData()">Confirmer la suppression</button>
       <button class="admin-btn secondary" onclick="hideResetDataForm()">Annuler</button>
     </div>
     
     <!-- View Results Form -->
     <div id="viewResultsForm" class="card" style="display:none;">
-      <h4><i class="fas fa-users"></i> Résultats des étudiants</h4>
+      <h4>Resultats des etudiants</h4>
       <div class="form-group">
         <label>Semestre</label>
         <select id="viewSemester"><option value="S3">S3</option><option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option></select>
       </div>
-      <button class="admin-btn primary" onclick="loadAllStudents()">Afficher les résultats</button>
-      <button class="admin-btn success" onclick="downloadCompleteResultsPDF()">Télécharger PDF complet</button>
+      <button class="admin-btn primary" onclick="loadAllStudents()">Afficher les resultats</button>
+      <button class="admin-btn success" onclick="downloadCompleteResultsPDF()">Telecharger PDF complet</button>
       <button class="admin-btn secondary" onclick="hideViewResultsForm()">Fermer</button>
-      <div id="resultsContainer" style="margin-top:1rem; max-height:500px; overflow:auto;"></div>
+      <div id="resultsContainer" style="margin-top:1rem; max-height:400px; overflow:auto;"></div>
     </div>
   </div>
 </div>
@@ -295,14 +285,14 @@
 <!-- Modal Annonce -->
 <div id="annonceModal" class="modal">
   <div class="modal-content">
-    <h3><i class="fas fa-bullhorn"></i> Publier une annonce</h3>
+    <h3>Publier une annonce</h3>
     <div class="form-group">
       <label>Texte de l'annonce :</label>
-      <textarea id="annonceTexte" rows="3" placeholder="Ex: Les résultats du semestre 3 sont disponibles !"></textarea>
+      <textarea id="annonceTexte" rows="3" placeholder="Ex: Les resultats du semestre 3 sont disponibles !"></textarea>
     </div>
-    <p style="font-size:0.8rem; color:#666; margin:0.3rem 0;"><i class="fas fa-info-circle"></i> L'annonce sera visible pendant 24 heures.</p>
+    <p style="font-size:0.8rem; color:#666; margin:0.3rem 0;">L'annonce sera visible pendant 24 heures.</p>
     <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
-      <button class="admin-btn" onclick="publierAnnonce()">Publier</button>
+      <button class="admin-btn primary" onclick="publierAnnonce()">Publier</button>
       <button class="admin-btn secondary" onclick="closeAnnonceModal()">Annuler</button>
     </div>
   </div>
@@ -311,7 +301,7 @@
 <!-- Modal Change Password -->
 <div id="changePasswordModal" class="modal">
   <div class="modal-content">
-    <h3><i class="fas fa-key"></i> Changer le mot de passe</h3>
+    <h3>Changer le mot de passe</h3>
     <div id="changePasswordMessage" class="message error"></div>
     <div class="form-group"><label>Mot de passe actuel</label><input type="password" id="currentPassword"></div>
     <div class="form-group"><label>Nouveau mot de passe</label><input type="password" id="newPassword"></div>
@@ -324,7 +314,7 @@
 </div>
 
 <footer class="footer">
-  <p>© 2026 Département de Production et Protection Végétales | <a href="index.html"><i class="fas fa-home"></i> Accueil</a></p>
+  <p>© 2026 Departement de Production et Protection Vegetales | <a href="index.html">Accueil</a></p>
 </footer>
 
 <script type="module">
@@ -354,30 +344,27 @@
 
   const SUBJECTS_BY_DEPT = {
     PPV: {
-      S3: ["Français_s3", "Economie", "I_Agronomie", "I_Horticulture", "Pesticides_agricoles", "Entomologie_et_Nemato", "Science_des_sols", "Science_des_plantes"],
+      S3: ["Francais_s3", "Economie", "I_Agronomie", "I_Horticulture", "Pesticides_agricoles", "Entomologie_et_Nemato", "Science_des_sols", "Science_des_plantes"],
       S4: ["Vulgarisation", "Technique_de_propagation", "Technique_d_irrigation_et_BEC", "Ecophysiologie_et_Biochimie", "Fertilite_du_sol", "Methodes_de_diagnostic", "Malherbologie"],
-      S5: [],
-      S6: []
+      S5: [], S6: []
     }
   };
 
-  const SUBJECTS_WITHOUT_TP = ["Anglais", "Anglais_2", "Français", "Français_2", "Français_s3", "Math_et_Statistique", "Economie", "Vulgarisation"];
+  const SUBJECTS_WITHOUT_TP = ["Anglais", "Anglais_2", "Francais", "Francais_2", "Francais_s3", "Math_et_Statistique", "Economie", "Vulgarisation"];
   
   const MODULES_STRUCTURE = {
     PPV: {
-      S3: { M31: { name: "Module 31", credit: 6.0, subjects: ["Français_s3", "Economie"] }, M32: { name: "Module 32", credit: 8.0, subjects: ["I_Agronomie", "I_Horticulture"] }, M33: { name: "Module 33", credit: 8.0, subjects: ["Pesticides_agricoles", "Entomologie_et_Nemato"] }, M34: { name: "Module 34", credit: 8.0, subjects: ["Science_des_sols", "Science_des_plantes"] } },
-      S4: { M41: { name: "Module 41", credit: 3.0, subjects: ["Vulgarisation"] }, M42: { name: "Module 42", credit: 7.0, subjects: ["Technique_de_propagation", "Technique_d_irrigation_et_BEC"] }, M43: { name: "Module 43", credit: 7.0, subjects: ["Ecophysiologie_et_Biochimie", "Fertilite_du_sol"] }, M44: { name: "Module 44", credit: 6.0, subjects: ["Methodes_de_diagnostic", "Malherbologie"] } },
-      S5: {},
-      S6: {}
+      S3: { M31: { name: "Langue et economie", credit: 6.0, subjects: ["Francais_s3", "Economie"] }, M32: { name: "Principes d'agronomie", credit: 8.0, subjects: ["I_Agronomie", "I_Horticulture"] }, M33: { name: "Phytoprotection 1", credit: 8.0, subjects: ["Pesticides_agricoles", "Entomologie_et_Nemato"] }, M34: { name: "Sciences du sol et des plantes", credit: 8.0, subjects: ["Science_des_sols", "Science_des_plantes"] } },
+      S4: { M41: { name: "Vulgarisation", credit: 3.0, subjects: ["Vulgarisation"] }, M42: { name: "Techniques culturales", credit: 7.0, subjects: ["Technique_de_propagation", "Technique_d_irrigation_et_BEC"] }, M43: { name: "Physiologie et fertilite", credit: 7.0, subjects: ["Ecophysiologie_et_Biochimie", "Fertilite_du_sol"] }, M44: { name: "Protection des vegetaux", credit: 6.0, subjects: ["Methodes_de_diagnostic", "Malherbologie"] } },
+      S5: {}, S6: {}
     }
   };
   
   const SUBJECT_CREDITS = {
     PPV: {
-      S3: { "Français_s3": 3.0, "Economie": 3.0, "I_Agronomie": 4.0, "I_Horticulture": 4.0, "Pesticides_agricoles": 4.0, "Entomologie_et_Nemato": 4.0, "Science_des_sols": 4.0, "Science_des_plantes": 4.0 },
+      S3: { "Francais_s3": 3.0, "Economie": 3.0, "I_Agronomie": 4.0, "I_Horticulture": 4.0, "Pesticides_agricoles": 4.0, "Entomologie_et_Nemato": 4.0, "Science_des_sols": 4.0, "Science_des_plantes": 4.0 },
       S4: { "Vulgarisation": 3.0, "Technique_de_propagation": 4.0, "Technique_d_irrigation_et_BEC": 3.0, "Ecophysiologie_et_Biochimie": 4.0, "Fertilite_du_sol": 3.0, "Methodes_de_diagnostic": 3.0, "Malherbologie": 3.0 },
-      S5: {},
-      S6: {}
+      S5: {}, S6: {}
     }
   };
 
@@ -407,13 +394,11 @@
     const type = document.getElementById('importType')?.value || 'Examen';
     const select = document.getElementById('importSubject');
     if (!select) return;
-    select.innerHTML = '<option value="">-- Sélectionner --</option>';
+    select.innerHTML = '<option value="">-- Selectionner --</option>';
     let subjects = SUBJECTS_BY_DEPT.PPV[sem] || [];
     if (type === 'TP') subjects = subjects.filter(s => hasTP(s));
     if (subjects.length === 0) {
-      const opt = document.createElement('option');
-      opt.value = ""; opt.textContent = "-- Aucune matière --"; opt.disabled = true;
-      select.appendChild(opt);
+      const opt = document.createElement('option'); opt.value = ""; opt.textContent = "-- Aucune matiere --"; opt.disabled = true; select.appendChild(opt);
     } else {
       subjects.forEach(s => { const opt = document.createElement('option'); opt.value = s; opt.textContent = displaySubjectName(s); select.appendChild(opt); });
     }
@@ -463,7 +448,7 @@
     const texte = document.getElementById('annonceTexte').value.trim();
     if (!texte) { alert('Texte requis'); return; }
     await set(ref(db, 'annonces/active'), { texte, expiration: Date.now() + 86400000, dateCreation: Date.now() });
-    showMessage('Annonce publiée (24h)', 'success');
+    showMessage('Annonce publiee (24h)', 'success');
     closeAnnonceModal();
   };
 
@@ -472,23 +457,23 @@
     const newP = document.getElementById('newPassword').value;
     const conf = document.getElementById('confirmNewPassword').value;
     if (!curr || !newP || !conf) { showMessage('Tous les champs requis', 'error'); return; }
-    if (newP !== conf) { showMessage('Mots de passe différents', 'error'); return; }
+    if (newP !== conf) { showMessage('Mots de passe differents', 'error'); return; }
     if ((await hashPassword(curr)) !== ADMIN_CREDENTIALS.PPV.passwordHash) { showMessage('Mot de passe actuel incorrect', 'error'); return; }
     ADMIN_CREDENTIALS.PPV.passwordHash = await hashPassword(newP);
     await saveCredentials();
-    showMessage('Mot de passe changé', 'success');
+    showMessage('Mot de passe change', 'success');
     closeChangePasswordModal();
   };
 
   window.resetAllData = async function() {
     const sem = document.getElementById('resetSemesterSelect').value;
-    if (!confirm(`Supprimer TOUTES les données du ${sem} ?`)) return;
+    if (!confirm(`Supprimer TOUTES les donnees du ${sem} ?`)) return;
     try {
       const snap = await get(child(ref(db), `results/PPV/${sem}`));
-      if (!snap.exists()) { showMessage('Aucune donnée', 'info'); hideResetDataForm(); return; }
+      if (!snap.exists()) { showMessage('Aucune donnee', 'info'); hideResetDataForm(); return; }
       const students = snap.val();
       for (let id in students) await remove(ref(db, `results/PPV/${sem}/${id}`));
-      showMessage(`Données ${sem} supprimées`, 'success');
+      showMessage(`Donnees ${sem} supprimees`, 'success');
       hideResetDataForm();
     } catch (e) { showMessage('Erreur suppression', 'error'); }
   };
@@ -503,7 +488,7 @@
     const subjAvg = {}, subjStatus = {}, subjSR = {};
     for (let s of required) {
       const notes = notesBySubject[s] || {};
-      const exam = notes['Examen'] || 0, cc = notes['Contrôle continu'] || 0, tp = notes['TP'] || 0;
+      const exam = notes['Examen'] || 0, cc = notes['Controle continu'] || notes['Contrôle continu'] || 0, tp = notes['TP'] || 0;
       const ratt = notes['Rattrapage'];
       const useSR = ratt !== undefined && ratt > exam;
       subjSR[s] = useSR;
@@ -529,7 +514,7 @@
     for (let s of required) { const cr = SUBJECT_CREDITS[dept][sem][s] || 3; totalW += (subjAvg[s] || 0) * cr; totalC += cr; }
     const genMoy = totalC > 0 ? totalW / totalC : 0;
     const hasNV = Object.values(modStatus).some(s => s === 'NV');
-    const semStatus = hasNV ? 'Non Validé' : (genMoy >= 10 ? 'Validé' : 'Non Validé');
+    const semStatus = hasNV ? 'Non Valide' : (genMoy >= 10 ? 'Valide' : 'Non Valide');
     const hasSR = Object.values(subjSR).some(v => v);
     
     return { genMoy, semStatus, modStatus, modCredits, modAvg, subjAvg, subjStatus, subjSR, hasSR, modules };
@@ -538,10 +523,10 @@
   window.loadAllStudents = async function() {
     const sem = document.getElementById('viewSemester').value;
     const container = document.getElementById('resultsContainer');
-    container.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Chargement...</p>';
+    container.innerHTML = '<p style="text-align:center;">Chargement...</p>';
     
     const snap = await get(child(ref(db), `results/PPV/${sem}`));
-    if (!snap.exists()) { container.innerHTML = '<p>Aucun résultat</p>'; return; }
+    if (!snap.exists()) { container.innerHTML = '<p>Aucun resultat</p>'; return; }
     
     const students = snap.val();
     const results = [];
@@ -560,7 +545,7 @@
       let complete = required.length > 0;
       for (let s of required) {
         const hasTPs = hasTP(s);
-        if (!notes[s]?.['Examen'] || !notes[s]?.['Contrôle continu'] || (hasTPs && !notes[s]?.['TP'])) { complete = false; break; }
+        if (!notes[s]?.['Examen'] || !notes[s]?.['Controle continu'] || (hasTPs && !notes[s]?.['TP'])) { complete = false; break; }
       }
       
       if (complete) {
@@ -578,77 +563,144 @@
     
     let html = '<table class="simple-table"><thead><tr><th>N°</th><th>Nom</th><th>Moyenne</th><th>Statut</th></tr></thead><tbody>';
     for (let r of results) {
-      html += `<tr><td>${r.id}</td><td style="text-align:left;">${r.name}</td><td>${r.complete ? r.calc.genMoy.toFixed(2) : '-'}</td><td class="${r.complete && r.calc.semStatus === 'Validé' ? 'status-V' : (r.complete ? 'status-NV' : '')}">${r.complete ? r.calc.semStatus : 'Incomplet'}</td></tr>`;
+      html += `<tr><td>${r.id}</td><td style="text-align:left;">${r.name}</td><td>${r.complete ? r.calc.genMoy.toFixed(2) : '-'}</td><td>${r.complete ? r.calc.semStatus : 'Incomplet'}</td></tr>`;
     }
     html += '</tbody></table>';
     container.innerHTML = html;
   };
 
   window.downloadCompleteResultsPDF = async function() {
-    if (!window.currentResults || window.currentResults.length === 0) { alert('Affichez d\'abord les résultats'); return; }
+    if (!window.currentResults || window.currentResults.length === 0) { alert('Affichez d\'abord les resultats'); return; }
     
     const sem = window.currentSemester;
     const results = window.currentResults.filter(r => r.complete);
     
-    if (results.length === 0) { alert('Aucun résultat complet à télécharger'); return; }
+    if (results.length === 0) { alert('Aucun resultat complet a telecharger'); return; }
     
-    // رأس واحد فقط
-    let content = `
-      <div style="padding:5mm; font-family:'Times New Roman',serif; font-size:8pt;">
-        <div style="text-align:center; margin-bottom:8px;">
-          <div style="font-weight:bold; font-size:10pt;">Institut Supérieur d'Enseignement Technologique de Rosso</div>
-          <div style="display:flex; justify-content:space-between; margin-top:2px;">
-            <span style="font-weight:bold; font-size:11pt;">Résultats du ${sem}</span>
-            <span>Année Universitaire : 2025-2026</span>
-          </div>
-          <div style="margin-top:2px;"><span style="font-weight:bold;">Filière :</span> L2PPV-L2 Licence PPV</div>
-        </div>
-    `;
+    let content = '';
     
     for (let i = 0; i < results.length; i++) {
       const r = results[i];
       const calc = r.calc;
       const showSR = calc.hasSR;
       
+      // رأس مبسط لكل طالب
       content += `
-        <table style="width:100%; border-collapse:collapse; border:0.5px solid #000; margin:2px 0;">
-          <thead><tr style="background:#e8f4fc;"><th style="border:0.5px solid #000; padding:1px 2px;">Numéro</th><th style="border:0.5px solid #000; padding:1px 2px;">Nom et Prénom</th><th style="border:0.5px solid #000; padding:1px 2px;">TP</th><th style="border:0.5px solid #000; padding:1px 2px;">CC</th><th style="border:0.5px solid #000; padding:1px 2px;">Examen</th>${showSR ? '<th style="border:0.5px solid #000; padding:1px 2px;">SR</th>' : ''}<th style="border:0.5px solid #000; padding:1px 2px;">NF°</th><th style="border:0.5px solid #000; padding:1px 2px;">Crédit</th><th style="border:0.5px solid #000; padding:1px 2px;">Obs</th></tr></thead>
-        <tbody>
-          <tr style="background:#f0f8ff;"><td style="border:0.5px solid #000; padding:1px 2px;">${r.id}</td><td style="border:0.5px solid #000; padding:1px 2px; text-align:left;">${r.name}</td><td style="border:0.5px solid #000; padding:1px 2px;"></td><td style="border:0.5px solid #000; padding:1px 2px;"></td><td style="border:0.5px solid #000; padding:1px 2px;"></td>${showSR ? '<td style="border:0.5px solid #000; padding:1px 2px;"></td>' : ''}<td style="border:0.5px solid #000; padding:1px 2px;"></td><td style="border:0.5px solid #000; padding:1px 2px;"></td><td style="border:0.5px solid #000; padding:1px 2px;"></td></tr>
+        <div style="margin-bottom:15px; page-break-inside:avoid;">
+          <div style="font-family:'Times New Roman',serif; font-size:10pt;">
+            <div style="font-weight:bold; font-size:11pt;">Institut Superieur d'Enseignement Technologique de Rosso</div>
+            <div style="display:flex; justify-content:space-between; margin-top:3px;">
+              <span style="font-weight:bold;">Resultats du ${sem}</span>
+              <span>Annee Universitaire : 2025-2026</span>
+            </div>
+            <div style="margin-top:2px;"><span style="font-weight:bold;">Filiere :</span> L2PPV-L2 Licence Production et Protection Vegetales</div>
+          </div>
+          
+          <table style="width:100%; border-collapse:collapse; border:1px solid #000; font-family:'Times New Roman',serif; font-size:9pt; margin-top:8px;">
+            <thead>
+              <tr>
+                <th style="border:1px solid #000; padding:3px 2px;">Numero</th>
+                <th style="border:1px solid #000; padding:3px 2px;">Nom et Prenom</th>
+                <th style="border:1px solid #000; padding:3px 2px;">TP</th>
+                <th style="border:1px solid #000; padding:3px 2px;">CC</th>
+                <th style="border:1px solid #000; padding:3px 2px;">Examen</th>
+                ${showSR ? '<th style="border:1px solid #000; padding:3px 2px;">SR</th>' : ''}
+                <th style="border:1px solid #000; padding:3px 2px;">NFe</th>
+                <th style="border:1px solid #000; padding:3px 2px;">Credit</th>
+                <th style="border:1px solid #000; padding:3px 2px;">Observations</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="border:1px solid #000; padding:2px;">${r.id}</td>
+                <td style="border:1px solid #000; padding:2px; text-align:left;">${r.name}</td>
+                <td style="border:1px solid #000; padding:2px;"></td>
+                <td style="border:1px solid #000; padding:2px;"></td>
+                <td style="border:1px solid #000; padding:2px;"></td>
+                ${showSR ? '<td style="border:1px solid #000; padding:2px;"></td>' : ''}
+                <td style="border:1px solid #000; padding:2px; font-weight:bold;">Moyenne Semestre : ${calc.genMoy.toFixed(2)}</td>
+                <td style="border:1px solid #000; padding:2px;"></td>
+                <td style="border:1px solid #000; padding:2px;">${calc.semStatus}</td>
+              </tr>
       `;
       
       for (let m in calc.modules) {
         const mod = calc.modules[m];
-        content += `<tr style="background:#d0e8f7;"><td style="border:0.5px solid #000; padding:1px 2px;">${m}</td><td style="border:0.5px solid #000; padding:1px 2px; text-align:left;">${mod.name}</td><td style="border:0.5px solid #000; padding:1px 2px;"></td><td style="border:0.5px solid #000; padding:1px 2px;"></td><td style="border:0.5px solid #000; padding:1px 2px;"></td>${showSR ? '<td style="border:0.5px solid #000; padding:1px 2px;"></td>' : ''}<td style="border:0.5px solid #000; padding:1px 2px; font-weight:bold;">${calc.modAvg[m].toFixed(2)}</td><td style="border:0.5px solid #000; padding:1px 2px;">${calc.modCredits[m].toFixed(1)}</td><td style="border:0.5px solid #000; padding:1px 2px;">${calc.modStatus[m]}</td></tr>`;
+        content += `
+          <tr>
+            <td style="border:1px solid #000; padding:2px;">${m}</td>
+            <td style="border:1px solid #000; padding:2px; text-align:left;">${mod.name}</td>
+            <td style="border:1px solid #000; padding:2px;"></td>
+            <td style="border:1px solid #000; padding:2px;"></td>
+            <td style="border:1px solid #000; padding:2px;"></td>
+            ${showSR ? '<td style="border:1px solid #000; padding:2px;"></td>' : ''}
+            <td style="border:1px solid #000; padding:2px; font-weight:bold;">${calc.modAvg[m].toFixed(2)}</td>
+            <td style="border:1px solid #000; padding:2px;">${mod.credit}</td>
+            <td style="border:1px solid #000; padding:2px;">${calc.modStatus[m]}</td>
+          </tr>
+        `;
         
         for (let s of mod.subjects) {
           const notes = r.notes[s] || {};
           const tpDisplay = hasTP(s) ? (notes['TP']?.toFixed(2) || '') : '';
-          const ccDisplay = notes['Contrôle continu']?.toFixed(2) || '';
+          const ccDisplay = notes['Controle continu']?.toFixed(2) || notes['Contrôle continu']?.toFixed(2) || '';
           const examDisplay = notes['Examen']?.toFixed(2) || '';
           const ratt = notes['Rattrapage'];
           const srDisplay = (ratt !== undefined && ratt > (notes['Examen'] || 0)) ? ratt.toFixed(2) : '';
-          const creditEarned = calc.subjStatus[s] === 'C' ? (SUBJECT_CREDITS.PPV[sem][s] || 3) : 0;
+          const credit = SUBJECT_CREDITS.PPV[sem][s] || 3;
+          const subjName = displaySubjectName(s);
           
-          content += `<tr><td style="border:0.5px solid #000; padding:1px 2px;"></td><td style="border:0.5px solid #000; padding:1px 2px; text-align:left; padding-left:10px;">${displaySubjectName(s)}</td><td style="border:0.5px solid #000; padding:1px 2px;">${tpDisplay}</td><td style="border:0.5px solid #000; padding:1px 2px;">${ccDisplay}</td><td style="border:0.5px solid #000; padding:1px 2px;">${examDisplay}</td>${showSR ? `<td style="border:0.5px solid #000; padding:1px 2px;">${srDisplay}</td>` : ''}<td style="border:0.5px solid #000; padding:1px 2px; font-weight:bold;">${calc.subjAvg[s].toFixed(2)}</td><td style="border:0.5px solid #000; padding:1px 2px;">${creditEarned.toFixed(1)}</td><td style="border:0.5px solid #000; padding:1px 2px;">${calc.subjStatus[s]}</td></tr>`;
+          content += `
+            <tr>
+              <td style="border:1px solid #000; padding:1px;"></td>
+              <td style="border:1px solid #000; padding:1px; text-align:left; padding-left:15px;">${subjName}</td>
+              <td style="border:1px solid #000; padding:1px;">${tpDisplay}</td>
+              <td style="border:1px solid #000; padding:1px;">${ccDisplay}</td>
+              <td style="border:1px solid #000; padding:1px;">${examDisplay}</td>
+              ${showSR ? `<td style="border:1px solid #000; padding:1px;">${srDisplay}</td>` : ''}
+              <td style="border:1px solid #000; padding:1px; font-weight:bold;">${calc.subjAvg[s].toFixed(2)}</td>
+              <td style="border:1px solid #000; padding:1px;">${credit.toFixed(1)}</td>
+              <td style="border:1px solid #000; padding:1px;">${calc.subjStatus[s]}</td>
+            </tr>
+          `;
         }
       }
       
-      const colspanV = showSR ? 6 : 5;
-      content += `<tr style="background:#f0f8ff;"><td colspan="${colspanV}" style="border:0.5px solid #000; padding:2px; text-align:right; font-weight:bold;">Moyenne Semestre :</td><td style="border:0.5px solid #000; padding:2px; font-weight:bold;">${calc.genMoy.toFixed(2)}</td><td style="border:0.5px solid #000; padding:2px;"></td><td style="border:0.5px solid #000; padding:2px; font-weight:bold;">${calc.semStatus}</td></tr></tbody></table>`;
+      content += `
+            </tbody>
+          </table>
+        </div>
+      `;
       
-      // خط فاصل بين الطلاب (ما عدا الأخير)
+      // إضافة فاصل بين الطلاب
       if (i < results.length - 1) {
-        content += `<div style="text-align:center; margin:2px 0; font-size:7pt; color:#999;">────────────────────────</div>`;
+        content += `<div style="margin:10px 0; border-top:1px dashed #999;"></div>`;
       }
     }
     
-    content += `</div>`;
+    // تذييل
+    content += `
+      <div style="font-family:'Times New Roman',serif; font-size:9pt; margin-top:15px;">
+        <p>V=Valide / NV=Non Valide / C=Capitalise / NC=Non Capitalise</p>
+        <div style="display:flex; justify-content:space-between; margin-top:20px;">
+          <div style="text-align:center;">Le Coordinateur de la Filiere</div>
+          <div style="text-align:center;">Le Jury</div>
+          <div style="text-align:center;">Le Directeur</div>
+        </div>
+      </div>
+    `;
     
     const el = document.createElement('div');
     el.innerHTML = content;
     document.body.appendChild(el);
-    html2pdf().set({ margin:[3,3,3,3], filename:`Resultats_Complets_PPV_${sem}.pdf`, image:{type:'jpeg',quality:0.95}, html2canvas:{scale:2}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'} }).from(el).save().then(() => document.body.removeChild(el));
+    
+    html2pdf().set({ 
+      margin:[8,5,8,5], 
+      filename:`PV_L2PPV_${sem}_2025-2026.pdf`,
+      image:{type:'jpeg',quality:0.95}, 
+      html2canvas:{scale:2.5, letterRendering:true}, 
+      jsPDF:{unit:'mm',format:'a4',orientation:'portrait'} 
+    }).from(el).save().then(() => document.body.removeChild(el));
   };
 
   // Import functions
@@ -714,7 +766,7 @@
       });
     }
     if (name.endsWith('.ods')) return readODSFile(file);
-    throw new Error('Format non supporté');
+    throw new Error('Format non supporte');
   }
 
   window.processImport = async function() {
@@ -725,7 +777,7 @@
     if (!sem || !subject || !file) { alert('Tous les champs requis'); return; }
     
     const cleanSubj = cleanSubjectName(subject);
-    if (type === 'TP' && !hasTP(subject)) { alert('Cette matière n\'a pas de TP'); return; }
+    if (type === 'TP' && !hasTP(subject)) { alert('Cette matiere n\'a pas de TP'); return; }
     
     showMessage('Importation en cours...', 'info');
     
@@ -748,8 +800,8 @@
       
       if (Object.keys(updates).length > 0) await update(ref(db), updates);
       
-      let msg = `${imported} étudiants ajoutés`;
-      if (duplicates) msg += `, ${duplicates} ignorés`;
+      let msg = `${imported} etudiants ajoutes`;
+      if (duplicates) msg += `, ${duplicates} ignores`;
       if (errors) msg += `, ${errors} erreurs`;
       showMessage(msg, 'success');
       document.getElementById('importFile').value = '';
@@ -759,10 +811,10 @@
   window.loadSubjectsList = async function() {
     const sem = document.getElementById('manageSemester').value;
     const container = document.getElementById('subjectsListContainer');
-    container.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i></p>';
+    container.innerHTML = '<p style="text-align:center;">Chargement...</p>';
     
     const snap = await get(child(ref(db), `results/PPV/${sem}`));
-    if (!snap.exists()) { container.innerHTML = '<p>Aucune matière</p>'; return; }
+    if (!snap.exists()) { container.innerHTML = '<p>Aucune matiere</p>'; return; }
     
     const students = snap.val();
     const subjectsMap = new Map();
@@ -775,11 +827,11 @@
       }
     }
     
-    if (subjectsMap.size === 0) { container.innerHTML = '<p>Aucune matière</p>'; return; }
+    if (subjectsMap.size === 0) { container.innerHTML = '<p>Aucune matiere</p>'; return; }
     
-    let html = '<table class="simple-table"><thead><tr><th>Matière</th><th>Type</th><th>Étudiants</th><th>Action</th></tr></thead><tbody>';
+    let html = '<table class="simple-table"><thead><tr><th>Matiere</th><th>Type</th><th>Etudiants</th><th>Action</th></tr></thead><tbody>';
     for (let [key, data] of subjectsMap) {
-      html += `<tr><td><strong>${displaySubjectName(data.subject)}</strong></td><td>${data.type}</td><td>${data.count}</td><td><button class="admin-btn danger" style="padding:0.2rem 0.6rem; font-size:0.75rem;" onclick="deleteSubject('${sem}', '${data.subject}', '${data.type}')"><i class="fas fa-trash"></i> Supprimer</button></td></tr>`;
+      html += `<tr><td style="text-align:left;"><strong>${displaySubjectName(data.subject)}</strong></td><td>${data.type}</td><td>${data.count}</td><td><button class="admin-btn danger" style="padding:0.2rem 0.6rem; font-size:0.75rem;" onclick="deleteSubject('${sem}', '${data.subject}', '${data.type}')">Supprimer</button></td></tr>`;
     }
     html += '</tbody></table>';
     container.innerHTML = html;
@@ -793,7 +845,7 @@
     const cleanSubj = cleanSubjectName(subject);
     const key = `${cleanSubj}_${type}`;
     for (let id in students) if (students[id][key]) await remove(ref(db, `results/PPV/${sem}/${id}/${key}`));
-    showMessage('Matière supprimée', 'success');
+    showMessage('Matiere supprimee', 'success');
     loadSubjectsList();
   };
 
