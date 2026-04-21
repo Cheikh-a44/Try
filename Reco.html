@@ -216,13 +216,13 @@
       <h4>Importer des resultats</h4>
       <div class="file-format-info">
         <strong>Formats acceptes :</strong> Excel (.xlsx, .xls), ODS (.ods), Word (.docx), PDF (.pdf)
-        <ul style="margin-left:1.5rem; margin-top:0.3rem;"><li>Colonnes attendues : NUMERO, NOM&PRENOM, NOTE/20</li></ul>
+        <ul style="margin-left:1.5rem; margin-top:0.3rem;"><li>Colonnes attendues : NUMERO, NOM, NOTE/20</li></ul>
       </div>
       <div class="form-group"><label>Semestre</label><select id="importSemester"><option value="S3">S3</option><option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option></select></div>
       <div class="form-group"><label>Type d'evaluation</label>
         <select id="importType">
           <option value="Examen">Examen</option>
-          <option value="Contrôle continu">Controle continu</option>
+          <option value="Controle continu">Controle continu</option>
           <option value="Rattrapage">Rattrapage</option>
           <option value="TP">TP</option>
         </select>
@@ -358,7 +358,7 @@
 
   function hasTP(s) { return !SUBJECTS_WITHOUT_TP.includes(s); }
   function cleanSubjectName(s) { 
-    return s.replace(/\./g, '_').replace(/\s+/g, '_').replace(/[éèêë]/g, 'e').replace(/[ç]/g, 'c').replace(/[ô]/g, 'o');
+    return s.replace(/\./g, '_').replace(/\s+/g, '_').replace(/[éèêë]/g, 'e').replace(/[ç]/g, 'c').replace(/[ô]/g, 'o').replace(/[àâä]/g, 'a');
   }
   function displaySubjectName(s) { 
     return s.replace(/_/g, ' ').replace(/I_/g, 'I.').replace(/et_/g, 'et ').replace(/Francais/g, 'Francais');
@@ -481,7 +481,7 @@
     for (let s of required) {
       const notes = notesBySubject[s] || {};
       const exam = notes['Examen'] || 0;
-      const cc = notes['Contrôle continu'] || notes['Controle continu'] || 0;
+      const cc = notes['Controle continu'] || notes['Contrôle continu'] || 0;
       const tp = notes['TP'] || 0;
       const ratt = notes['Rattrapage'];
       const useSR = ratt !== undefined && ratt > exam;
@@ -540,7 +540,7 @@
       for (let s of required) {
         const hasTPs = hasTP(s);
         const examExists = notes[s] && notes[s]['Examen'] !== undefined;
-        const ccExists = notes[s] && (notes[s]['Contrôle continu'] !== undefined || notes[s]['Controle continu'] !== undefined);
+        const ccExists = notes[s] && (notes[s]['Controle continu'] !== undefined || notes[s]['Contrôle continu'] !== undefined);
         const tpExists = !hasTPs || (notes[s] && notes[s]['TP'] !== undefined);
         if (!examExists || !ccExists || !tpExists) { complete = false; break; }
       }
@@ -639,7 +639,7 @@
         for (let s of mod.subjects) {
           const notes = r.notes[s] || {};
           const tpDisplay = hasTP(s) ? (notes['TP']?.toFixed(2) || '') : '';
-          const ccDisplay = notes['Contrôle continu']?.toFixed(2) || notes['Controle continu']?.toFixed(2) || '';
+          const ccDisplay = notes['Controle continu']?.toFixed(2) || notes['Contrôle continu']?.toFixed(2) || '';
           const examDisplay = notes['Examen']?.toFixed(2) || '';
           const ratt = notes['Rattrapage'];
           const srDisplay = (ratt !== undefined && ratt > (notes['Examen'] || 0)) ? ratt.toFixed(2) : '';
@@ -697,7 +697,9 @@
     }).from(el).save().then(() => document.body.removeChild(el));
   };
 
-  // Import functions - FIXED
+  // ==================== دوال الاستيراد - تم إصلاحها ====================
+  
+  // استخراج النص من PDF
   async function extractTextFromPDF(file) {
     const buf = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
@@ -710,85 +712,188 @@
     return text;
   }
   
+  // استخراج النص من Word
   async function extractTextFromWord(file) { 
     const buf = await file.arrayBuffer(); 
     const res = await mammoth.extractRawText({ arrayBuffer: buf }); 
     return res.value; 
   }
   
+  // تحليل النص إلى بيانات (لـ PDF و Word)
   function parseTextToData(text) {
-    const lines = text.split('\n').filter(l => l.trim() && !l.match(/num|nom|prenom|note/i));
+    const lines = text.split('\n').filter(l => l.trim());
     const data = [];
+    
     for (let line of lines) {
+      // تجاهل السطر إذا كان يحتوي على عناوين
+      if (line.match(/numero|numéro|nom|prenom|note/i)) continue;
+      
+      // البحث عن رقم متبوع باسم ثم علامة
       const match = line.match(/(\d+)\s+([A-Za-zÀ-ÿ\s\-]+?)\s+(\d{1,2}(?:[.,]\d{1,2})?)/);
       if (match) { 
         const grade = parseFloat(match[3].replace(',', '.')); 
-        if (grade >= 0 && grade <= 20) data.push({ NUMERO: match[1].trim(), NOM: match[2].trim(), NOTE: grade }); 
+        if (!isNaN(grade) && grade >= 0 && grade <= 20) {
+          data.push({ 
+            NUMERO: match[1].trim(), 
+            NOM: match[2].trim(), 
+            NOTE: grade 
+          }); 
+        }
       }
     }
+    
+    // إذا لم يجد بيانات، جرب طريقة أخرى
+    if (data.length === 0) {
+      for (let line of lines) {
+        if (line.match(/numero|numéro|nom|prenom|note/i)) continue;
+        const parts = line.trim().split(/\s+/);
+        if (parts.length >= 3) {
+          const num = parts[0];
+          const grade = parseFloat(parts[parts.length - 1].replace(',', '.'));
+          if (/^\d+$/.test(num) && !isNaN(grade) && grade >= 0 && grade <= 20) {
+            const name = parts.slice(1, -1).join(' ');
+            data.push({ NUMERO: num, NOM: name, NOTE: grade });
+          }
+        }
+      }
+    }
+    
     return data;
   }
   
+  // قراءة ملف ODS
   async function readODSFile(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = e => {
-        const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
-        const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
-        const headers = json[0] || [];
-        let numCol = 0, nameCol = 1, gradeCol = 2;
-        headers.forEach((h, i) => { 
-          const hs = String(h).toLowerCase(); 
-          if (hs.includes('num')) numCol = i; 
-          if (hs.includes('nom')) nameCol = i; 
-          if (hs.includes('note')) gradeCol = i; 
-        });
-        const result = [];
-        for (let i = 1; i < json.length; i++) {
-          const row = json[i]; 
-          if (!row?.length) continue;
-          const grade = parseFloat(String(row[gradeCol]).replace(',', '.'));
-          if (row[numCol] && !isNaN(grade) && grade >= 0 && grade <= 20) 
-            result.push({ NUMERO: String(row[numCol]).trim(), NOM: String(row[nameCol] || '').trim(), NOTE: grade });
+        try {
+          const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+          const sheet = wb.Sheets[wb.SheetNames[0]];
+          const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+          
+          if (json.length === 0) { resolve([]); return; }
+          
+          const headers = json[0];
+          let numCol = -1, nameCol = -1, gradeCol = -1;
+          
+          headers.forEach((h, i) => {
+            if (!h) return;
+            const hs = String(h).toLowerCase();
+            if (hs.includes('num') || hs.includes('n°')) numCol = i;
+            if (hs.includes('nom') || hs.includes('prenom')) nameCol = i;
+            if (hs.includes('note') || hs.includes('/20')) gradeCol = i;
+          });
+          
+          // إذا لم يتم العثور على الأعمدة، استخدم الافتراضي
+          if (numCol === -1) numCol = 0;
+          if (nameCol === -1) nameCol = 1;
+          if (gradeCol === -1) gradeCol = 2;
+          
+          const result = [];
+          for (let i = 1; i < json.length; i++) {
+            const row = json[i];
+            if (!row || row.length === 0) continue;
+            
+            const num = row[numCol] ? String(row[numCol]).trim() : '';
+            const name = row[nameCol] ? String(row[nameCol]).trim() : '';
+            const gradeVal = row[gradeCol];
+            
+            if (!num || gradeVal === undefined || gradeVal === null) continue;
+            
+            const grade = parseFloat(String(gradeVal).replace(',', '.'));
+            if (!isNaN(grade) && grade >= 0 && grade <= 20) {
+              result.push({ NUMERO: num, NOM: name, NOTE: grade });
+            }
+          }
+          resolve(result);
+        } catch (err) {
+          reject(err);
         }
-        resolve(result);
       };
       reader.onerror = reject;
       reader.readAsArrayBuffer(file);
     });
   }
   
-  async function parseFile(file) {
-    const name = file.name.toLowerCase();
-    if (name.endsWith('.pdf')) return parseTextToData(await extractTextFromPDF(file));
-    if (name.endsWith('.docx')) return parseTextToData(await extractTextFromWord(file));
-    if (name.endsWith('.xlsx') || name.endsWith('.xls')) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = e => {
+  // قراءة ملف Excel
+  async function readExcelFile(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
           const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
-          const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-          const result = json.map(r => {
-            const keys = Object.keys(r);
-            const numKey = keys.find(k => k.toLowerCase().includes('num')) || keys[0];
-            const nameKey = keys.find(k => k.toLowerCase().includes('nom')) || keys[1];
-            const gradeKey = keys.find(k => k.toLowerCase().includes('note')) || keys[2];
-            return { 
-              NUMERO: String(r[numKey]).trim(), 
-              NOM: String(r[nameKey] || '').trim(), 
-              NOTE: parseFloat(String(r[gradeKey]).replace(',', '.')) 
-            };
-          }).filter(r => r.NUMERO && !isNaN(r.NOTE) && r.NOTE >= 0 && r.NOTE <= 20);
+          const sheet = wb.Sheets[wb.SheetNames[0]];
+          const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+          
+          if (json.length === 0) { resolve([]); return; }
+          
+          const headers = json[0];
+          let numCol = -1, nameCol = -1, gradeCol = -1;
+          
+          headers.forEach((h, i) => {
+            if (!h) return;
+            const hs = String(h).toLowerCase();
+            if (hs.includes('num') || hs.includes('n°') || hs.includes('id')) numCol = i;
+            if (hs.includes('nom') || hs.includes('prenom')) nameCol = i;
+            if (hs.includes('note') || hs.includes('/20') || hs.includes('grade')) gradeCol = i;
+          });
+          
+          if (numCol === -1) numCol = 0;
+          if (nameCol === -1) nameCol = 1;
+          if (gradeCol === -1) gradeCol = 2;
+          
+          const result = [];
+          for (let i = 1; i < json.length; i++) {
+            const row = json[i];
+            if (!row || row.length === 0) continue;
+            
+            const num = row[numCol] ? String(row[numCol]).trim() : '';
+            const name = row[nameCol] ? String(row[nameCol]).trim() : '';
+            const gradeVal = row[gradeCol];
+            
+            if (!num || gradeVal === undefined || gradeVal === null) continue;
+            
+            const grade = parseFloat(String(gradeVal).replace(',', '.'));
+            if (!isNaN(grade) && grade >= 0 && grade <= 20) {
+              result.push({ NUMERO: num, NOM: name, NOTE: grade });
+            }
+          }
           resolve(result);
-        };
-        reader.onerror = reject;
-        reader.readAsArrayBuffer(file);
-      });
+        } catch (err) {
+          reject(err);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(file);
+    });
+  }
+  
+  // الدالة الرئيسية لتحليل الملف
+  async function parseFile(file) {
+    const fileName = file.name.toLowerCase();
+    
+    if (fileName.endsWith('.pdf')) {
+      const text = await extractTextFromPDF(file);
+      return parseTextToData(text);
     }
-    if (name.endsWith('.ods')) return readODSFile(file);
+    
+    if (fileName.endsWith('.docx')) {
+      const text = await extractTextFromWord(file);
+      return parseTextToData(text);
+    }
+    
+    if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+      return await readExcelFile(file);
+    }
+    
+    if (fileName.endsWith('.ods')) {
+      return await readODSFile(file);
+    }
+    
     throw new Error('Format non supporte');
   }
 
+  // دالة الاستيراد الرئيسية
   window.processImport = async function() {
     const sem = document.getElementById('importSemester').value;
     const typeSelect = document.getElementById('importType');
@@ -796,60 +901,85 @@
     const subject = document.getElementById('importSubject').value;
     const file = document.getElementById('importFile').files[0];
     
-    if (!sem || !subject || !file) { alert('Tous les champs requis'); return; }
+    if (!sem || !subject || !file) { 
+      alert('Tous les champs sont requis'); 
+      return; 
+    }
     
-    const cleanSubj = cleanSubjectName(subject);
-    if (type === 'TP' && !hasTP(subject)) { alert('Cette matiere n\'a pas de TP'); return; }
+    if (type === 'TP' && !hasTP(subject)) { 
+      alert('Cette matiere n\'a pas de TP'); 
+      return; 
+    }
     
-    // Normaliser le type pour le stockage
-    let normalizedType = type;
-    if (type === 'Contrôle continu') normalizedType = 'Contrôle continu';
-    
-    showMessage('Importation en cours...', 'info');
+    showMessage('Analyse du fichier en cours...', 'info');
     
     try {
-      const snap = await get(child(ref(db), `results/PPV/${sem}`));
-      const existing = new Set();
-      if (snap.exists()) { 
-        const students = snap.val(); 
+      // تحليل الملف
+      const data = await parseFile(file);
+      
+      if (data.length === 0) {
+        showMessage('Aucune donnee valide trouvee dans le fichier', 'error');
+        return;
+      }
+      
+      // التحقق من البيانات الموجودة
+      const snapshot = await get(child(ref(db), `results/PPV/${sem}`));
+      const existingStudents = new Set();
+      
+      if (snapshot.exists()) { 
+        const students = snapshot.val(); 
         for (let id in students) {
-          // Vérifier les deux orthographes possibles
-          if (students[id][`${cleanSubj}_${normalizedType}`] || students[id][`${cleanSubj}_Controle continu`]) {
-            existing.add(id);
+          // البحث عن أي مفتاح يطابق المادة والنوع
+          for (let key in students[id]) {
+            const d = students[id][key];
+            if (d.subject === subject && (d.type === type || d.type === 'Controle continu' || d.type === 'Contrôle continu')) {
+              existingStudents.add(id);
+              break;
+            }
           }
         }
       }
       
-      const data = await parseFile(file);
+      const cleanSubj = cleanSubjectName(subject);
       const updates = {};
       let imported = 0, duplicates = 0, errors = 0;
       
       for (let row of data) {
         const id = row.NUMERO;
-        if (!id) { errors++; continue; }
-        if (existing.has(id)) { duplicates++; continue; }
+        const name = row.NOM;
+        const grade = row.NOTE;
         
-        updates[`results/PPV/${sem}/${id}/${cleanSubj}_${normalizedType}`] = { 
-          grade: row.NOTE, 
-          name: row.NOM, 
+        if (!id) { errors++; continue; }
+        if (existingStudents.has(id)) { duplicates++; continue; }
+        
+        // استخدام نفس المفتاح لكل الأنواع
+        const key = `${cleanSubj}_${type}`;
+        updates[`results/PPV/${sem}/${id}/${key}`] = { 
+          grade: grade, 
+          name: name, 
           subject: subject, 
-          type: normalizedType, 
+          type: type, 
           dateAdded: Date.now() 
         };
+        
         imported++; 
-        existing.add(id);
+        existingStudents.add(id);
       }
       
-      if (Object.keys(updates).length > 0) await update(ref(db), updates);
+      if (Object.keys(updates).length > 0) {
+        await update(ref(db), updates);
+      }
       
-      let msg = `${imported} etudiants ajoutes`;
-      if (duplicates) msg += `, ${duplicates} ignores`;
-      if (errors) msg += `, ${errors} erreurs`;
-      showMessage(msg, 'success');
+      let message = `${imported} etudiants ajoutes`;
+      if (duplicates > 0) message += `, ${duplicates} ignores (deja existants)`;
+      if (errors > 0) message += `, ${errors} erreurs`;
+      
+      showMessage(message, 'success');
       document.getElementById('importFile').value = '';
+      
     } catch (e) { 
-      console.error(e);
-      showMessage('Erreur importation: ' + e.message, 'error'); 
+      console.error('Erreur:', e);
+      showMessage('Erreur: ' + e.message, 'error'); 
     }
   };
 
@@ -889,7 +1019,7 @@
     const students = snap.val();
     const cleanSubj = cleanSubjectName(subject);
     const key = `${cleanSubj}_${type}`;
-    for (let id in students) if (students[id][key]) await remove(ref(db, `results/PPV/${sem}/${id}/${key}`));
+    for (let id in students) if (students[id][key]) await remove(ref(db), `results/PPV/${sem}/${id}/${key}`);
     showMessage('Matiere supprimee', 'success');
     loadSubjectsList();
   };
