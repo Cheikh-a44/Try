@@ -3,21 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Résultats PPV - Consultation des notes</title>
+<title>Resultats PPV - Consultation des notes</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   :root {
-    --primary: #0077b6;
-    --primary-dark: #005f87;
-    --primary-light: #caf0f8;
-    --secondary: #0096c7;
+    --primary: #2c5f2d;
+    --primary-dark: #1e4420;
+    --primary-light: #e8f5e9;
     --light: #f5f7fa;
     --white: #ffffff;
     --text: #333333;
     --text-light: #666666;
-    --shadow: 0 4px 12px rgba(0,0,0,0.1);
-    --radius: 10px;
-    --transition: all 0.3s ease;
+    --shadow: 0 2px 8px rgba(0,0,0,0.1);
+    --radius: 6px;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   html, body { height: 100%; }
@@ -26,81 +24,39 @@
     background:var(--light); 
     color:var(--text); 
     line-height:1.2;
-    overflow-x: hidden;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
   }
   
   header { 
-    background:linear-gradient(135deg,var(--primary),var(--secondary)); 
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark)); 
     color:var(--white); 
     padding:1.5rem 1rem; 
     text-align:center; 
-    box-shadow:var(--shadow); 
   }
-  header h1 { 
-    font-size:2rem; 
-    margin-bottom:0.3rem; 
-  }
-  header p { 
-    font-size:1rem; 
-    opacity:0.9; 
-    max-width:600px; 
-    margin:0 auto; 
-  }
+  header h1 { font-size:2rem; margin-bottom:0.3rem; font-weight:500; }
+  header p { font-size:1rem; opacity:0.9; }
   
-  .main-content {
-    flex: 1 0 auto;
-  }
+  .main-content { flex: 1 0 auto; }
+  .container { max-width:1000px; margin:0 auto; padding:0 1rem; }
   
-  .container { 
-    max-width:1000px; 
-    margin:0 auto; 
-    padding:0 1rem; 
-  }
-  
-  .annonce-container {
-    margin-bottom: 0.8rem;
-    padding: 0;
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
+  .annonce-container { margin-bottom: 0.8rem; }
   .annonce-bloc {
-    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-    border-left: 6px solid #ffc107;
+    background: #fff3cd;
+    border-left: 4px solid #d4a017;
     padding: 0.8rem 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.8rem;
     box-shadow: var(--shadow);
+    border-radius: var(--radius);
   }
-  .annonce-texte {
-    flex: 1;
-    font-size: 0.9rem;
-    color: #856404;
-  }
-  .annonce-icone {
-    font-size: 1.3rem;
-    margin-right: 0.5rem;
-    vertical-align: middle;
-  }
-  .annonce-date {
-    font-size: 0.7rem;
-    color: #856404;
-    margin-top: 0.2rem;
-  }
+  .annonce-texte { color: #856404; }
   
   .section-title { 
     padding:1rem 0 0.8rem; 
     font-size:1.3rem; 
     color:var(--primary); 
-    display:flex; 
-    align-items:center; 
-    gap:0.5rem; 
-    justify-content:center;
+    text-align:center;
+    font-weight:500;
   }
   
   .search-box { 
@@ -111,11 +67,10 @@
   .search-box input { 
     flex:1; 
     padding:0.8rem 1rem; 
-    border:2px solid var(--primary-light); 
+    border:1px solid #ddd; 
     border-radius:var(--radius) 0 0 var(--radius); 
     font-size:0.9rem; 
     outline:none; 
-    transition:var(--transition); 
   }
   .search-box input:focus { border-color:var(--primary); }
   .search-box button { 
@@ -125,9 +80,7 @@
     padding:0 1.2rem; 
     border-radius:0 var(--radius) var(--radius) 0; 
     cursor:pointer; 
-    transition:var(--transition); 
     font-size:1rem;
-    min-width:50px;
   }
   .search-box button:hover { background:var(--primary-dark); }
   
@@ -143,137 +96,82 @@
     text-align:center;
     margin-bottom:1rem;
     padding-bottom:0.8rem;
-    border-bottom:2px solid var(--primary-light);
+    border-bottom:1px solid #ddd;
   }
-  .student-header h3 { font-size:1.2rem; color:var(--text); }
+  .student-header h3 { font-size:1.2rem; font-weight:500; }
   .student-header p { color:var(--text-light); font-size:0.85rem; }
   
   .empty-state { text-align:center; padding:2rem 1rem; color:var(--text-light); }
-  .empty-state h3 { margin-bottom:0.5rem; }
-  
   .loading { text-align:center; padding:2rem; color:var(--text-light); }
-  .loading i { font-size:2rem; animation:spin 1s linear infinite; margin-bottom:0.8rem; }
-  @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
   
   .pdf-link {
     display: inline-block;
     padding: 0.6rem 1.2rem;
-    background: #28a745;
+    background: var(--primary);
     color: white;
     text-decoration: none;
     border-radius: var(--radius);
-    font-weight: bold;
-    transition: var(--transition);
+    font-weight:500;
     margin-top: 0.8rem;
   }
-  .pdf-link:hover { background: #218838; transform: translateY(-2px); }
+  .pdf-link:hover { background: var(--primary-dark); }
   
   .neutral-message {
     text-align: center;
-    margin-top: 0.8rem;
     padding: 0.6rem;
     background: #e9ecef;
     color: #6c757d;
     border-radius: var(--radius);
-    font-weight: normal;
   }
   
   .simple-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 0.8rem 0;
-    font-size: 13px;
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
   }
   .simple-table th, .simple-table td {
-    border: 1px solid #ddd;
-    padding: 5px;
-    text-align: center;
+    border:1px solid #ddd;
+    padding:5px;
+    text-align:center;
   }
-  .simple-table th { background: var(--primary-light); font-weight: bold; }
-  .simple-table td:first-child { text-align: left; }
+  .simple-table th { background:#f0f0f0; font-weight:500; }
   
   .releve-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 0.5rem 0;
-    font-size: 12px;
+    width:100%;
+    border-collapse:collapse;
+    font-size:12px;
   }
   .releve-table th {
-    border: 1px solid #aaa;
-    padding: 3px 4px;
-    text-align: center;
-    background: var(--primary-light);
-    font-weight: bold;
+    border:1px solid #aaa;
+    padding:3px 4px;
+    background:#f0f0f0;
+    font-weight:500;
   }
-  .releve-table td { padding: 2px 4px; text-align: center; }
-  
-  .releve-table tbody tr:not(.module-row):not(.student-info-row):not(.moyenne-row) td { border: 1px solid #aaa; }
-  
-  .releve-table .student-info-row { background: #f0f8ff; font-weight: bold; }
-  .releve-table .student-info-row td {
-    border-top: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
-    border-left: none;
-    border-right: none;
-    padding: 2px 4px;
-  }
-  .releve-table .student-info-row td:first-child { border-left: 1px solid #aaa; }
-  .releve-table .student-info-row td:last-child { border-right: 1px solid #aaa; }
-  
-  .releve-table .module-row { background: #d0e8f7; font-weight: bold; }
-  .releve-table .module-row td {
-    border-top: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
-    border-left: none;
-    border-right: none;
-    padding: 2px 4px;
-  }
-  .releve-table .module-row td:first-child { border-left: 1px solid #aaa; }
-  .releve-table .module-row td:last-child { border-right: 1px solid #aaa; }
-  
-  .releve-table .subject-row td:first-child { text-align: left; padding-left: 20px; }
-  .releve-table .subject-row td { padding: 1px 4px; }
-  
-  .status-C, .status-V { color: #27ae60; font-weight: bold; }
-  .status-NC, .status-NV { color: #e74c3c; font-weight: bold; }
-  
-  .moyenne-row td { border: none !important; padding: 6px 4px 2px 4px; background: transparent; }
-  
+  .releve-table td { border:1px solid #aaa; padding:2px 4px; }
+  .releve-table .module-row { background:#f8f9fa; font-weight:500; }
+  .releve-table .student-info-row { background:#f0f8ff; }
+  .status-C, .status-V { color:#27ae60; }
+  .status-NC, .status-NV { color:#e74c3c; }
+  .moyenne-row td { border:none !important; padding:6px 4px 2px; }
   .section-subtitle {
-    font-size: 1rem;
-    color: var(--primary);
-    margin: 0.8rem 0 0.3rem 0;
-    padding-bottom: 0.2rem;
-    border-bottom: 2px solid var(--primary-light);
+    font-size:1rem;
+    color:var(--primary);
+    margin:0.8rem 0 0.3rem;
+    border-bottom:1px solid #ddd;
   }
   
   .footer {
-    flex-shrink: 0;
-    text-align:center; 
-    padding:1.5rem; 
-    color:var(--text-light); 
-    font-size:0.85rem;
-    background:var(--light);
+    text-align:center;
+    padding:1.5rem;
+    color:var(--text-light);
+    font-size:0.8rem;
     border-top:1px solid #ddd;
-    margin-top:2rem;
   }
-  
-  .footer a {
-    color: var(--primary);
-    text-decoration: none;
-    margin: 0 0.5rem;
-  }
-  
-  .footer a:hover {
-    text-decoration: underline;
-  }
+  .footer a { color:var(--primary); text-decoration:none; margin:0 0.5rem; }
   
   @media (max-width:600px) {
     header h1 { font-size:1.6rem; }
-    .releve-table { font-size: 10px; }
-    .releve-table th, .releve-table td { padding: 1px 3px; }
-    .simple-table { font-size: 11px; }
-    .search-box button { padding:0 1rem; }
+    .releve-table { font-size:10px; }
   }
 </style>
 </head>
@@ -281,8 +179,8 @@
 
 <header>
   <div class="container">
-    <h1>Résultats PPV</h1>
-    <p>Département de Production et Protection Végétales</p>
+    <h1>Resultats PPV</h1>
+    <p>Departement de Production et Protection Vegetales</p>
   </div>
 </header>
 
@@ -291,28 +189,25 @@
     <div id="annonceContainer" class="annonce-container"></div>
     
     <div class="result-card">
-      <h2 class="section-title"><i class="fas fa-search"></i> Consulter votre résultat</h2>
+      <h2 class="section-title">Consulter votre resultat</h2>
       
       <div class="search-box">
-        <input type="text" id="studentIdInput" placeholder="Entrez votre numéro d'étudiant...">
-        <button onclick="searchStudentResult()" title="Rechercher"><i class="fas fa-search"></i></button>
+        <input type="text" id="studentIdInput" placeholder="Entrez votre numero d'etudiant...">
+        <button onclick="searchStudentResult()">Rechercher</button>
       </div>
       
       <div id="studentResultContainer" style="display:none;"></div>
       <div id="noResultMessage" style="display:none;" class="empty-state">
-        <h3>Aucun résultat trouvé</h3>
-        <p>Vérifiez votre numéro d'étudiant</p>
+        <h3>Aucun resultat trouve</h3>
+        <p>Verifiez votre numero d'etudiant</p>
       </div>
     </div>
   </div>
 </div>
 
 <footer class="footer">
-  <p>© 2026 Département de Production et Protection Végétales</p>
-  <p style="margin-top:0.3rem; font-size:0.75rem;">
-    Développé par Cheikh_A | 
-    <a href="Reco.html"><i class="fas fa-lock"></i> Accès Coordinateur</a>
-  </p>
+  <p>© 2026 Departement de Production et Protection Vegetales | <a href="Reco.html">Acces Coordinateur</a></p>
+  <p style="margin-top:0.3rem; font-size:0.7rem;">Developpe par Cheikh_A</p>
 </footer>
 
 <script type="module">
@@ -337,144 +232,85 @@
       const snapshot = await get(child(ref(db), 'annonces/active'));
       if (snapshot.exists()) {
         const annonce = snapshot.val();
-        if (annonce.expiration && Date.now() < annonce.expiration) {
-          return annonce;
-        } else {
-          return null;
-        }
+        if (annonce.expiration && Date.now() < annonce.expiration) return annonce;
       }
       return null;
-    } catch (error) {
-      console.error('Erreur de chargement de l\'annonce:', error);
-      return null;
-    }
+    } catch (e) { return null; }
   }
 
   async function afficherAnnonce() {
     const annonce = await loadAnnonceFromFirebase();
     const container = document.getElementById('annonceContainer');
-    if (!container) return;
-    
-    if (!annonce || !annonce.texte) { 
-      container.innerHTML = ''; 
-      return; 
-    }
-    
-    const dateExpiration = new Date(annonce.expiration);
-    const dateFormatted = dateExpiration.toLocaleString('fr-FR');
-    
-    container.innerHTML = `
-      <div class="annonce-bloc">
-        <div style="flex:1">
-          <span class="annonce-icone"><i class="fas fa-bullhorn"></i></span>
-          <span class="annonce-texte"><strong>Annonce :</strong> ${annonce.texte.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
-          <div class="annonce-date">Visible jusqu'au ${dateFormatted}</div>
-        </div>
-      </div>
-    `;
+    if (!annonce || !annonce.texte) { container.innerHTML = ''; return; }
+    const dateExpiration = new Date(annonce.expiration).toLocaleString('fr-FR');
+    container.innerHTML = `<div class="annonce-bloc"><strong>Annonce :</strong> ${annonce.texte.replace(/</g, '&lt;')}<br><small>Visible jusqu'au ${dateExpiration}</small></div>`;
   }
 
   const SUBJECTS_BY_DEPT = {
     PPV: {
-      S3: ["Français_s3", "Economie", "I_Agronomie", "I_Horticulture", "Pesticides_agricoles", "Entomologie_et_Nemato", "Science_des_sols", "Science_des_plantes"],
+      S3: ["Francais_s3", "Economie", "I_Agronomie", "I_Horticulture", "Pesticides_agricoles", "Entomologie_et_Nemato", "Science_des_sols", "Science_des_plantes"],
       S4: ["Vulgarisation", "Technique_de_propagation", "Technique_d_irrigation_et_BEC", "Ecophysiologie_et_Biochimie", "Fertilite_du_sol", "Methodes_de_diagnostic", "Malherbologie"],
       S5: [], S6: []
     }
   };
 
-  const SUBJECTS_WITHOUT_TP = [
-    "Anglais", "Anglais_2", "Français", "Français_2", "Français_s3",
-    "Math_et_Statistique", "Economie", "Vulgarisation"
-  ];
-
-  function hasTP(subjectName) { return !SUBJECTS_WITHOUT_TP.includes(subjectName); }
-  function displaySubjectName(subject) { return subject.replace(/_/g, ' ').replace(/I_/g, 'I.').replace(/et_/g, 'et '); }
-
+  const SUBJECTS_WITHOUT_TP = ["Anglais", "Anglais_2", "Francais", "Francais_2", "Francais_s3", "Math_et_Statistique", "Economie", "Vulgarisation"];
   const MODULES_STRUCTURE = {
     PPV: {
-      S3: { M31: { name: "Module 31", credit: 6.0, subjects: ["Français_s3", "Economie"] }, M32: { name: "Module 32", credit: 8.0, subjects: ["I_Agronomie", "I_Horticulture"] }, M33: { name: "Module 33", credit: 8.0, subjects: ["Pesticides_agricoles", "Entomologie_et_Nemato"] }, M34: { name: "Module 34", credit: 8.0, subjects: ["Science_des_sols", "Science_des_plantes"] } },
-      S4: { M41: { name: "Module 41", credit: 3.0, subjects: ["Vulgarisation"] }, M42: { name: "Module 42", credit: 7.0, subjects: ["Technique_de_propagation", "Technique_d_irrigation_et_BEC"] }, M43: { name: "Module 43", credit: 7.0, subjects: ["Ecophysiologie_et_Biochimie", "Fertilite_du_sol"] }, M44: { name: "Module 44", credit: 6.0, subjects: ["Methodes_de_diagnostic", "Malherbologie"] } }
+      S3: { M31: { name: "Langue et economie", credit: 6.0, subjects: ["Francais_s3", "Economie"] }, M32: { name: "Principes d'agronomie", credit: 8.0, subjects: ["I_Agronomie", "I_Horticulture"] }, M33: { name: "Phytoprotection 1", credit: 8.0, subjects: ["Pesticides_agricoles", "Entomologie_et_Nemato"] }, M34: { name: "Sciences du sol et des plantes", credit: 8.0, subjects: ["Science_des_sols", "Science_des_plantes"] } },
+      S4: { M41: { name: "Vulgarisation", credit: 3.0, subjects: ["Vulgarisation"] }, M42: { name: "Techniques culturales", credit: 7.0, subjects: ["Technique_de_propagation", "Technique_d_irrigation_et_BEC"] }, M43: { name: "Physiologie et fertilite", credit: 7.0, subjects: ["Ecophysiologie_et_Biochimie", "Fertilite_du_sol"] }, M44: { name: "Protection des vegetaux", credit: 6.0, subjects: ["Methodes_de_diagnostic", "Malherbologie"] } }
+    }
+  };
+  const SUBJECT_CREDITS = {
+    PPV: {
+      S3: { "Francais_s3": 3.0, "Economie": 3.0, "I_Agronomie": 4.0, "I_Horticulture": 4.0, "Pesticides_agricoles": 4.0, "Entomologie_et_Nemato": 4.0, "Science_des_sols": 4.0, "Science_des_plantes": 4.0 },
+      S4: { "Vulgarisation": 3.0, "Technique_de_propagation": 4.0, "Technique_d_irrigation_et_BEC": 3.0, "Ecophysiologie_et_Biochimie": 4.0, "Fertilite_du_sol": 3.0, "Methodes_de_diagnostic": 3.0, "Malherbologie": 3.0 }
     }
   };
 
-  const SUBJECT_CREDITS = {
-    PPV: { S3: { "Français_s3": 3.0, "Economie": 3.0, "I_Agronomie": 4.0, "I_Horticulture": 4.0, "Pesticides_agricoles": 4.0, "Entomologie_et_Nemato": 4.0, "Science_des_sols": 4.0, "Science_des_plantes": 4.0 }, S4: { "Vulgarisation": 3.0, "Technique_de_propagation": 4.0, "Technique_d_irrigation_et_BEC": 3.0, "Ecophysiologie_et_Biochimie": 4.0, "Fertilite_du_sol": 3.0, "Methodes_de_diagnostic": 3.0, "Malherbologie": 3.0 } }
-  };
+  function hasTP(s) { return !SUBJECTS_WITHOUT_TP.includes(s); }
+  function displaySubjectName(s) { return s.replace(/_/g, ' ').replace(/I_/g, 'I.').replace(/et_/g, 'et '); }
 
   function calculateResultsFromNotes(notesBySubject, dept, semester) {
-    const modulesStructure = MODULES_STRUCTURE[dept]?.[semester];
-    if (!modulesStructure) return null;
+    const modules = MODULES_STRUCTURE[dept]?.[semester];
+    if (!modules) return null;
     
-    const requiredSubjects = [];
-    for (let moduleCode in modulesStructure) {
-      for (let subject of modulesStructure[moduleCode].subjects) {
-        if (!requiredSubjects.includes(subject)) requiredSubjects.push(subject);
+    const required = [];
+    for (let m in modules) for (let s of modules[m].subjects) if (!required.includes(s)) required.push(s);
+    
+    const subjAvg = {}, subjStatus = {}, subjSR = {};
+    for (let s of required) {
+      const notes = notesBySubject[s] || {};
+      const exam = notes['Examen'] || 0, cc = notes['Controle continu'] || notes['Contrôle continu'] || 0, tp = notes['TP'] || 0;
+      const ratt = notes['Rattrapage'];
+      const useSR = ratt !== undefined && ratt > exam;
+      subjSR[s] = useSR;
+      const final = useSR ? ratt : exam;
+      subjAvg[s] = hasTP(s) ? (tp + cc * 2 + final * 3) / 6 : (cc * 2 + final * 3) / 5;
+      subjStatus[s] = subjAvg[s] >= 10 ? 'C' : 'NC';
+    }
+    
+    const modAvg = {}, modStatus = {}, modCredits = {};
+    for (let m in modules) {
+      let w = 0, c = 0, earned = 0;
+      for (let s of modules[m].subjects) {
+        const cr = SUBJECT_CREDITS[dept][semester][s] || 3;
+        w += (subjAvg[s] || 0) * cr; c += cr;
+        if (subjStatus[s] === 'C') earned += cr;
       }
+      modAvg[m] = c > 0 ? w / c : 0;
+      modStatus[m] = modules[m].subjects.every(s => subjStatus[s] === 'C') && modAvg[m] >= 10 ? 'V' : 'NV';
+      modCredits[m] = earned;
     }
     
-    const subjectAverages = {}, subjectStatus = {}, subjectHasSR = {};
+    let totalW = 0, totalC = 0;
+    for (let s of required) { const cr = SUBJECT_CREDITS[dept][semester][s] || 3; totalW += (subjAvg[s] || 0) * cr; totalC += cr; }
+    const genMoy = totalC > 0 ? totalW / totalC : 0;
+    const hasNV = Object.values(modStatus).some(s => s === 'NV');
+    const semStatus = hasNV ? 'Non Valide' : (genMoy >= 10 ? 'Valide' : 'Non Valide');
+    const hasSR = Object.values(subjSR).some(v => v);
     
-    for (let subject of requiredSubjects) {
-      const notes = notesBySubject[subject] || {};
-      const hasTPforSubject = hasTP(subject);
-      const exam = notes['Examen'] || 0, cc = notes['Contrôle continu'] || 0, tp = notes['TP'] || 0;
-      const rattrapage = notes['Rattrapage'];
-      const useSR = (rattrapage !== undefined && rattrapage > exam);
-      subjectHasSR[subject] = useSR;
-      const finalExam = useSR ? rattrapage : exam;
-      let moyenne = hasTPforSubject ? (tp * 1 + cc * 2 + finalExam * 3) / 6 : (cc * 2 + finalExam * 3) / 5;
-      subjectAverages[subject] = moyenne;
-      subjectStatus[subject] = moyenne >= 10 ? 'C' : 'NC';
-    }
-    
-    const moduleAverages = {}, moduleStatus = {}, moduleEarnedCredits = {};
-    
-    for (let moduleCode in modulesStructure) {
-      const module = modulesStructure[moduleCode];
-      let totalWeighted = 0, totalCredits = 0, earnedModuleCredits = 0;
-      for (let subject of module.subjects) {
-        const credit = SUBJECT_CREDITS[dept]?.[semester]?.[subject] || 3.0;
-        totalWeighted += (subjectAverages[subject] || 0) * credit;
-        totalCredits += credit;
-        if (subjectStatus[subject] === 'C') earnedModuleCredits += credit;
-      }
-      const moduleMoyenne = totalCredits > 0 ? totalWeighted / totalCredits : 0;
-      moduleAverages[moduleCode] = moduleMoyenne;
-      let allC = true;
-      for (let subject of module.subjects) if (subjectStatus[subject] !== 'C') allC = false;
-      moduleStatus[moduleCode] = allC && moduleMoyenne >= 10 ? 'V' : 'NV';
-      moduleEarnedCredits[moduleCode] = earnedModuleCredits;
-    }
-    
-    let totalWeightedGeneral = 0, totalCreditsGeneral = 0;
-    for (let subject of requiredSubjects) {
-      const credit = SUBJECT_CREDITS[dept]?.[semester]?.[subject] || 3.0;
-      totalWeightedGeneral += (subjectAverages[subject] || 0) * credit;
-      totalCreditsGeneral += credit;
-    }
-    const generaleMoyenne = totalCreditsGeneral > 0 ? totalWeightedGeneral / totalCreditsGeneral : 0;
-    
-    let hasAnyNV = false;
-    for (let moduleCode in moduleStatus) if (moduleStatus[moduleCode] === 'NV') { hasAnyNV = true; break; }
-    const semestreStatus = hasAnyNV ? 'Non Validé' : (generaleMoyenne >= 10 ? 'Validé' : 'Non Validé');
-    
-    let hasAnySR = false;
-    for (let subject of requiredSubjects) if (subjectHasSR[subject]) { hasAnySR = true; break; }
-    
-    const modules = {};
-    for (let moduleCode in modulesStructure) {
-      const module = modulesStructure[moduleCode];
-      modules[moduleCode] = {
-        name: module.name, moyenne: moduleAverages[moduleCode], status: moduleStatus[moduleCode],
-        credit: module.credit, earnedCredits: moduleEarnedCredits[moduleCode],
-        subjects: module.subjects.map(s => ({
-          name: s, credit: SUBJECT_CREDITS[dept]?.[semester]?.[s] || 3.0,
-          moyenne: subjectAverages[s], status: subjectStatus[s], hasTP: hasTP(s), useSR: subjectHasSR[s]
-        }))
-      };
-    }
-    
-    return { moyenneGenerale: generaleMoyenne, semestreStatus, modules, hasAnySR, calculated: true };
+    return { genMoy, semStatus, modStatus, modCredits, modAvg, subjAvg, subjStatus, hasSR, modules };
   }
 
   window.searchStudentResult = async () => {
@@ -482,33 +318,21 @@
     const container = document.getElementById('studentResultContainer');
     const noResult = document.getElementById('noResultMessage');
     
-    if (!studentId) { alert('Veuillez entrer votre numéro d\'étudiant'); return; }
+    if (!studentId) { alert('Veuillez entrer votre numero d\'etudiant'); return; }
     
-    container.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i><p>Chargement...</p></div>';
+    container.innerHTML = '<div class="loading">Chargement...</div>';
     container.style.display = 'block'; noResult.style.display = 'none';
     
     const semesters = ['S3', 'S4', 'S5', 'S6'];
-    
-    // بحث متوازي في جميع السداسيات دفعة واحدة
     const promises = semesters.map(sem => get(child(ref(db), `results/PPV/${sem}/${studentId}`)));
     const snapshots = await Promise.all(promises);
     
-    let foundData = null;
-    let foundSem = null;
-    
+    let foundData = null, foundSem = null;
     for (let i = 0; i < semesters.length; i++) {
-      if (snapshots[i].exists()) {
-        foundData = snapshots[i].val();
-        foundSem = semesters[i];
-        break;
-      }
+      if (snapshots[i].exists()) { foundData = snapshots[i].val(); foundSem = semesters[i]; break; }
     }
     
-    if (!foundData) { 
-      container.style.display = 'none'; 
-      noResult.style.display = 'block'; 
-      return; 
-    }
+    if (!foundData) { container.style.display = 'none'; noResult.style.display = 'block'; return; }
     
     const studentData = foundData;
     const department = 'PPV';
@@ -525,80 +349,73 @@
     }
     
     const requiredSubjects = SUBJECTS_BY_DEPT[department]?.[semester] || [];
-    let allNotesComplete = true;
+    let allNotesComplete = requiredSubjects.length > 0;
     for (let subject of requiredSubjects) {
       const hasTPforSubject = hasTP(subject);
       const examExists = notesBySubject[subject] && notesBySubject[subject]['Examen'] !== undefined;
-      const ccExists = notesBySubject[subject] && notesBySubject[subject]['Contrôle continu'] !== undefined;
+      const ccExists = notesBySubject[subject] && (notesBySubject[subject]['Controle continu'] !== undefined || notesBySubject[subject]['Contrôle continu'] !== undefined);
       const tpExists = !hasTPforSubject || (notesBySubject[subject] && notesBySubject[subject]['TP'] !== undefined);
       if (!examExists || !ccExists || !tpExists) { allNotesComplete = false; break; }
     }
     
-    let html = `<div class="student-header"><h3>${studentName || 'Étudiant'}</h3><p>N° ${studentId} | ${department} | ${semester}</p></div>`;
+    let html = `<div class="student-header"><h3>${studentName || 'Etudiant'}</h3><p>N° ${studentId} | PPV | ${semester}</p></div>`;
     
     if (allNotesComplete) {
       const results = calculateResultsFromNotes(notesBySubject, department, semester);
-      const showSRColumn = results.hasAnySR;
+      const showSRColumn = results.hasSR;
       
-      html += '<div style="overflow-x:auto;"><table class="releve-table"><thead><tr><th>Numéro</th><th>Nom et Prénom</th><th>TP</th><th>CC</th><th>Examen</th>' + (showSRColumn ? '<th>SR</th>' : '') + '<th>NFe</th><th>Crédit</th><th>Obs</th></tr></thead><tbody>';
+      html += '<div style="overflow-x:auto;"><table class="releve-table"><thead><tr><th>Numero</th><th>Nom et Prenom</th><th>TP</th><th>CC</th><th>Examen</th>' + (showSRColumn ? '<th>SR</th>' : '') + '<th>NFe</th><th>Credit</th><th>Obs</th></tr></thead><tbody>';
       html += `<tr class="student-info-row"><td>${studentId}</td><td style="text-align:left; padding-left:15px;">${studentName}</td><td></td><td></td><td></td>${showSRColumn ? '<td></td>' : ''}<td></td><td></td><td></td></tr>`;
       
       for (let moduleCode in results.modules) {
         const module = results.modules[moduleCode];
-        html += `<tr class="module-row"><td>${moduleCode}</td><td style="text-align:left; padding-left:15px;">${module.name}</td><td></td><td></td><td></td>${showSRColumn ? '<td></td>' : ''}<td style="font-weight:bold;">${module.moyenne.toFixed(2)}</td><td>${module.earnedCredits.toFixed(1)}</td><td class="${module.status === 'V' ? 'status-V' : 'status-NV'}">${module.status}</td></tr>`;
+        html += `<tr class="module-row"><td>${moduleCode}</td><td style="text-align:left; padding-left:15px;">${module.name}</td><td></td><td></td><td></td>${showSRColumn ? '<td></td>' : ''}<td style="font-weight:bold;">${results.modAvg[moduleCode].toFixed(2)}</td><td>${module.credit}</td><td class="${results.modStatus[moduleCode] === 'V' ? 'status-V' : 'status-NV'}">${results.modStatus[moduleCode]}</td></tr>`;
         for (let subject of module.subjects) {
-          const notes = notesBySubject[subject.name] || {};
-          const tpDisplay = subject.hasTP ? (notes['TP'] !== undefined ? notes['TP'].toFixed(2) : '') : '';
-          const ccDisplay = notes['Contrôle continu'] !== undefined ? notes['Contrôle continu'].toFixed(2) : '';
-          const examDisplay = notes['Examen'] !== undefined ? notes['Examen'].toFixed(2) : '';
-          const rattrapage = notes['Rattrapage'];
-          const srDisplay = (rattrapage !== undefined && rattrapage > (notes['Examen'] || 0)) ? rattrapage.toFixed(2) : '';
-          const creditEarned = subject.status === 'C' ? subject.credit : 0;
+          const notes = notesBySubject[subject] || {};
+          const tpDisplay = hasTP(subject) ? (notes['TP']?.toFixed(2) || '') : '';
+          const ccDisplay = notes['Controle continu']?.toFixed(2) || notes['Contrôle continu']?.toFixed(2) || '';
+          const examDisplay = notes['Examen']?.toFixed(2) || '';
+          const ratt = notes['Rattrapage'];
+          const srDisplay = (ratt !== undefined && ratt > (notes['Examen'] || 0)) ? ratt.toFixed(2) : '';
+          const credit = SUBJECT_CREDITS.PPV[semester][subject] || 3;
           
-          html += `<tr class="subject-row"><td></td><td style="text-align:left; padding-left:30px;">${displaySubjectName(subject.name)}</td><td>${tpDisplay}</td><td>${ccDisplay}</td><td>${examDisplay}</td>${showSRColumn ? `<td>${srDisplay}</td>` : ''}<td style="font-weight:bold;">${subject.moyenne.toFixed(2)}</td><td>${creditEarned.toFixed(1)}</td><td class="${subject.status === 'C' ? 'status-C' : 'status-NC'}">${subject.status}</td></tr>`;
+          html += `<tr class="subject-row"><td></td><td style="text-align:left; padding-left:30px;">${displaySubjectName(subject)}</td><td>${tpDisplay}</td><td>${ccDisplay}</td><td>${examDisplay}</td>${showSRColumn ? `<td>${srDisplay}</td>` : ''}<td style="font-weight:bold;">${results.subjAvg[subject].toFixed(2)}</td><td>${credit.toFixed(1)}</td><td class="${results.subjStatus[subject] === 'C' ? 'status-C' : 'status-NC'}">${results.subjStatus[subject]}</td></tr>`;
         }
       }
       
       const colspanValue = showSRColumn ? 6 : 5;
-      html += `<tr class="moyenne-row"><td colspan="${colspanValue}" style="text-align:right; font-weight:bold;">Moyenne Semestre :</td><td style="font-weight:bold;">${results.moyenneGenerale.toFixed(2)}</td><td></td><td class="${results.semestreStatus === 'Validé' ? 'status-V' : 'status-NV'}" style="font-weight:bold;">${results.semestreStatus}</td></tr>`;
+      html += `<tr class="moyenne-row"><td colspan="${colspanValue}" style="text-align:right; font-weight:bold;">Moyenne Semestre :</td><td style="font-weight:bold;">${results.genMoy.toFixed(2)}</td><td></td><td class="${results.semStatus === 'Valide' ? 'status-V' : 'status-NV'}" style="font-weight:bold;">${results.semStatus}</td></tr>`;
       html += '</tbody></table></div>';
-      html += `<div style="text-align:center;"><a href="result.html?dept=${department}&sem=${semester}&id=${studentId}&name=${encodeURIComponent(studentName)}" class="pdf-link" target="_blank"><i class="fas fa-file-pdf"></i> Télécharger mon relevé PDF</a></div>`;
+      html += `<div style="text-align:center;"><a href="result.html?dept=${department}&sem=${semester}&id=${studentId}&name=${encodeURIComponent(studentName)}" class="pdf-link" target="_blank">Telecharger mon releve PDF</a></div>`;
     } else {
-      let hasAnyTP = false, hasAnyCC = false, hasAnyExam = false, hasAnyRattrapage = false;
+      let hasAnyTP = false, hasAnyCC = false, hasAnyExam = false;
       for (let subject of requiredSubjects) {
         if (notesBySubject[subject]?.['TP'] !== undefined) hasAnyTP = true;
-        if (notesBySubject[subject]?.['Contrôle continu'] !== undefined) hasAnyCC = true;
+        if (notesBySubject[subject]?.['Controle continu'] !== undefined || notesBySubject[subject]?.['Contrôle continu'] !== undefined) hasAnyCC = true;
         if (notesBySubject[subject]?.['Examen'] !== undefined) hasAnyExam = true;
-        if (notesBySubject[subject]?.['Rattrapage'] !== undefined) hasAnyRattrapage = true;
       }
       
       if (hasAnyTP) {
-        html += `<h4 class="section-subtitle">Résultats TP</h4><table class="simple-table"><thead><tr><th>Matière</th><th>Note TP</th></tr></thead><tbody>`;
-        for (let subject of requiredSubjects) { if (!hasTP(subject)) continue; const note = notesBySubject[subject]?.['TP']; html += `<tr><td>${displaySubjectName(subject)}</td><td style="text-align:center;">${note !== undefined ? note.toFixed(2) : ''}</td></tr>`; }
+        html += `<h4 class="section-subtitle">Resultats TP</h4><table class="simple-table"><thead><tr><th>Matiere</th><th>Note TP</th></tr></thead><tbody>`;
+        for (let subject of requiredSubjects) { if (!hasTP(subject)) continue; const note = notesBySubject[subject]?.['TP']; html += `<tr><td>${displaySubjectName(subject)}</td><td>${note !== undefined ? note.toFixed(2) : ''}</td></tr>`; }
         html += `</tbody></table>`;
       }
       if (hasAnyCC) {
-        html += `<h4 class="section-subtitle">Résultats Contrôle continu</h4><table class="simple-table"><thead><tr><th>Matière</th><th>Note CC</th></tr></thead><tbody>`;
-        for (let subject of requiredSubjects) { const note = notesBySubject[subject]?.['Contrôle continu']; html += `<tr><td>${displaySubjectName(subject)}</td><td style="text-align:center;">${note !== undefined ? note.toFixed(2) : ''}</td></tr>`; }
+        html += `<h4 class="section-subtitle">Resultats Controle continu</h4><table class="simple-table"><thead><tr><th>Matiere</th><th>Note CC</th></tr></thead><tbody>`;
+        for (let subject of requiredSubjects) { const note = notesBySubject[subject]?.['Controle continu'] || notesBySubject[subject]?.['Contrôle continu']; html += `<tr><td>${displaySubjectName(subject)}</td><td>${note !== undefined ? note.toFixed(2) : ''}</td></tr>`; }
         html += `</tbody></table>`;
       }
       if (hasAnyExam) {
-        html += `<h4 class="section-subtitle">Résultats Examen</h4><table class="simple-table"><thead><tr><th>Matière</th><th>Note Examen</th></tr></thead><tbody>`;
-        for (let subject of requiredSubjects) { const note = notesBySubject[subject]?.['Examen']; html += `<tr><td>${displaySubjectName(subject)}</td><td style="text-align:center;">${note !== undefined ? note.toFixed(2) : ''}</td></tr>`; }
+        html += `<h4 class="section-subtitle">Resultats Examen</h4><table class="simple-table"><thead><tr><th>Matiere</th><th>Note Examen</th></tr></thead><tbody>`;
+        for (let subject of requiredSubjects) { const note = notesBySubject[subject]?.['Examen']; html += `<tr><td>${displaySubjectName(subject)}</td><td>${note !== undefined ? note.toFixed(2) : ''}</td></tr>`; }
         html += `</tbody></table>`;
       }
-      if (hasAnyRattrapage) {
-        html += `<h4 class="section-subtitle">Résultats Rattrapage</h4><table class="simple-table"><thead><tr><th>Matière</th><th>Note Rattrapage</th></tr></thead><tbody>`;
-        for (let subject of requiredSubjects) { const note = notesBySubject[subject]?.['Rattrapage']; if (note !== undefined) html += `<tr><td>${displaySubjectName(subject)}</td><td style="text-align:center;">${note.toFixed(2)}</td></tr>`; }
-        html += `</tbody></table>`;
-      }
-      html += `<div class="neutral-message"><i class="fas fa-info-circle"></i> Les résultats ne sont pas encore finalisés par le coordinateur.</div>`;
+      html += `<div class="neutral-message">Les resultats ne sont pas encore finalises par le coordinateur.</div>`;
     }
     container.innerHTML = html;
   };
 
   document.getElementById('studentIdInput').addEventListener('keyup', e => { if (e.key === 'Enter') searchStudentResult(); });
-  
   afficherAnnonce();
 </script>
 </body>
