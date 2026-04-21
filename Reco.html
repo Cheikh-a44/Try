@@ -20,7 +20,6 @@
     --text-light: #666666;
     --shadow: 0 2px 8px rgba(0,0,0,0.1);
     --radius: 6px;
-    --transition: all 0.2s ease;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body { 
@@ -44,7 +43,6 @@
   
   .container { max-width:900px; margin:0 auto; padding:1rem; flex:1; }
   
-  /* أزرار ممتلئة بألوان هادئة */
   .admin-btn {
     padding:0.7rem 1.2rem;
     border:none;
@@ -52,7 +50,6 @@
     font-size:0.9rem;
     font-weight:500;
     cursor:pointer;
-    transition:var(--transition);
     margin:0.2rem;
     color:white;
     display:inline-flex;
@@ -60,7 +57,6 @@
     justify-content:center;
     gap:0.5rem;
   }
-  .admin-btn i { font-size:1rem; }
   .admin-btn.primary { background:#2c5f2d; }
   .admin-btn.primary:hover { background:#1e4420; }
   .admin-btn.success { background:#4a7c59; }
@@ -109,10 +105,6 @@
     border-radius:var(--radius);
     font-size:0.9rem;
     background:white;
-  }
-  .form-group select:focus, .form-group input:focus, .form-group textarea:focus {
-    border-color:var(--primary);
-    outline:none;
   }
   
   .message {
@@ -165,8 +157,6 @@
     border-radius:var(--radius);
     max-width:500px;
     width:90%;
-    max-height:80vh;
-    overflow-y:auto;
   }
   
   .footer {
@@ -179,11 +169,6 @@
   }
   
   .footer a { color:var(--primary); text-decoration:none; }
-  
-  @media (max-width:768px) {
-    header h1 { font-size:1.5rem; }
-    .admin-btn { padding:0.5rem 1rem; font-size:0.85rem; }
-  }
 </style>
 </head>
 <body>
@@ -236,12 +221,15 @@
       <div class="form-group"><label>Semestre</label><select id="importSemester"><option value="S3">S3</option><option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option></select></div>
       <div class="form-group"><label>Type d'evaluation</label>
         <select id="importType">
-          <option value="Examen">Examen</option><option value="Controle continu">Controle continu</option>
-          <option value="Rattrapage">Rattrapage</option><option value="TP">TP</option>
+          <option value="Examen">Examen</option>
+          <option value="Contrôle continu">Controle continu</option>
+          <option value="Rattrapage">Rattrapage</option>
+          <option value="TP">TP</option>
         </select>
       </div>
       <div class="form-group"><label>Nom de la matiere</label><select id="importSubject"></select></div>
       <div class="form-group"><label>Fichier a importer</label><input type="file" id="importFile" accept=".xlsx, .xls, .ods, .docx, .pdf"></div>
+      <div id="importProgress" style="display:none;"><div style="height:4px; background:#e0e0e0; margin:10px 0;"><div id="progressFill" style="height:100%; width:0%; background:var(--primary);"></div></div><p id="progressText">Analyse...</p></div>
       <button class="admin-btn success" onclick="processImport()">Importer</button>
       <button class="admin-btn secondary" onclick="hideImportForm()">Fermer</button>
     </div>
@@ -369,8 +357,12 @@
   };
 
   function hasTP(s) { return !SUBJECTS_WITHOUT_TP.includes(s); }
-  function cleanSubjectName(s) { return s.replace(/\./g, '_').replace(/\s+/g, '_').replace(/[éèêë]/g, 'e').replace(/[ç]/g, 'c'); }
-  function displaySubjectName(s) { return s.replace(/_/g, ' ').replace(/I_/g, 'I.').replace(/et_/g, 'et '); }
+  function cleanSubjectName(s) { 
+    return s.replace(/\./g, '_').replace(/\s+/g, '_').replace(/[éèêë]/g, 'e').replace(/[ç]/g, 'c').replace(/[ô]/g, 'o');
+  }
+  function displaySubjectName(s) { 
+    return s.replace(/_/g, ' ').replace(/I_/g, 'I.').replace(/et_/g, 'et ').replace(/Francais/g, 'Francais');
+  }
 
   async function hashPassword(p) {
     const msg = new TextEncoder().encode(p);
@@ -488,7 +480,9 @@
     const subjAvg = {}, subjStatus = {}, subjSR = {};
     for (let s of required) {
       const notes = notesBySubject[s] || {};
-      const exam = notes['Examen'] || 0, cc = notes['Controle continu'] || notes['Contrôle continu'] || 0, tp = notes['TP'] || 0;
+      const exam = notes['Examen'] || 0;
+      const cc = notes['Contrôle continu'] || notes['Controle continu'] || 0;
+      const tp = notes['TP'] || 0;
       const ratt = notes['Rattrapage'];
       const useSR = ratt !== undefined && ratt > exam;
       subjSR[s] = useSR;
@@ -545,7 +539,10 @@
       let complete = required.length > 0;
       for (let s of required) {
         const hasTPs = hasTP(s);
-        if (!notes[s]?.['Examen'] || !notes[s]?.['Controle continu'] || (hasTPs && !notes[s]?.['TP'])) { complete = false; break; }
+        const examExists = notes[s] && notes[s]['Examen'] !== undefined;
+        const ccExists = notes[s] && (notes[s]['Contrôle continu'] !== undefined || notes[s]['Controle continu'] !== undefined);
+        const tpExists = !hasTPs || (notes[s] && notes[s]['TP'] !== undefined);
+        if (!examExists || !ccExists || !tpExists) { complete = false; break; }
       }
       
       if (complete) {
@@ -584,7 +581,6 @@
       const calc = r.calc;
       const showSR = calc.hasSR;
       
-      // رأس مبسط لكل طالب
       content += `
         <div style="margin-bottom:15px; page-break-inside:avoid;">
           <div style="font-family:'Times New Roman',serif; font-size:10pt;">
@@ -643,7 +639,7 @@
         for (let s of mod.subjects) {
           const notes = r.notes[s] || {};
           const tpDisplay = hasTP(s) ? (notes['TP']?.toFixed(2) || '') : '';
-          const ccDisplay = notes['Controle continu']?.toFixed(2) || notes['Contrôle continu']?.toFixed(2) || '';
+          const ccDisplay = notes['Contrôle continu']?.toFixed(2) || notes['Controle continu']?.toFixed(2) || '';
           const examDisplay = notes['Examen']?.toFixed(2) || '';
           const ratt = notes['Rattrapage'];
           const srDisplay = (ratt !== undefined && ratt > (notes['Examen'] || 0)) ? ratt.toFixed(2) : '';
@@ -672,13 +668,11 @@
         </div>
       `;
       
-      // إضافة فاصل بين الطلاب
       if (i < results.length - 1) {
         content += `<div style="margin:10px 0; border-top:1px dashed #999;"></div>`;
       }
     }
     
-    // تذييل
     content += `
       <div style="font-family:'Times New Roman',serif; font-size:9pt; margin-top:15px;">
         <p>V=Valide / NV=Non Valide / C=Capitalise / NC=Non Capitalise</p>
@@ -703,24 +697,38 @@
     }).from(el).save().then(() => document.body.removeChild(el));
   };
 
-  // Import functions
+  // Import functions - FIXED
   async function extractTextFromPDF(file) {
     const buf = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
     let text = '';
-    for (let i = 1; i <= pdf.numPages; i++) { const page = await pdf.getPage(i); const content = await page.getTextContent(); text += content.items.map(it => it.str).join(' ') + '\n'; }
+    for (let i = 1; i <= pdf.numPages; i++) { 
+      const page = await pdf.getPage(i); 
+      const content = await page.getTextContent(); 
+      text += content.items.map(it => it.str).join(' ') + '\n'; 
+    }
     return text;
   }
-  async function extractTextFromWord(file) { const buf = await file.arrayBuffer(); const res = await mammoth.extractRawText({ arrayBuffer: buf }); return res.value; }
+  
+  async function extractTextFromWord(file) { 
+    const buf = await file.arrayBuffer(); 
+    const res = await mammoth.extractRawText({ arrayBuffer: buf }); 
+    return res.value; 
+  }
+  
   function parseTextToData(text) {
-    const lines = text.split('\n').filter(l => l.trim() && !l.match(/num[eé]ro|nom|prenom|note/i));
+    const lines = text.split('\n').filter(l => l.trim() && !l.match(/num|nom|prenom|note/i));
     const data = [];
     for (let line of lines) {
       const match = line.match(/(\d+)\s+([A-Za-zÀ-ÿ\s\-]+?)\s+(\d{1,2}(?:[.,]\d{1,2})?)/);
-      if (match) { const grade = parseFloat(match[3].replace(',', '.')); if (grade >= 0 && grade <= 20) data.push({ NUMERO: match[1].trim(), NOM: match[2].trim(), NOTE: grade }); }
+      if (match) { 
+        const grade = parseFloat(match[3].replace(',', '.')); 
+        if (grade >= 0 && grade <= 20) data.push({ NUMERO: match[1].trim(), NOM: match[2].trim(), NOTE: grade }); 
+      }
     }
     return data;
   }
+  
   async function readODSFile(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -729,12 +737,19 @@
         const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
         const headers = json[0] || [];
         let numCol = 0, nameCol = 1, gradeCol = 2;
-        headers.forEach((h, i) => { const hs = String(h).toLowerCase(); if (hs.includes('num')) numCol = i; if (hs.includes('nom')) nameCol = i; if (hs.includes('note')) gradeCol = i; });
+        headers.forEach((h, i) => { 
+          const hs = String(h).toLowerCase(); 
+          if (hs.includes('num')) numCol = i; 
+          if (hs.includes('nom')) nameCol = i; 
+          if (hs.includes('note')) gradeCol = i; 
+        });
         const result = [];
         for (let i = 1; i < json.length; i++) {
-          const row = json[i]; if (!row?.length) continue;
+          const row = json[i]; 
+          if (!row?.length) continue;
           const grade = parseFloat(String(row[gradeCol]).replace(',', '.'));
-          if (row[numCol] && !isNaN(grade) && grade >= 0 && grade <= 20) result.push({ NUMERO: String(row[numCol]).trim(), NOM: String(row[nameCol] || '').trim(), NOTE: grade });
+          if (row[numCol] && !isNaN(grade) && grade >= 0 && grade <= 20) 
+            result.push({ NUMERO: String(row[numCol]).trim(), NOM: String(row[nameCol] || '').trim(), NOTE: grade });
         }
         resolve(result);
       };
@@ -742,6 +757,7 @@
       reader.readAsArrayBuffer(file);
     });
   }
+  
   async function parseFile(file) {
     const name = file.name.toLowerCase();
     if (name.endsWith('.pdf')) return parseTextToData(await extractTextFromPDF(file));
@@ -757,7 +773,11 @@
             const numKey = keys.find(k => k.toLowerCase().includes('num')) || keys[0];
             const nameKey = keys.find(k => k.toLowerCase().includes('nom')) || keys[1];
             const gradeKey = keys.find(k => k.toLowerCase().includes('note')) || keys[2];
-            return { NUMERO: String(r[numKey]).trim(), NOM: String(r[nameKey] || '').trim(), NOTE: parseFloat(String(r[gradeKey]).replace(',', '.')) };
+            return { 
+              NUMERO: String(r[numKey]).trim(), 
+              NOM: String(r[nameKey] || '').trim(), 
+              NOTE: parseFloat(String(r[gradeKey]).replace(',', '.')) 
+            };
           }).filter(r => r.NUMERO && !isNaN(r.NOTE) && r.NOTE >= 0 && r.NOTE <= 20);
           resolve(result);
         };
@@ -771,20 +791,34 @@
 
   window.processImport = async function() {
     const sem = document.getElementById('importSemester').value;
-    const type = document.getElementById('importType').value;
+    const typeSelect = document.getElementById('importType');
+    const type = typeSelect.value;
     const subject = document.getElementById('importSubject').value;
     const file = document.getElementById('importFile').files[0];
+    
     if (!sem || !subject || !file) { alert('Tous les champs requis'); return; }
     
     const cleanSubj = cleanSubjectName(subject);
     if (type === 'TP' && !hasTP(subject)) { alert('Cette matiere n\'a pas de TP'); return; }
+    
+    // Normaliser le type pour le stockage
+    let normalizedType = type;
+    if (type === 'Contrôle continu') normalizedType = 'Contrôle continu';
     
     showMessage('Importation en cours...', 'info');
     
     try {
       const snap = await get(child(ref(db), `results/PPV/${sem}`));
       const existing = new Set();
-      if (snap.exists()) { const students = snap.val(); for (let id in students) if (students[id][`${cleanSubj}_${type}`]) existing.add(id); }
+      if (snap.exists()) { 
+        const students = snap.val(); 
+        for (let id in students) {
+          // Vérifier les deux orthographes possibles
+          if (students[id][`${cleanSubj}_${normalizedType}`] || students[id][`${cleanSubj}_Controle continu`]) {
+            existing.add(id);
+          }
+        }
+      }
       
       const data = await parseFile(file);
       const updates = {};
@@ -794,8 +828,16 @@
         const id = row.NUMERO;
         if (!id) { errors++; continue; }
         if (existing.has(id)) { duplicates++; continue; }
-        updates[`results/PPV/${sem}/${id}/${cleanSubj}_${type}`] = { grade: row.NOTE, name: row.NOM, subject, type, dateAdded: Date.now() };
-        imported++; existing.add(id);
+        
+        updates[`results/PPV/${sem}/${id}/${cleanSubj}_${normalizedType}`] = { 
+          grade: row.NOTE, 
+          name: row.NOM, 
+          subject: subject, 
+          type: normalizedType, 
+          dateAdded: Date.now() 
+        };
+        imported++; 
+        existing.add(id);
       }
       
       if (Object.keys(updates).length > 0) await update(ref(db), updates);
@@ -805,7 +847,10 @@
       if (errors) msg += `, ${errors} erreurs`;
       showMessage(msg, 'success');
       document.getElementById('importFile').value = '';
-    } catch (e) { showMessage('Erreur importation', 'error'); }
+    } catch (e) { 
+      console.error(e);
+      showMessage('Erreur importation: ' + e.message, 'error'); 
+    }
   };
 
   window.loadSubjectsList = async function() {
