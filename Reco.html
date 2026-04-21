@@ -11,9 +11,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   :root {
-    --primary: #0077b6;
-    --primary-dark: #005f87;
-    --primary-light: #caf0f8;
+    --primary: #2e7d52;
+    --primary-dark: #1f5c3a;
+    --primary-light: #c8e6d4;
     --light: #f5f7fa;
     --white: #ffffff;
     --text: #333333;
@@ -51,7 +51,7 @@
   .message { padding:0.6rem 0.8rem; border-radius:var(--radius); margin:0.8rem 0; display:none; }
   .message.success { background:#d4edda; color:#155724; }
   .message.error { background:#f8d7da; color:#721c24; }
-  .message.info { background:#caf0f8; color:#005f87; }
+  .message.info { background:#c8e6d4; color:#1f5c3a; }
   
   .file-format-info { background:var(--primary-light); padding:0.8rem; border-radius:var(--radius); margin-bottom:0.8rem; font-size:0.85rem; }
   
@@ -353,7 +353,6 @@
       const showSRColumn = calc.hasSR;
       const colspanValue = showSRColumn ? 6 : 5;
 
-      // Saut de page après chaque 3ème étudiant (sauf le dernier)
       const isLastOnPage = (i % 3 === 2) && (i < results.length - 1);
 
       content += `
