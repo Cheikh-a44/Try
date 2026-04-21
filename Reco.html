@@ -179,7 +179,6 @@
 </header>
 
 <div class="container">
-  <!-- Login Form -->
   <div id="loginForm" class="login-container">
     <h2 style="text-align:center; margin-bottom:1.5rem; color:var(--primary); font-weight:500;">Connexion</h2>
     <div id="loginMessage" class="message error"></div>
@@ -193,7 +192,6 @@
     </p>
   </div>
   
-  <!-- Dashboard -->
   <div id="dashboard" class="dashboard">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
       <h2 style="color:var(--primary); font-weight:500;">Panneau de coordination - PPV</h2>
@@ -211,7 +209,6 @@
       <button class="admin-btn primary" onclick="showViewResultsForm()">Voir les resultats des etudiants</button>
     </div>
     
-    <!-- Import Form -->
     <div id="importForm" class="card" style="display:none;">
       <h4>Importer des resultats</h4>
       <div class="file-format-info">
@@ -229,12 +226,10 @@
       </div>
       <div class="form-group"><label>Nom de la matiere</label><select id="importSubject"></select></div>
       <div class="form-group"><label>Fichier a importer</label><input type="file" id="importFile" accept=".xlsx, .xls, .ods, .docx, .pdf"></div>
-      <div id="importProgress" style="display:none;"><div style="height:4px; background:#e0e0e0; margin:10px 0;"><div id="progressFill" style="height:100%; width:0%; background:var(--primary);"></div></div><p id="progressText">Analyse...</p></div>
       <button class="admin-btn success" onclick="processImport()">Importer</button>
       <button class="admin-btn secondary" onclick="hideImportForm()">Fermer</button>
     </div>
     
-    <!-- Manage Subjects -->
     <div id="manageSubjects" class="card" style="display:none;">
       <h4>Gerer les matieres</h4>
       <div class="form-group"><label>Semestre</label><select id="manageSemester"><option value="S3">S3</option><option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option></select></div>
@@ -243,7 +238,6 @@
       <button class="admin-btn secondary" onclick="hideManageSubjects()" style="margin-top:0.8rem;">Fermer</button>
     </div>
     
-    <!-- Reset Data Form -->
     <div id="resetDataForm" class="card" style="display:none; background:#fef5f5; border-left:4px solid #c0392b;">
       <h4 style="color:#c0392b;">Supprimer les donnees d'un semestre</h4>
       <p style="margin-bottom:0.8rem; color:#721c24;">Attention : Cette action supprimera definitivement toutes les donnees des etudiants pour le semestre selectionne.</p>
@@ -255,7 +249,6 @@
       <button class="admin-btn secondary" onclick="hideResetDataForm()">Annuler</button>
     </div>
     
-    <!-- View Results Form -->
     <div id="viewResultsForm" class="card" style="display:none;">
       <h4>Resultats des etudiants</h4>
       <div class="form-group">
@@ -270,14 +263,10 @@
   </div>
 </div>
 
-<!-- Modal Annonce -->
 <div id="annonceModal" class="modal">
   <div class="modal-content">
     <h3>Publier une annonce</h3>
-    <div class="form-group">
-      <label>Texte de l'annonce :</label>
-      <textarea id="annonceTexte" rows="3" placeholder="Ex: Les resultats du semestre 3 sont disponibles !"></textarea>
-    </div>
+    <div class="form-group"><label>Texte de l'annonce :</label><textarea id="annonceTexte" rows="3" placeholder="Ex: Les resultats du semestre 3 sont disponibles !"></textarea></div>
     <p style="font-size:0.8rem; color:#666; margin:0.3rem 0;">L'annonce sera visible pendant 24 heures.</p>
     <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
       <button class="admin-btn primary" onclick="publierAnnonce()">Publier</button>
@@ -286,7 +275,6 @@
   </div>
 </div>
 
-<!-- Modal Change Password -->
 <div id="changePasswordModal" class="modal">
   <div class="modal-content">
     <h3>Changer le mot de passe</h3>
@@ -357,12 +345,8 @@
   };
 
   function hasTP(s) { return !SUBJECTS_WITHOUT_TP.includes(s); }
-  function cleanSubjectName(s) { 
-    return s.replace(/\./g, '_').replace(/\s+/g, '_').replace(/[éèêë]/g, 'e').replace(/[ç]/g, 'c').replace(/[ô]/g, 'o').replace(/[àâä]/g, 'a');
-  }
-  function displaySubjectName(s) { 
-    return s.replace(/_/g, ' ').replace(/I_/g, 'I.').replace(/et_/g, 'et ').replace(/Francais/g, 'Francais');
-  }
+  function cleanSubjectName(s) { return s.replace(/\./g, '_').replace(/\s+/g, '_').replace(/[éèêë]/g, 'e').replace(/[ç]/g, 'c').replace(/[ô]/g, 'o').replace(/[àâä]/g, 'a'); }
+  function displaySubjectName(s) { return s.replace(/_/g, ' ').replace(/I_/g, 'I.').replace(/et_/g, 'et ').replace(/Francais/g, 'Francais').replace(/Economie/g, 'Economie'); }
 
   async function hashPassword(p) {
     const msg = new TextEncoder().encode(p);
@@ -566,13 +550,27 @@
     container.innerHTML = html;
   };
 
+  // ==================== دالة PDF مطابقة للنموذج ====================
   window.downloadCompleteResultsPDF = async function() {
-    if (!window.currentResults || window.currentResults.length === 0) { alert('Affichez d\'abord les resultats'); return; }
+    if (!window.currentResults || window.currentResults.length === 0) { 
+      alert('Affichez d\'abord les resultats'); 
+      return; 
+    }
     
     const sem = window.currentSemester;
     const results = window.currentResults.filter(r => r.complete);
     
-    if (results.length === 0) { alert('Aucun resultat complet a telecharger'); return; }
+    if (results.length === 0) { 
+      alert('Aucun resultat complet a telecharger'); 
+      return; 
+    }
+    
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('fr-FR').replace(/\//g, '/');
+    const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    const headerDate = `[${dateStr} ${timeStr}]`;
+    
+    const totalPages = results.length;
     
     let content = '';
     
@@ -580,43 +578,44 @@
       const r = results[i];
       const calc = r.calc;
       const showSR = calc.hasSR;
+      const pageNum = i + 1;
       
       content += `
-        <div style="margin-bottom:15px; page-break-inside:avoid;">
-          <div style="font-family:'Times New Roman',serif; font-size:10pt;">
-            <div style="font-weight:bold; font-size:11pt;">Institut Superieur d'Enseignement Technologique de Rosso</div>
-            <div style="display:flex; justify-content:space-between; margin-top:3px;">
-              <span style="font-weight:bold;">Resultats du ${sem}</span>
-              <span>Annee Universitaire : 2025-2026</span>
-            </div>
-            <div style="margin-top:2px;"><span style="font-weight:bold;">Filiere :</span> L2PPV-L2 Licence Production et Protection Vegetales</div>
+        <div style="font-family:'Times New Roman',serif; font-size:9pt; padding:10px; page-break-after:${i < results.length - 1 ? 'always' : 'auto'};">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span>${headerDate}</span>
+            <span>L2PPV-L2 Licence Page ${pageNum} / ${totalPages}</span>
           </div>
           
-          <table style="width:100%; border-collapse:collapse; border:1px solid #000; font-family:'Times New Roman',serif; font-size:9pt; margin-top:8px;">
+          <div style="font-weight:bold; font-size:14pt; text-align:center; margin:10px 0;">Resultats du ${sem}</div>
+          <div style="text-align:center; margin-bottom:12px;">Filiere : L2PPV-L2 Licence Production et Protection Vegetales</div>
+          
+          <table style="width:100%; border-collapse:collapse; font-size:9pt; border:1px solid #000;">
             <thead>
               <tr>
-                <th style="border:1px solid #000; padding:3px 2px;">Numero</th>
-                <th style="border:1px solid #000; padding:3px 2px;">Nom et Prenom</th>
-                <th style="border:1px solid #000; padding:3px 2px;">TP</th>
-                <th style="border:1px solid #000; padding:3px 2px;">CC</th>
-                <th style="border:1px solid #000; padding:3px 2px;">Examen</th>
-                ${showSR ? '<th style="border:1px solid #000; padding:3px 2px;">SR</th>' : ''}
-                <th style="border:1px solid #000; padding:3px 2px;">NFe</th>
-                <th style="border:1px solid #000; padding:3px 2px;">Credit</th>
-                <th style="border:1px solid #000; padding:3px 2px;">Observations</th>
+                <th style="border:1px solid #000; padding:4px 2px;">Numero</th>
+                <th style="border:1px solid #000; padding:4px 2px;">Nom et Prenom</th>
+                <th style="border:1px solid #000; padding:4px 2px;">TP</th>
+                <th style="border:1px solid #000; padding:4px 2px;">CC</th>
+                <th style="border:1px solid #000; padding:4px 2px;">Examen</th>
+                ${showSR ? '<th style="border:1px solid #000; padding:4px 2px;">SR</th>' : ''}
+                <th style="border:1px solid #000; padding:4px 2px;">NFe</th>
+                <th style="border:1px solid #000; padding:4px 2px;">Credit</th>
+                <th style="border:1px solid #000; padding:4px 2px;">Observations</th>
               </tr>
             </thead>
             <tbody>
+              <!-- صف الطالب -->
               <tr>
-                <td style="border:1px solid #000; padding:2px;">${r.id}</td>
-                <td style="border:1px solid #000; padding:2px; text-align:left;">${r.name}</td>
-                <td style="border:1px solid #000; padding:2px;"></td>
-                <td style="border:1px solid #000; padding:2px;"></td>
-                <td style="border:1px solid #000; padding:2px;"></td>
-                ${showSR ? '<td style="border:1px solid #000; padding:2px;"></td>' : ''}
-                <td style="border:1px solid #000; padding:2px; font-weight:bold;">Moyenne Semestre : ${calc.genMoy.toFixed(2)}</td>
-                <td style="border:1px solid #000; padding:2px;"></td>
-                <td style="border:1px solid #000; padding:2px;">${calc.semStatus}</td>
+                <td style="border:1px solid #000; padding:4px; vertical-align:middle;">${r.id}</td>
+                <td style="border:1px solid #000; padding:4px; font-size:10pt; vertical-align:middle;">${r.name}</td>
+                <td style="border:1px solid #000; padding:4px;"></td>
+                <td style="border:1px solid #000; padding:4px;"></td>
+                <td style="border:1px solid #000; padding:4px;"></td>
+                ${showSR ? '<td style="border:1px solid #000; padding:4px;"></td>' : ''}
+                <td style="border:1px solid #000; padding:4px; font-weight:bold;">Moyenne Semestre : ${calc.genMoy.toFixed(2)}</td>
+                <td style="border:1px solid #000; padding:4px;"></td>
+                <td style="border:1px solid #000; padding:4px; font-weight:bold;">${calc.semStatus}</td>
               </tr>
       `;
       
@@ -624,15 +623,15 @@
         const mod = calc.modules[m];
         content += `
           <tr>
-            <td style="border:1px solid #000; padding:2px;">${m}</td>
-            <td style="border:1px solid #000; padding:2px; text-align:left;">${mod.name}</td>
-            <td style="border:1px solid #000; padding:2px;"></td>
-            <td style="border:1px solid #000; padding:2px;"></td>
-            <td style="border:1px solid #000; padding:2px;"></td>
-            ${showSR ? '<td style="border:1px solid #000; padding:2px;"></td>' : ''}
-            <td style="border:1px solid #000; padding:2px; font-weight:bold;">${calc.modAvg[m].toFixed(2)}</td>
-            <td style="border:1px solid #000; padding:2px;">${mod.credit}</td>
-            <td style="border:1px solid #000; padding:2px;">${calc.modStatus[m]}</td>
+            <td style="border:1px solid #000; padding:3px;">${m}</td>
+            <td style="border:1px solid #000; padding:3px; text-align:left;">${mod.name}</td>
+            <td style="border:1px solid #000; padding:3px;"></td>
+            <td style="border:1px solid #000; padding:3px;"></td>
+            <td style="border:1px solid #000; padding:3px;"></td>
+            ${showSR ? '<td style="border:1px solid #000; padding:3px;"></td>' : ''}
+            <td style="border:1px solid #000; padding:3px; font-weight:bold;">${calc.modAvg[m].toFixed(2)}</td>
+            <td style="border:1px solid #000; padding:3px;">${mod.credit.toFixed(1)}</td>
+            <td style="border:1px solid #000; padding:3px;">${calc.modStatus[m]}</td>
           </tr>
         `;
         
@@ -648,15 +647,15 @@
           
           content += `
             <tr>
-              <td style="border:1px solid #000; padding:1px;"></td>
-              <td style="border:1px solid #000; padding:1px; text-align:left; padding-left:15px;">${subjName}</td>
-              <td style="border:1px solid #000; padding:1px;">${tpDisplay}</td>
-              <td style="border:1px solid #000; padding:1px;">${ccDisplay}</td>
-              <td style="border:1px solid #000; padding:1px;">${examDisplay}</td>
-              ${showSR ? `<td style="border:1px solid #000; padding:1px;">${srDisplay}</td>` : ''}
-              <td style="border:1px solid #000; padding:1px; font-weight:bold;">${calc.subjAvg[s].toFixed(2)}</td>
-              <td style="border:1px solid #000; padding:1px;">${credit.toFixed(1)}</td>
-              <td style="border:1px solid #000; padding:1px;">${calc.subjStatus[s]}</td>
+              <td style="border:1px solid #000; padding:2px;"></td>
+              <td style="border:1px solid #000; padding:2px; text-align:left; padding-left:15px;">${subjName}</td>
+              <td style="border:1px solid #000; padding:2px; text-align:center;">${tpDisplay}</td>
+              <td style="border:1px solid #000; padding:2px; text-align:center;">${ccDisplay}</td>
+              <td style="border:1px solid #000; padding:2px; text-align:center;">${examDisplay}</td>
+              ${showSR ? `<td style="border:1px solid #000; padding:2px; text-align:center;">${srDisplay}</td>` : ''}
+              <td style="border:1px solid #000; padding:2px; text-align:center; font-weight:bold;">${calc.subjAvg[s].toFixed(2)}</td>
+              <td style="border:1px solid #000; padding:2px; text-align:center;">${credit.toFixed(1)}</td>
+              <td style="border:1px solid #000; padding:2px; text-align:center;">${calc.subjStatus[s]}</td>
             </tr>
           `;
         }
@@ -665,41 +664,34 @@
       content += `
             </tbody>
           </table>
+          
+          <div style="margin-top:15px; font-size:8pt;">
+            <p>V=Valide / NV=Non Valide / C=Capitalise / NC=Non Capitalise</p>
+          </div>
+          
+          <div style="display:flex; justify-content:space-between; margin-top:25px;">
+            <div style="text-align:center;">Le Coordinateur de la Filiere</div>
+            <div style="text-align:center;">Le Jury</div>
+            <div style="text-align:center;">Le Directeur</div>
+          </div>
         </div>
       `;
-      
-      if (i < results.length - 1) {
-        content += `<div style="margin:10px 0; border-top:1px dashed #999;"></div>`;
-      }
     }
-    
-    content += `
-      <div style="font-family:'Times New Roman',serif; font-size:9pt; margin-top:15px;">
-        <p>V=Valide / NV=Non Valide / C=Capitalise / NC=Non Capitalise</p>
-        <div style="display:flex; justify-content:space-between; margin-top:20px;">
-          <div style="text-align:center;">Le Coordinateur de la Filiere</div>
-          <div style="text-align:center;">Le Jury</div>
-          <div style="text-align:center;">Le Directeur</div>
-        </div>
-      </div>
-    `;
     
     const el = document.createElement('div');
     el.innerHTML = content;
     document.body.appendChild(el);
     
     html2pdf().set({ 
-      margin:[8,5,8,5], 
+      margin:[5,3,5,3], 
       filename:`PV_L2PPV_${sem}_2025-2026.pdf`,
-      image:{type:'jpeg',quality:0.95}, 
+      image:{type:'jpeg',quality:0.98}, 
       html2canvas:{scale:2.5, letterRendering:true}, 
       jsPDF:{unit:'mm',format:'a4',orientation:'portrait'} 
     }).from(el).save().then(() => document.body.removeChild(el));
   };
 
-  // ==================== دوال الاستيراد - تم إصلاحها ====================
-  
-  // استخراج النص من PDF
+  // ==================== دوال الاستيراد ====================
   async function extractTextFromPDF(file) {
     const buf = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
@@ -712,37 +704,23 @@
     return text;
   }
   
-  // استخراج النص من Word
   async function extractTextFromWord(file) { 
     const buf = await file.arrayBuffer(); 
     const res = await mammoth.extractRawText({ arrayBuffer: buf }); 
     return res.value; 
   }
   
-  // تحليل النص إلى بيانات (لـ PDF و Word)
   function parseTextToData(text) {
     const lines = text.split('\n').filter(l => l.trim());
     const data = [];
-    
     for (let line of lines) {
-      // تجاهل السطر إذا كان يحتوي على عناوين
       if (line.match(/numero|numéro|nom|prenom|note/i)) continue;
-      
-      // البحث عن رقم متبوع باسم ثم علامة
       const match = line.match(/(\d+)\s+([A-Za-zÀ-ÿ\s\-]+?)\s+(\d{1,2}(?:[.,]\d{1,2})?)/);
       if (match) { 
         const grade = parseFloat(match[3].replace(',', '.')); 
-        if (!isNaN(grade) && grade >= 0 && grade <= 20) {
-          data.push({ 
-            NUMERO: match[1].trim(), 
-            NOM: match[2].trim(), 
-            NOTE: grade 
-          }); 
-        }
+        if (!isNaN(grade) && grade >= 0 && grade <= 20) data.push({ NUMERO: match[1].trim(), NOM: match[2].trim(), NOTE: grade }); 
       }
     }
-    
-    // إذا لم يجد بيانات، جرب طريقة أخرى
     if (data.length === 0) {
       for (let line of lines) {
         if (line.match(/numero|numéro|nom|prenom|note/i)) continue;
@@ -757,11 +735,9 @@
         }
       }
     }
-    
     return data;
   }
   
-  // قراءة ملف ODS
   async function readODSFile(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -770,12 +746,9 @@
           const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
           const sheet = wb.Sheets[wb.SheetNames[0]];
           const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-          
           if (json.length === 0) { resolve([]); return; }
-          
           const headers = json[0];
           let numCol = -1, nameCol = -1, gradeCol = -1;
-          
           headers.forEach((h, i) => {
             if (!h) return;
             const hs = String(h).toLowerCase();
@@ -783,39 +756,28 @@
             if (hs.includes('nom') || hs.includes('prenom')) nameCol = i;
             if (hs.includes('note') || hs.includes('/20')) gradeCol = i;
           });
-          
-          // إذا لم يتم العثور على الأعمدة، استخدم الافتراضي
           if (numCol === -1) numCol = 0;
           if (nameCol === -1) nameCol = 1;
           if (gradeCol === -1) gradeCol = 2;
-          
           const result = [];
           for (let i = 1; i < json.length; i++) {
             const row = json[i];
             if (!row || row.length === 0) continue;
-            
             const num = row[numCol] ? String(row[numCol]).trim() : '';
             const name = row[nameCol] ? String(row[nameCol]).trim() : '';
             const gradeVal = row[gradeCol];
-            
             if (!num || gradeVal === undefined || gradeVal === null) continue;
-            
             const grade = parseFloat(String(gradeVal).replace(',', '.'));
-            if (!isNaN(grade) && grade >= 0 && grade <= 20) {
-              result.push({ NUMERO: num, NOM: name, NOTE: grade });
-            }
+            if (!isNaN(grade) && grade >= 0 && grade <= 20) result.push({ NUMERO: num, NOM: name, NOTE: grade });
           }
           resolve(result);
-        } catch (err) {
-          reject(err);
-        }
+        } catch (err) { reject(err); }
       };
       reader.onerror = reject;
       reader.readAsArrayBuffer(file);
     });
   }
   
-  // قراءة ملف Excel
   async function readExcelFile(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -824,12 +786,9 @@
           const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
           const sheet = wb.Sheets[wb.SheetNames[0]];
           const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-          
           if (json.length === 0) { resolve([]); return; }
-          
           const headers = json[0];
           let numCol = -1, nameCol = -1, gradeCol = -1;
-          
           headers.forEach((h, i) => {
             if (!h) return;
             const hs = String(h).toLowerCase();
@@ -837,63 +796,37 @@
             if (hs.includes('nom') || hs.includes('prenom')) nameCol = i;
             if (hs.includes('note') || hs.includes('/20') || hs.includes('grade')) gradeCol = i;
           });
-          
           if (numCol === -1) numCol = 0;
           if (nameCol === -1) nameCol = 1;
           if (gradeCol === -1) gradeCol = 2;
-          
           const result = [];
           for (let i = 1; i < json.length; i++) {
             const row = json[i];
             if (!row || row.length === 0) continue;
-            
             const num = row[numCol] ? String(row[numCol]).trim() : '';
             const name = row[nameCol] ? String(row[nameCol]).trim() : '';
             const gradeVal = row[gradeCol];
-            
             if (!num || gradeVal === undefined || gradeVal === null) continue;
-            
             const grade = parseFloat(String(gradeVal).replace(',', '.'));
-            if (!isNaN(grade) && grade >= 0 && grade <= 20) {
-              result.push({ NUMERO: num, NOM: name, NOTE: grade });
-            }
+            if (!isNaN(grade) && grade >= 0 && grade <= 20) result.push({ NUMERO: num, NOM: name, NOTE: grade });
           }
           resolve(result);
-        } catch (err) {
-          reject(err);
-        }
+        } catch (err) { reject(err); }
       };
       reader.onerror = reject;
       reader.readAsArrayBuffer(file);
     });
   }
   
-  // الدالة الرئيسية لتحليل الملف
   async function parseFile(file) {
     const fileName = file.name.toLowerCase();
-    
-    if (fileName.endsWith('.pdf')) {
-      const text = await extractTextFromPDF(file);
-      return parseTextToData(text);
-    }
-    
-    if (fileName.endsWith('.docx')) {
-      const text = await extractTextFromWord(file);
-      return parseTextToData(text);
-    }
-    
-    if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-      return await readExcelFile(file);
-    }
-    
-    if (fileName.endsWith('.ods')) {
-      return await readODSFile(file);
-    }
-    
+    if (fileName.endsWith('.pdf')) { const text = await extractTextFromPDF(file); return parseTextToData(text); }
+    if (fileName.endsWith('.docx')) { const text = await extractTextFromWord(file); return parseTextToData(text); }
+    if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) return await readExcelFile(file);
+    if (fileName.endsWith('.ods')) return await readODSFile(file);
     throw new Error('Format non supporte');
   }
 
-  // دالة الاستيراد الرئيسية
   window.processImport = async function() {
     const sem = document.getElementById('importSemester').value;
     const typeSelect = document.getElementById('importType');
@@ -901,40 +834,25 @@
     const subject = document.getElementById('importSubject').value;
     const file = document.getElementById('importFile').files[0];
     
-    if (!sem || !subject || !file) { 
-      alert('Tous les champs sont requis'); 
-      return; 
-    }
-    
-    if (type === 'TP' && !hasTP(subject)) { 
-      alert('Cette matiere n\'a pas de TP'); 
-      return; 
-    }
+    if (!sem || !subject || !file) { alert('Tous les champs sont requis'); return; }
+    if (type === 'TP' && !hasTP(subject)) { alert('Cette matiere n\'a pas de TP'); return; }
     
     showMessage('Analyse du fichier en cours...', 'info');
     
     try {
-      // تحليل الملف
       const data = await parseFile(file);
+      if (data.length === 0) { showMessage('Aucune donnee valide trouvee dans le fichier', 'error'); return; }
       
-      if (data.length === 0) {
-        showMessage('Aucune donnee valide trouvee dans le fichier', 'error');
-        return;
-      }
-      
-      // التحقق من البيانات الموجودة
       const snapshot = await get(child(ref(db), `results/PPV/${sem}`));
       const existingStudents = new Set();
       
       if (snapshot.exists()) { 
         const students = snapshot.val(); 
         for (let id in students) {
-          // البحث عن أي مفتاح يطابق المادة والنوع
           for (let key in students[id]) {
             const d = students[id][key];
             if (d.subject === subject && (d.type === type || d.type === 'Controle continu' || d.type === 'Contrôle continu')) {
-              existingStudents.add(id);
-              break;
+              existingStudents.add(id); break;
             }
           }
         }
@@ -948,39 +866,21 @@
         const id = row.NUMERO;
         const name = row.NOM;
         const grade = row.NOTE;
-        
         if (!id) { errors++; continue; }
         if (existingStudents.has(id)) { duplicates++; continue; }
-        
-        // استخدام نفس المفتاح لكل الأنواع
         const key = `${cleanSubj}_${type}`;
-        updates[`results/PPV/${sem}/${id}/${key}`] = { 
-          grade: grade, 
-          name: name, 
-          subject: subject, 
-          type: type, 
-          dateAdded: Date.now() 
-        };
-        
-        imported++; 
-        existingStudents.add(id);
+        updates[`results/PPV/${sem}/${id}/${key}`] = { grade, name, subject, type, dateAdded: Date.now() };
+        imported++; existingStudents.add(id);
       }
       
-      if (Object.keys(updates).length > 0) {
-        await update(ref(db), updates);
-      }
+      if (Object.keys(updates).length > 0) await update(ref(db), updates);
       
       let message = `${imported} etudiants ajoutes`;
-      if (duplicates > 0) message += `, ${duplicates} ignores (deja existants)`;
+      if (duplicates > 0) message += `, ${duplicates} ignores`;
       if (errors > 0) message += `, ${errors} erreurs`;
-      
       showMessage(message, 'success');
       document.getElementById('importFile').value = '';
-      
-    } catch (e) { 
-      console.error('Erreur:', e);
-      showMessage('Erreur: ' + e.message, 'error'); 
-    }
+    } catch (e) { console.error('Erreur:', e); showMessage('Erreur: ' + e.message, 'error'); }
   };
 
   window.loadSubjectsList = async function() {
