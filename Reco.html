@@ -389,8 +389,8 @@
         html += `<tr style="background:#fff3cd;">
           <td>${r.id}</td>
           <td style="text-align:left;">${r.name || 'Sans nom'}</td>
-          <td style="color:#856404; font-weight:bold;">Incomplet</td>
-          <td style="color:#856404;">Non finalisé</td>
+          <td style="color:#856404; font-weight:bold;">Incomplet</span></td>
+          <td style="color:#856404;">Non finalisé</span></td>
           <td><span title="${r.missingSubjects.join(', ')}" style="cursor:help; color:#856404;"><i class="fas fa-info-circle"></i> Données manquantes</span></td>
         </tr>`;
       }
@@ -398,18 +398,6 @@
     
     html += '</tbody></table>';
     cont.innerHTML = html;
-    
-    const total = results.length;
-    const completeCount = results.filter(r => r.complete).length;
-    const incompleteCount = total - completeCount;
-    
-    if (incompleteCount > 0) {
-      cont.innerHTML += `<div class="neutral-message" style="margin-top:1rem; background:#fff3cd; color:#856404;">
-        <i class="fas fa-exclamation-triangle"></i> 
-        ${incompleteCount} étudiant(s) sur ${total} ont des données incomplètes.
-        <br><small>Seuls les étudiants avec données complètes apparaîtront dans le PDF.</small>
-      </div>`;
-    }
   };
 
   window.downloadCompletePDF = async function() {
@@ -452,9 +440,7 @@
       const showSRColumn = calc.hasSR;
       const colspanValue = showSRColumn ? 6 : 5;
       
-      // ========== التعديل الوحيد: 2 étudiants par page au lieu de 3 ==========
       const isLastOnPage = (studentCount % 2 === 0) && (i < results.length - 1);
-      // ====================================================================
       
       content += `
         <div style="padding: 0 10mm 5mm 10mm; font-family: Arial, Helvetica, sans-serif; font-size: 11pt; ${isLastOnPage ? 'page-break-after: always;' : ''}">
@@ -508,7 +494,8 @@
           const ccDisplay = notes['Contrôle continu']?.toFixed(2) || '';
           const examDisplay = notes['Examen']?.toFixed(2) || '';
           const ratt = notes['Rattrapage'];
-          const srDisplay = (ratt !== undefined && ratt > (notes['Examen'] || 0)) ? ratt.toFixed(2) : '';
+          // التعديل: عرض SR دائماً إذا كان موجوداً
+          const srDisplay = (ratt !== undefined) ? ratt.toFixed(2) : '';
           const credit = CREDITS.PPV[sem][s] || 3;
           
           content += `
@@ -533,7 +520,7 @@
                 <td style="border:none; padding:4px 4px 2px 4px; font-weight:bold;">${calc.genMoy.toFixed(2)}</td>
                 <td style="border:none; padding:4px 4px 2px 4px;"></td>
                 <td style="border:none; padding:4px 4px 2px 4px; font-weight:bold;">${calc.semStatus}</td>
-              </tr>
+              </table>
             </tbody>
           </table>
         </div>
