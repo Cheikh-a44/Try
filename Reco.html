@@ -75,7 +75,7 @@
 <body>
 
 <header>
-  <h1> Coordinateur PPV</h1>
+  <h1><i class="fas fa-user-shield"></i> Coordinateur PPV</h1>
   <p>Département de Production et Protection Végétales</p>
 </header>
 
@@ -98,18 +98,18 @@
     <div id="dashboardMessage" class="message success"></div>
     
     <div style="display:grid; gap:0.8rem; margin:1rem 0;">
-      <button class="admin-btn success" onclick="showImportForm()"> Importer des résultats</button>
-      <button class="admin-btn danger" onclick="showManageSubjects()"> Gérer les matières</button>
-      <button class="admin-btn warning" onclick="openAnnonceModal()"> Gérer l'annonce</button>
-      <button class="admin-btn primary" onclick="openChangePasswordModal()"> Changer le mot de passe</button>
-      <button class="admin-btn danger" onclick="showResetDataForm()" style="background:#f8d7da;"> Supprimer données semestre</button>
-      <button class="admin-btn primary" onclick="showViewResultsForm()"> Voir résultats étudiants</button>
+      <button class="admin-btn success" onclick="showImportForm()"><i class="fas fa-upload"></i> Importer des résultats</button>
+      <button class="admin-btn danger" onclick="showManageSubjects()"><i class="fas fa-trash-alt"></i> Gérer les matières</button>
+      <button class="admin-btn warning" onclick="openAnnonceModal()"><i class="fas fa-bullhorn"></i> Gérer l'annonce</button>
+      <button class="admin-btn primary" onclick="openChangePasswordModal()"><i class="fas fa-key"></i> Changer le mot de passe</button>
+      <button class="admin-btn danger" onclick="showResetDataForm()" style="background:#f8d7da;"><i class="fas fa-database"></i> Supprimer données semestre</button>
+      <button class="admin-btn primary" onclick="showViewResultsForm()"><i class="fas fa-eye"></i> Voir résultats étudiants</button>
     </div>
     
     <!-- Import Form -->
     <div id="importForm" class="card" style="display:none;">
       <h4>Importer des résultats</h4>
-      <div class="file-format-info"> <strong>Formats :</strong> Excel, ODS, Word, PDF - Colonnes : NUMERO, NOM, NOTE/20</div>
+      <div class="file-format-info"><i class="fas fa-info-circle"></i> <strong>Formats :</strong> Excel, ODS, Word, PDF - Colonnes : NUMERO, NOM, NOTE/20</div>
       <div class="form-group"><label>Semestre</label><select id="importSemester"><option value="S3">S3</option><option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option></select></div>
       <div class="form-group"><label>Type</label><select id="importType"><option value="Examen">Examen</option><option value="Contrôle continu">Contrôle continu</option><option value="Rattrapage">Rattrapage</option><option value="TP">TP</option></select></div>
       <div class="form-group"><label>Matière</label><select id="importSubject"></select></div>
@@ -275,7 +275,7 @@
     const subjAvg={}, subjStatus={}, subjSR={};
     for(let s of req){
       const n=notes[s]||{};
-      const exam=n['Examen']??0, cc=n['Contrôle continu']??0, tp=n['TP']??0, ratt=n['Rattrapage'];
+      const exam=n['Examen']||0, cc=n['Contrôle continu']||0, tp=n['TP']||0, ratt=n['Rattrapage'];
       const useSR=ratt!==undefined&&ratt>exam; subjSR[s]=useSR;
       const final=useSR?ratt:exam;
       subjAvg[s]=hasTP(s)?(tp+cc*2+final*3)/6:(cc*2+final*3)/5;
@@ -305,7 +305,6 @@
     return { genMoy, semStatus, modStatus, modCredits, modAvg, subjAvg, subjStatus, hasSR, modules:mods };
   }
 
-  // ========== loadAllStudents : affiche tous les étudiants (complets + incomplets) ==========
   window.loadAllStudents = async function() {
     const sem = document.getElementById('viewSemester').value;
     currentSem = sem;
@@ -384,7 +383,7 @@
           <td style="text-align:left;">${r.name || 'Sans nom'}</td>
           <td><strong>${r.calc.genMoy.toFixed(2)}</strong></td>
           <td class="${r.calc.semStatus === 'Validé' ? 'status-V' : 'status-NV'}">${r.calc.semStatus}</td>
-          <td>-</td>
+          <td>-</span></td>
         </tr>`;
       } else {
         html += `<tr style="background:#fff3cd;">
@@ -392,7 +391,7 @@
           <td style="text-align:left;">${r.name || 'Sans nom'}</td>
           <td style="color:#856404; font-weight:bold;">Incomplet</td>
           <td style="color:#856404;">Non finalisé</td>
-          <td><span title="${r.missingSubjects.join(', ')}" style="cursor:help; color:#856404;"> Données manquantes</span></td>
+          <td><span title="${r.missingSubjects.join(', ')}" style="cursor:help; color:#856404;"><i class="fas fa-info-circle"></i> Données manquantes</span></td>
         </tr>`;
       }
     }
@@ -406,13 +405,13 @@
     
     if (incompleteCount > 0) {
       cont.innerHTML += `<div class="neutral-message" style="margin-top:1rem; background:#fff3cd; color:#856404;">
-         ${incompleteCount} étudiant(s) sur ${total} ont des données incomplètes.
+        <i class="fas fa-exclamation-triangle"></i> 
+        ${incompleteCount} étudiant(s) sur ${total} ont des données incomplètes.
         <br><small>Seuls les étudiants avec données complètes apparaîtront dans le PDF.</small>
       </div>`;
     }
   };
 
-  // ========== downloadCompletePDF : seulement les étudiants complets, 2 par page ==========
   window.downloadCompletePDF = async function() {
     if (!currentResults || currentResults.length === 0) { 
       alert('Affichez d\'abord les résultats'); 
@@ -453,8 +452,9 @@
       const showSRColumn = calc.hasSR;
       const colspanValue = showSRColumn ? 6 : 5;
       
-      // chaque page contient 2 étudiants (modifié de 3 à 2)
+      // ========== التعديل الوحيد: 2 étudiants par page au lieu de 3 ==========
       const isLastOnPage = (studentCount % 2 === 0) && (i < results.length - 1);
+      // ====================================================================
       
       content += `
         <div style="padding: 0 10mm 5mm 10mm; font-family: Arial, Helvetica, sans-serif; font-size: 11pt; ${isLastOnPage ? 'page-break-after: always;' : ''}">
@@ -470,7 +470,7 @@
                 <th style="border:1px solid #000; padding:3px;">NF°</th>
                 <th style="border:1px solid #000; padding:3px;">Crédit</th>
                 <th style="border:1px solid #000; padding:3px;">Obs</th>
-              </table>
+              </tr>
             </thead>
             <tbody>
               <tr style="background:#f0f8ff;">
@@ -522,7 +522,7 @@
               <td style="border:1px solid #000; padding:1px; font-weight:bold;">${calc.subjAvg[s].toFixed(2)}</td>
               <td style="border:1px solid #000; padding:1px;">${credit.toFixed(1)}</td>
               <td style="border:1px solid #000; padding:1px;">${calc.subjStatus[s]}</td>
-             </tr>
+            </tr>
           `;
         }
       }
@@ -607,7 +607,7 @@
     if(map.size===0){ cont.innerHTML='<p>Aucune matière</p>'; return; }
     let h='<table class="simple-table"><thead><tr><th>Matière</th><th>Type</th><th>Étudiants</th><th>Action</th></tr></thead><tbody>';
     for(let [k,d] of map) h+=`<tr><td><strong>${displaySubject(d.subject)}</strong></td><td>${d.type}</td><td>${d.count}</td><td><button class="admin-btn danger" style="padding:0.2rem 0.6rem;" onclick="deleteSubject('${sem}','${d.subject}','${d.type}')">Supprimer</button></td></tr>`;
-    h+='</tbody>}</table>'; cont.innerHTML=h;
+    h+='</tbody></table>'; cont.innerHTML=h;
   };
 
   window.deleteSubject=async function(sem,subj,type){
