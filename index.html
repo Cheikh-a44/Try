@@ -175,7 +175,7 @@
     <div id="annonceContainer" class="annonce-container"></div>
     
     <div class="result-card">
-      <h2 class="section-title"><i class="fas fa-search"></i> Consulter votre résultat</h2>
+      <h2 class="section-title"> Consulter votre résultat</h2>
       
       <div class="search-box">
         <input type="text" id="studentIdInput" placeholder="Entrez votre numéro d'étudiant...">
@@ -270,7 +270,10 @@
     const subjAvg = {}, subjStatus = {}, subjSR = {};
     for (let s of req) {
       const n = notes[s] || {};
-      const exam = n['Examen'] || 0, cc = n['Contrôle continu'] || 0, tp = n['TP'] || 0;
+      // تصحيح: استخدام ?? بدلاً من || للتعامل مع 0 بشكل صحيح
+      const exam = n['Examen'] ?? 0;
+      const cc = n['Contrôle continu'] ?? 0;
+      const tp = n['TP'] ?? 0;
       const ratt = n['Rattrapage'];
       const useSR = ratt !== undefined && ratt > exam;
       subjSR[s] = useSR;
@@ -302,7 +305,6 @@
     return { genMoy, semStatus, modStatus, modCredits, modAvg, subjAvg, subjStatus, hasSR, modules: mods };
   }
 
-  // ==================== دالة البحث المصححة ====================
   window.searchStudentResult = async () => {
     const id = document.getElementById('studentIdInput').value.trim();
     const cont = document.getElementById('studentResultContainer');
@@ -313,12 +315,10 @@
       return; 
     }
     
-    // عرض حالة التحميل
-    cont.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i><p>Chargement...</p><p style="font-size:12px; margin-top:8px;">Recherche en cours...</p></div>';
+    cont.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i><p>Chargement...</p></div>';
     cont.style.display = 'block'; 
     noRes.style.display = 'none';
     
-    // إنشاء مؤقت 15 ثانية
     let timeoutId;
     const timeoutPromise = new Promise((_, reject) => {
       timeoutId = setTimeout(() => reject(new Error('TIMEOUT')), 15000);
@@ -330,14 +330,11 @@
     try {
       for (let s of sems) {
         try {
-          // البحث مع إمكانية الإلغاء عند timeout
           const snap = await Promise.race([
             get(child(ref(db), `results/PPV/${s}/${id}`)),
             timeoutPromise
           ]);
-          
           clearTimeout(timeoutId);
-          
           if (snap.exists()) { 
             data = snap.val(); 
             sem = s; 
@@ -371,9 +368,14 @@
       let complete = req.length > 0;
       for (let s of req) {
         const htp = hasTP(s);
-        if (!notes[s]?.['Examen'] || !notes[s]?.['Contrôle continu'] || (htp && !notes[s]?.['TP'])) { 
-          complete = false; 
-          break; 
+        // تصحيح: التحقق من وجود القيمة (undefined) وليس من قيمتها
+        const examExists = notes[s]?.['Examen'] !== undefined;
+        const ccExists = notes[s]?.['Contrôle continu'] !== undefined;
+        const tpExists = !htp || notes[s]?.['TP'] !== undefined;
+        
+        if (!examExists || !ccExists || !tpExists) {
+          complete = false;
+          break;
         }
       }
       
@@ -405,7 +407,7 @@
         const colspan = showSR ? 6 : 5;
         html += `<tr class="moyenne-row"><td colspan="${colspan}" style="text-align:right; font-weight:bold;">Moyenne Semestre :</td><td style="font-weight:bold;">${res.genMoy.toFixed(2)}</td><td></td><td class="${res.semStatus==='Validé'?'status-V':'status-NV'}" style="font-weight:bold;">${res.semStatus}</td></tr>`;
         html += '</tbody></table></div>';
-        html += `<div style="text-align:center;"><a href="result.html?dept=PPV&sem=${sem}&id=${id}&name=${encodeURIComponent(name)}" class="pdf-link" target="_blank"><i class="fas fa-file-pdf"></i> Télécharger mon relevé PDF</a></div>`;
+        html += `<div style="text-align:center;"><a href="result.html?dept=PPV&sem=${sem}&id=${id}&name=${encodeURIComponent(name)}" class="pdf-link" target="_blank"> Télécharger mon relevé PDF</a></div>`;
       } else {
         let hasTPdata = false, hasCC = false, hasExam = false;
         for (let s of req) {
@@ -428,7 +430,7 @@
           for (let s of req) { const n = notes[s]?.['Examen']; html += `<tr><td>${displaySubjectName(s)}</td><td>${n!==undefined?n.toFixed(2):''}</td></tr>`; }
           html += `</tbody></table>`;
         }
-        html += `<div class="neutral-message"><i class="fas fa-info-circle"></i> Les résultats ne sont pas encore finalisés.</div>`;
+        html += `<div class="neutral-message"> Les résultats ne sont pas encore finalisés.</div>`;
       }
       cont.innerHTML = html;
       
@@ -438,14 +440,12 @@
       
       if (error.message === 'TIMEOUT') {
         cont.innerHTML = `<div class="error-state">
-          <i class="fas fa-clock"></i>
           <h3>Délai d'attente dépassé</h3>
           <p>Vérifiez votre connexion internet et réessayez.</p>
           <button onclick="searchStudentResult()">Réessayer</button>
         </div>`;
       } else {
         cont.innerHTML = `<div class="error-state">
-          <i class="fas fa-exclamation-circle"></i>
           <h3>Erreur de connexion</h3>
           <p>Impossible de contacter le serveur. Veuillez réessayer.</p>
           <button onclick="searchStudentResult()">Réessayer</button>
