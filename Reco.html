@@ -66,12 +66,16 @@
   
   .progress-bar { width:100%; height:6px; background:var(--primary-light); border-radius:3px; margin:0.8rem 0; overflow:hidden; }
   .progress-fill { height:100%; background:var(--primary); width:0%; transition:width 0.3s; }
+  
+  .status-V { color: #27ae60; font-weight: bold; }
+  .status-NV { color: #e74c3c; font-weight: bold; }
+  .neutral-message { text-align: center; margin-top: 0.8rem; padding: 0.6rem; background: #e9ecef; color: #6c757d; border-radius: var(--radius); }
 </style>
 </head>
 <body>
 
 <header>
-  <h1><i class="fas fa-user-shield"></i> Coordinateur PPV</h1>
+  <h1> Coordinateur PPV</h1>
   <p>Département de Production et Protection Végétales</p>
 </header>
 
@@ -94,18 +98,18 @@
     <div id="dashboardMessage" class="message success"></div>
     
     <div style="display:grid; gap:0.8rem; margin:1rem 0;">
-      <button class="admin-btn success" onclick="showImportForm()"><i class="fas fa-upload"></i> Importer des résultats</button>
-      <button class="admin-btn danger" onclick="showManageSubjects()"><i class="fas fa-trash-alt"></i> Gérer les matières</button>
-      <button class="admin-btn warning" onclick="openAnnonceModal()"><i class="fas fa-bullhorn"></i> Gérer l'annonce</button>
-      <button class="admin-btn primary" onclick="openChangePasswordModal()"><i class="fas fa-key"></i> Changer le mot de passe</button>
-      <button class="admin-btn danger" onclick="showResetDataForm()" style="background:#f8d7da;"><i class="fas fa-database"></i> Supprimer données semestre</button>
-      <button class="admin-btn primary" onclick="showViewResultsForm()"><i class="fas fa-eye"></i> Voir résultats étudiants</button>
+      <button class="admin-btn success" onclick="showImportForm()"> Importer des résultats</button>
+      <button class="admin-btn danger" onclick="showManageSubjects()"> Gérer les matières</button>
+      <button class="admin-btn warning" onclick="openAnnonceModal()"> Gérer l'annonce</button>
+      <button class="admin-btn primary" onclick="openChangePasswordModal()"> Changer le mot de passe</button>
+      <button class="admin-btn danger" onclick="showResetDataForm()" style="background:#f8d7da;"> Supprimer données semestre</button>
+      <button class="admin-btn primary" onclick="showViewResultsForm()"> Voir résultats étudiants</button>
     </div>
     
     <!-- Import Form -->
     <div id="importForm" class="card" style="display:none;">
       <h4>Importer des résultats</h4>
-      <div class="file-format-info"><i class="fas fa-info-circle"></i> <strong>Formats :</strong> Excel, ODS, Word, PDF - Colonnes : NUMERO, NOM, NOTE/20</div>
+      <div class="file-format-info"> <strong>Formats :</strong> Excel, ODS, Word, PDF - Colonnes : NUMERO, NOM, NOTE/20</div>
       <div class="form-group"><label>Semestre</label><select id="importSemester"><option value="S3">S3</option><option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option></select></div>
       <div class="form-group"><label>Type</label><select id="importType"><option value="Examen">Examen</option><option value="Contrôle continu">Contrôle continu</option><option value="Rattrapage">Rattrapage</option><option value="TP">TP</option></select></div>
       <div class="form-group"><label>Matière</label><select id="importSubject"></select></div>
@@ -271,7 +275,7 @@
     const subjAvg={}, subjStatus={}, subjSR={};
     for(let s of req){
       const n=notes[s]||{};
-      const exam=n['Examen']||0, cc=n['Contrôle continu']||0, tp=n['TP']||0, ratt=n['Rattrapage'];
+      const exam=n['Examen']??0, cc=n['Contrôle continu']??0, tp=n['TP']??0, ratt=n['Rattrapage'];
       const useSR=ratt!==undefined&&ratt>exam; subjSR[s]=useSR;
       const final=useSR?ratt:exam;
       subjAvg[s]=hasTP(s)?(tp+cc*2+final*3)/6:(cc*2+final*3)/5;
@@ -301,41 +305,133 @@
     return { genMoy, semStatus, modStatus, modCredits, modAvg, subjAvg, subjStatus, hasSR, modules:mods };
   }
 
-  window.loadAllStudents=async function(){
-    const sem=document.getElementById('viewSemester').value;
-    currentSem=sem;
-    const cont=document.getElementById('resultsContainer');
-    cont.innerHTML='<p style="text-align:center;">Chargement...</p>';
-    const snap=await get(child(ref(db),`results/PPV/${sem}`));
-    if(!snap.exists()){ cont.innerHTML='<p>Aucun résultat</p>'; return; }
-    const students=snap.val(); const results=[];
-    for(let id in students){
-      const data=students[id]; let name=''; const notes={};
-      for(let k in data){ if(data[k].name) name=data[k].name; if(!notes[data[k].subject]) notes[data[k].subject]={}; notes[data[k].subject][data[k].type]=data[k].grade; }
-      const req=SUBJECTS.PPV[sem]||[];
-      if(req.length===0) continue;
-      let complete=true;
-      for(let s of req){ const htp=hasTP(s); if(!notes[s]?.['Examen']||!notes[s]?.['Contrôle continu']||(htp&&!notes[s]?.['TP'])){ complete=false; break; } }
-      if(complete){ const calc=calculate(notes,'PPV',sem); if(calc) results.push({id,name,notes,calc}); }
+  // ========== loadAllStudents modifiée : affiche tous les étudiants (complets + incomplets) ==========
+  window.loadAllStudents = async function() {
+    const sem = document.getElementById('viewSemester').value;
+    currentSem = sem;
+    const cont = document.getElementById('resultsContainer');
+    cont.innerHTML = '<p style="text-align:center;">Chargement...</p>';
+    
+    const snap = await get(child(ref(db), `results/PPV/${sem}`));
+    if (!snap.exists()) { 
+      cont.innerHTML = '<p>Aucun résultat</p>'; 
+      return; 
     }
-    results.sort((a,b)=>a.id.localeCompare(b.id));
-    currentResults=results;
-    let html='<table class="simple-table"><thead><tr><th>N°</th><th>Nom</th><th>Moyenne</th><th>Statut</th></tr></thead><tbody>';
-    for(let r of results) html+=`<tr><td>${r.id}</td><td style="text-align:left;">${r.name}</td><td>${r.calc.genMoy.toFixed(2)}</td><td class="${r.calc.semStatus==='Validé'?'status-V':'status-NV'}">${r.calc.semStatus}</td></tr>`;
-    html+='</tbody></table>'; cont.innerHTML=html;
+    
+    const students = snap.val();
+    const results = [];
+    
+    for (let id in students) {
+      const data = students[id];
+      let name = '';
+      const notes = {};
+      
+      for (let k in data) { 
+        if (data[k].name) name = data[k].name; 
+        if (!notes[data[k].subject]) notes[data[k].subject] = {};
+        notes[data[k].subject][data[k].type] = data[k].grade; 
+      }
+      
+      const req = SUBJECTS.PPV[sem] || [];
+      if (req.length === 0) continue;
+      
+      let complete = true;
+      let missingSubjects = [];
+      
+      for (let s of req) {
+        const htp = hasTP(s);
+        const examExists = notes[s]?.['Examen'] !== undefined;
+        const ccExists = notes[s]?.['Contrôle continu'] !== undefined;
+        const tpExists = !htp || notes[s]?.['TP'] !== undefined;
+        
+        if (!examExists) missingSubjects.push(`${displaySubject(s)} (Examen)`);
+        if (!ccExists) missingSubjects.push(`${displaySubject(s)} (CC)`);
+        if (htp && !tpExists) missingSubjects.push(`${displaySubject(s)} (TP)`);
+        
+        if (!examExists || !ccExists || (htp && !tpExists)) {
+          complete = false;
+        }
+      }
+      
+      if (complete) {
+        const calc = calculate(notes, 'PPV', sem);
+        if (calc) {
+          results.push({ 
+            id, name, notes, calc, 
+            complete: true, 
+            missingSubjects: [] 
+          });
+        }
+      } else {
+        results.push({ 
+          id, name, notes, 
+          complete: false, 
+          missingSubjects: missingSubjects,
+          calc: null 
+        });
+      }
+    }
+    
+    results.sort((a, b) => a.id.localeCompare(b.id));
+    currentResults = results;
+    
+    let html = '<table class="simple-table"><thead><tr><th>N°</th><th>Nom</th><th>Moyenne</th><th>Statut</th><th>Détails</th></tr></thead><tbody>';
+    
+    for (let r of results) {
+      if (r.complete) {
+        html += `<tr>
+          <td>${r.id}</td>
+          <td style="text-align:left;">${r.name || 'Sans nom'}</td>
+          <td><strong>${r.calc.genMoy.toFixed(2)}</strong></td>
+          <td class="${r.calc.semStatus === 'Validé' ? 'status-V' : 'status-NV'}">${r.calc.semStatus}</td>
+          <td>-</td>
+        </tr>`;
+      } else {
+        html += `<tr style="background:#fff3cd;">
+          <td>${r.id}</td>
+          <td style="text-align:left;">${r.name || 'Sans nom'}</td>
+          <td style="color:#856404; font-weight:bold;">Incomplet</td>
+          <td style="color:#856404;">Non finalisé</td>
+          <td><span title="${r.missingSubjects.join(', ')}" style="cursor:help; color:#856404;"> Données manquantes</span></td>
+        </tr>`;
+      }
+    }
+    
+    html += '</tbody>}</table>';
+    cont.innerHTML = html;
+    
+    const total = results.length;
+    const completeCount = results.filter(r => r.complete).length;
+    const incompleteCount = total - completeCount;
+    
+    if (incompleteCount > 0) {
+      cont.innerHTML += `<div class="neutral-message" style="margin-top:1rem; background:#fff3cd; color:#856404;">
+         ${incompleteCount} étudiant(s) sur ${total} ont des données incomplètes.
+        <br><small>Seuls les étudiants avec données complètes apparaîtront dans le PDF.</small>
+      </div>`;
+    }
   };
 
-  // ==================== downloadCompletePDF : 3 étudiants par page, en-tête une seule fois ====================
+  // ========== downloadCompletePDF : seulement les étudiants complets ==========
   window.downloadCompletePDF = async function() {
-    if (!currentResults || currentResults.length === 0) { alert('Affichez d\'abord les résultats'); return; }
+    if (!currentResults || currentResults.length === 0) { 
+      alert('Affichez d\'abord les résultats'); 
+      return; 
+    }
+    
+    const completedResults = currentResults.filter(r => r.complete === true);
+    
+    if (completedResults.length === 0) {
+      alert('Aucun étudiant avec des données complètes à exporter vers PDF.');
+      return;
+    }
     
     const sem = currentSem;
-    const results = currentResults;
+    const results = completedResults;
     const currentYear = new Date().getFullYear();
     const academicYear = `${currentYear-1}-${currentYear}`;
     const filiere = 'L2PPV-L2 Licence PPV';
     
-    // En-tête une seule fois au début du document
     let content = `
       <div style="padding: 15mm 10mm 5mm 10mm; font-family: Arial, Helvetica, sans-serif; font-size: 11pt;">
         <div style="font-weight: bold; font-size: 12pt; margin-bottom: 5px;">Institut Supérieur d'Enseignement Technologique de Rosso</div>
@@ -344,17 +440,21 @@
           <span style="font-weight: normal;">Année Universitaire : ${academicYear}</span>
         </div>
         <div style="margin-top: 5px;"><span style="font-weight: bold;">Filière :</span> ${filiere}</div>
+        <div style="margin-top: 5px; color: green;"><span style="font-weight: bold;">Nombre d'étudiants :</span> ${results.length}</div>
       </div>
     `;
     
+    let studentCount = 0;
+    
     for (let i = 0; i < results.length; i++) {
       const r = results[i];
+      studentCount++;
       const calc = r.calc;
       const showSRColumn = calc.hasSR;
       const colspanValue = showSRColumn ? 6 : 5;
-
-      const isLastOnPage = (i % 3 === 2) && (i < results.length - 1);
-
+      
+      const isLastOnPage = (studentCount % 3 === 0) && (i < results.length - 1);
+      
       content += `
         <div style="padding: 0 10mm 5mm 10mm; font-family: Arial, Helvetica, sans-serif; font-size: 11pt; ${isLastOnPage ? 'page-break-after: always;' : ''}">
           <table style="width:100%; border-collapse:collapse; border:1px solid #000; font-size:10pt; margin-top:8px;">
@@ -432,11 +532,15 @@
                 <td style="border:none; padding:4px 4px 2px 4px; font-weight:bold;">${calc.genMoy.toFixed(2)}</td>
                 <td style="border:none; padding:4px 4px 2px 4px;"></td>
                 <td style="border:none; padding:4px 4px 2px 4px; font-weight:bold;">${calc.semStatus}</td>
-              </tr>
+              </td>
             </tbody>
           </table>
         </div>
       `;
+      
+      if (isLastOnPage && i < results.length - 1) {
+        content += `<div style="page-break-after: always;"></div>`;
+      }
     }
     
     const element = document.createElement('div');
@@ -451,8 +555,13 @@
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
     };
     
-    html2pdf().set(opt).from(element).save().then(() => document.body.removeChild(element))
-      .catch(err => { console.error('Erreur PDF:', err); alert('Erreur lors de la génération du PDF.'); document.body.removeChild(element); });
+    html2pdf().set(opt).from(element).save()
+      .then(() => document.body.removeChild(element))
+      .catch(err => { 
+        console.error('Erreur PDF:', err); 
+        alert('Erreur lors de la génération du PDF.'); 
+        document.body.removeChild(element); 
+      });
   };
 
   // Import functions
