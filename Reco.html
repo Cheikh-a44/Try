@@ -392,12 +392,24 @@
           <td style="color:#856404; font-weight:bold;">Incomplet</td>
           <td style="color:#856404;">Non finalisé</td>
           <td><span title="${r.missingSubjects.join(', ')}" style="cursor:help; color:#856404;"><i class="fas fa-info-circle"></i> Données manquantes</span></td>
-        </table>`;
+        </tr>`;
       }
     }
     
     html += '</tbody></table>';
     cont.innerHTML = html;
+    
+    const total = results.length;
+    const completeCount = results.filter(r => r.complete).length;
+    const incompleteCount = total - completeCount;
+    
+    if (incompleteCount > 0) {
+      cont.innerHTML += `<div class="neutral-message" style="margin-top:1rem; background:#fff3cd; color:#856404;">
+        <i class="fas fa-exclamation-triangle"></i> 
+        ${incompleteCount} étudiant(s) sur ${total} ont des données incomplètes.
+        <br><small>Seuls les étudiants avec données complètes apparaîtront dans le PDF.</small>
+      </div>`;
+    }
   };
 
   window.downloadCompletePDF = async function() {
@@ -440,8 +452,9 @@
       const showSRColumn = calc.hasSR;
       const colspanValue = showSRColumn ? 6 : 5;
       
-      // Modification: 2 étudiants par page au lieu de 3
+      // ========== التعديل الوحيد: 2 étudiants par page au lieu de 3 ==========
       const isLastOnPage = (studentCount % 2 === 0) && (i < results.length - 1);
+      // ====================================================================
       
       content += `
         <div style="padding: 0 10mm 5mm 10mm; font-family: Arial, Helvetica, sans-serif; font-size: 11pt; ${isLastOnPage ? 'page-break-after: always;' : ''}">
@@ -470,7 +483,7 @@
                 <td style="border:1px solid #000; padding:2px;"></td>
                 <td style="border:1px solid #000; padding:2px;"></td>
                 <td style="border:1px solid #000; padding:2px;"></td>
-              </tr>
+               </tr>
       `;
       
       for (let m in calc.modules) {
@@ -486,7 +499,7 @@
             <td style="border:1px solid #000; padding:2px; font-weight:bold;">${calc.modAvg[m].toFixed(2)}</td>
             <td style="border:1px solid #000; padding:2px;">${calc.modCredits[m].toFixed(1)}</td>
             <td style="border:1px solid #000; padding:2px;">${calc.modStatus[m]}</td>
-          </tr>
+           </tr>
         `;
         
         for (let s of mod.subjects) {
