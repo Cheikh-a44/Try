@@ -3,268 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mes Résultats S4 - PPV</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<style>
-  :root { --primary:#2c5f2d; --light:#e8f5e9; --white:#fff; --shadow:0 2px 8px rgba(0,0,0,0.1); --radius:8px; }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Segoe UI',sans-serif; background:#f5f7fa; color:#333; padding:1rem; }
-  h1 { text-align:center; color:var(--primary); margin-bottom:1.5rem; font-size:1.4rem; }
-  .card { background:var(--white); border-radius:var(--radius); padding:1.2rem; margin-bottom:1rem; box-shadow:var(--shadow); }
-  .card h3 { color:var(--primary); margin-bottom:0.8rem; font-size:1rem; border-bottom:2px solid var(--light); padding-bottom:0.4rem; }
-  .import-row { display:flex; align-items:center; gap:0.8rem; margin-bottom:0.6rem; flex-wrap:wrap; }
-  .import-row label { font-weight:600; min-width:80px; font-size:0.9rem; }
-  input[type=file] { font-size:0.85rem; flex:1; }
-  .btn { padding:0.5rem 1.2rem; background:var(--primary); color:white; border:none; border-radius:var(--radius); cursor:pointer; font-size:0.9rem; font-weight:600; }
-  .btn:hover { background:#1e4420; }
-  .btn.secondary { background:#6c757d; }
-  .msg { padding:0.5rem 0.8rem; border-radius:var(--radius); margin:0.5rem 0; font-size:0.85rem; display:none; }
-  .msg.ok  { background:#d4edda; color:#155724; display:block; }
-  .msg.err { background:#f8d7da; color:#721c24; display:block; }
-  .ref-table { width:100%; border-collapse:collapse; font-size:0.82rem; margin-top:0.5rem; }
-  .ref-table th, .ref-table td { border:1px solid #ddd; padding:4px 8px; }
-  .ref-table th { background:var(--light); font-weight:bold; text-align:center; }
-  .ref-table td:first-child { text-align:center; font-weight:bold; color:var(--primary); }
-  .releve-table { width:100%; border-collapse:collapse; font-size:12px; margin-top:0.5rem; }
-  .releve-table th { border:1px solid #aaa; padding:4px; text-align:center; background:var(--light); font-weight:bold; }
-  .releve-table td { padding:2px 4px; text-align:center; }
-  .releve-table tbody tr:not(.module-row):not(.student-info-row):not(.student-empty-row) td { border:1px solid #aaa; }
-  .student-info-row { background:#f0f8ff; font-weight:bold; }
-  .student-info-row td { border-top:1px solid #aaa; border-bottom:1px solid #aaa; border-left:none; border-right:none; padding:2px 4px; }
-  .student-info-row td:first-child { border-left:1px solid #aaa; }
-  .student-info-row td:last-child  { border-right:1px solid #aaa; }
-  .student-empty-row td { border-left:1px solid #aaa; border-right:1px solid #aaa; border-bottom:1px solid #aaa; height:6px; background:#f0f8ff; }
-  .module-row { background:#d4edda; font-weight:bold; }
-  .module-row td { border-top:1px solid #aaa; border-bottom:1px solid #aaa; border-left:none; border-right:none; padding:2px 4px; }
-  .module-row td:first-child { border-left:1px solid #aaa; }
-  .module-row td:last-child  { border-right:1px solid #aaa; }
-  .subject-row td:first-child { text-align:left; padding-left:20px; }
-  .status-C, .status-V  { color:#27ae60; font-weight:bold; }
-  .status-NC, .status-NV { color:#e74c3c; font-weight:bold; }
-  .summary { display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.8rem; }
-  .summary-box { flex:1; min-width:130px; background:var(--light); border-radius:var(--radius); padding:0.8rem; text-align:center; }
-  .summary-box .val { font-size:1.4rem; font-weight:bold; color:var(--primary); }
-  .summary-box .lbl { font-size:0.8rem; color:#666; margin-top:0.2rem; }
-  @media(max-width:500px){ .releve-table { font-size:10px; } }
-</style>
+<title>ISET Rosso - Consultation des notes</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>📊 Mes Résultats S4 — PPV</h1>
+<header>
+  <div class="container">
+    <h1>ISET Rosso</h1>
+    <p>Institut Supérieur d'Enseignement Technologique</p>
+  </div>
+</header>
 
-<!-- Référence -->
-<div class="card">
-  <h3>📌 Référence des matières</h3>
-  <table class="ref-table">
-    <thead><tr><th>N°</th><th>Matière</th><th>Crédit</th><th>TP</th></tr></thead>
-    <tbody>
-      <tr><td>1</td><td>Technique de communication et vulgarisation</td><td>3.0</td><td>Non</td></tr>
-      <tr><td>2</td><td>Technique de Propagation des semences et Culture Fouragère</td><td>4.0</td><td>Oui</td></tr>
-      <tr><td>3</td><td>Besoins en eau des cultures</td><td>3.0</td><td>Oui</td></tr>
-      <tr><td>4</td><td>Ecophysiologie Végétale et Complément en Biochimie</td><td>4.0</td><td>Oui</td></tr>
-      <tr><td>5</td><td>Fertilité des sols</td><td>3.0</td><td>Oui</td></tr>
-      <tr><td>6</td><td>Méthodes de Diagnostics en Phytoprotection</td><td>3.0</td><td>Oui</td></tr>
-      <tr><td>7</td><td>Malherbologie</td><td>3.0</td><td>Oui</td></tr>
-    </tbody>
-  </table>
-  <div style="margin-top:0.8rem; background:#fff3cd; border-radius:var(--radius); padding:0.6rem; font-size:0.82rem; color:#856404;">
-    <strong>Format du fichier Excel :</strong><br>
-    Colonnes : <strong>N</strong> | <strong>CC</strong> | <strong>Examen</strong> | <strong>TP</strong><br>
-    La colonne TP de la matière 1 peut être laissée vide.
+<div class="main-content">
+  <div class="container">
+    <div id="annonceContainer" class="annonce-container"></div>
+
+    <div class="result-card">
+      <h2 class="section-title">Consulter votre résultat</h2>
+
+      <div class="dept-selector">
+        <button class="dept-btn active" data-dept="PPV">PPV</button>
+        <button class="dept-btn" data-dept="TC">TC</button>
+        <button class="dept-btn" data-dept="GAB">GAB</button>
+        <button class="dept-btn" data-dept="GEM">GEM</button>
+        <button class="dept-btn" data-dept="PSA">PSA</button>
+        <button class="dept-btn" data-dept="STA">STA</button>
+      </div>
+
+      <div class="search-box">
+        <input type="text" id="studentIdInput" placeholder="Entrez votre numéro d'étudiant...">
+        <button id="searchBtn" title="Rechercher"><i class="fas fa-search"></i></button>
+      </div>
+
+      <div id="studentResultContainer" style="display:none;"></div>
+      <div id="noResultMessage" style="display:none;" class="empty-state">
+        <h3>Aucun résultat trouvé</h3>
+        <p>Vérifiez votre numéro d'étudiant et le département sélectionné</p>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- Import -->
-<div class="card">
-  <h3>📂 Importer le fichier Excel</h3>
-  <div class="import-row">
-    <label>Fichier :</label>
-    <input type="file" id="fileMain" accept=".xlsx,.xls">
-  </div>
-  <div style="margin-top:0.8rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
-    <button class="btn" onclick="calculate()">✅ Calculer</button>
-    <button class="btn secondary" onclick="resetAll()">🔄 Réinitialiser</button>
-  </div>
-  <div id="msg" class="msg"></div>
-</div>
+<footer class="footer">
+  <p>© 2026 Institut Supérieur d'Enseignement Technologique de Rosso</p>
+</footer>
 
-<!-- Résultats -->
-<div class="card" id="resultCard" style="display:none;">
-  <h3>📋 Relevé de Notes — S4</h3>
-  <div style="overflow-x:auto;">
-    <table class="releve-table" id="releveTable"></table>
-  </div>
-  <div class="summary" id="summary"></div>
-</div>
-
-<script>
-const SUBJECTS = [
-  null,
-  { name:"Technique de communication et vulgarisation",          credit:3, hasTP:false, module:"M41" },
-  { name:"Technique de Propagation des semences et Culture Fouragère", credit:4, hasTP:true,  module:"M42" },
-  { name:"Besoins en eau des cultures",                          credit:3, hasTP:true,  module:"M42" },
-  { name:"Ecophysiologie Végétale et Complément en Biochimie",   credit:4, hasTP:true,  module:"M43" },
-  { name:"Fertilité des sols",                                   credit:3, hasTP:true,  module:"M43" },
-  { name:"Méthodes de Diagnostics en Phytoprotection",           credit:3, hasTP:true,  module:"M44" },
-  { name:"Malherbologie",                                        credit:3, hasTP:true,  module:"M44" }
-];
-
-const MODULES = {
-  M41:{ name:"Module 41", subjects:[1] },
-  M42:{ name:"Module 42", subjects:[2,3] },
-  M43:{ name:"Module 43", subjects:[4,5] },
-  M44:{ name:"Module 44", subjects:[6,7] }
-};
-
-function readExcel(file) {
-  return new Promise((res, rej) => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      try {
-        const wb   = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
-        const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-        const cc={}, exam={}, tp={};
-
-        for (let row of json) {
-          const keys = Object.keys(row);
-
-          // عمود N (رقم المادة)
-          const nk = keys.find(k => k.trim().toUpperCase()==='N' || k.trim().toUpperCase()==='N°' || k.toLowerCase().includes('num')) || keys[0];
-          const num = parseInt(row[nk]);
-          if (num < 1 || num > 7) continue;
-
-          // عمود CC
-          const ck = keys.find(k => k.toLowerCase().includes('cc') || k.toLowerCase().includes('cont')) || keys[1];
-          // عمود Examen
-          const ek = keys.find(k => k.toLowerCase().includes('exam')) || keys[2];
-          // عمود TP
-          const tk = keys.find(k => k.toLowerCase() === 'tp') || keys[3];
-
-          const vCC   = parseFloat(String(row[ck]||'').replace(',','.'));
-          const vExam = parseFloat(String(row[ek]||'').replace(',','.'));
-          const vTP   = parseFloat(String(row[tk]||'').replace(',','.'));
-
-          if (!isNaN(vCC)   && vCC   >= 0 && vCC   <= 20) cc[num]   = vCC;
-          if (!isNaN(vExam) && vExam >= 0 && vExam <= 20) exam[num] = vExam;
-          if (!isNaN(vTP)   && vTP   >= 0 && vTP   <= 20) tp[num]   = vTP;
-        }
-        res({cc, exam, tp});
-      } catch(err) { rej(err); }
-    };
-    reader.onerror = rej;
-    reader.readAsArrayBuffer(file);
-  });
-}
-
-function showMsg(txt, type) {
-  const el = document.getElementById('msg');
-  el.textContent = txt; el.className = 'msg ' + type;
-}
-
-function resetAll() {
-  document.getElementById('fileMain').value = '';
-  document.getElementById('resultCard').style.display = 'none';
-  document.getElementById('msg').className = 'msg';
-}
-
-async function calculate() {
-  const file = document.getElementById('fileMain').files[0];
-  if (!file) { showMsg("Veuillez sélectionner un fichier Excel", 'err'); return; }
-
-  let cc={}, exam={}, tp={};
-  try {
-    const data = await readExcel(file);
-    cc = data.cc; exam = data.exam; tp = data.tp;
-  } catch(e) { showMsg("Erreur de lecture du fichier", 'err'); return; }
-
-  // حساب معدل كل مادة
-  const avg={}, status={};
-  for (let i=1; i<=7; i++) {
-    const s = SUBJECTS[i];
-    const e = exam[i] ?? 0;
-    const c = cc[i]   ?? 0;
-    const t = tp[i]   ?? 0;
-    avg[i]    = s.hasTP ? (t + c*2 + e*3)/6 : (c*2 + e*3)/5;
-    status[i] = avg[i] >= 10 ? 'C' : 'NC';
-  }
-
-  // حساب معدل كل موديل
-  const modAvg={}, modStatus={}, modEarned={};
-  for (let m in MODULES) {
-    let w=0, tot=0, earned=0;
-    for (let i of MODULES[m].subjects) {
-      const cr = SUBJECTS[i].credit;
-      w += avg[i]*cr; tot += cr;
-      if (status[i]==='C') earned += cr;
-    }
-    modAvg[m]    = tot>0 ? w/tot : 0;
-    modStatus[m] = MODULES[m].subjects.every(i=>status[i]==='C') && modAvg[m]>=10 ? 'V' : 'NV';
-    modEarned[m] = earned;
-  }
-
-  // المعدل العام
-  let tw=0, tc=0;
-  for (let i=1; i<=7; i++) { tw += avg[i]*SUBJECTS[i].credit; tc += SUBJECTS[i].credit; }
-  const genMoy    = tc>0 ? tw/tc : 0;
-  const hasNV     = Object.values(modStatus).some(s=>s==='NV');
-  const semStatus = hasNV ? 'Non Validé' : (genMoy>=10 ? 'Validé' : 'Non Validé');
-
-  // بناء الجدول
-  let rows = `<thead><tr>
-    <th>Module</th><th>Matière</th><th>TP</th><th>CC</th><th>Examen</th>
-    <th>NFe</th><th>Crédit</th><th>Observations</th>
-  </tr></thead><tbody>`;
-
-  rows += `<tr class="student-info-row">
-    <td colspan="2" style="text-align:left;padding-left:8px;">Mes Résultats — Semestre 4</td>
-    <td></td><td></td><td></td>
-    <td colspan="2" style="text-align:right;font-weight:bold;padding-right:4px;">Moyenne : ${genMoy.toFixed(2)}</td>
-    <td class="${semStatus==='Validé'?'status-V':'status-NV'}">${semStatus}</td>
-  </tr>`;
-  rows += `<tr class="student-empty-row"><td colspan="8"></td></tr>`;
-
-  for (let m in MODULES) {
-    rows += `<tr class="module-row">
-      <td>${m}</td>
-      <td style="text-align:left;padding-left:8px;font-weight:bold;">${MODULES[m].name}</td>
-      <td></td><td></td><td></td>
-      <td style="font-weight:bold;">${modAvg[m].toFixed(2)}</td>
-      <td>${modEarned[m].toFixed(1)}</td>
-      <td class="${modStatus[m]==='V'?'status-V':'status-NV'}">${modStatus[m]}</td>
-    </tr>`;
-    for (let i of MODULES[m].subjects) {
-      const s   = SUBJECTS[i];
-      const tpV = s.hasTP ? (tp[i]!==undefined   ? tp[i].toFixed(2)   : '') : '';
-      const ccV = cc[i]!==undefined   ? cc[i].toFixed(2)   : '';
-      const exV = exam[i]!==undefined ? exam[i].toFixed(2) : '';
-      rows += `<tr class="subject-row">
-        <td></td>
-        <td style="text-align:left;padding-left:20px;">${s.name}</td>
-        <td>${tpV}</td><td>${ccV}</td><td>${exV}</td>
-        <td style="font-weight:bold;">${avg[i].toFixed(2)}</td>
-        <td>${s.credit.toFixed(1)}</td>
-        <td class="${status[i]==='C'?'status-C':'status-NC'}">${status[i]}</td>
-      </tr>`;
-    }
-  }
-  rows += '</tbody>';
-
-  document.getElementById('releveTable').innerHTML = rows;
-
-  const totalCr  = SUBJECTS.slice(1).reduce((a,s)=>a+s.credit, 0);
-  const earnedCr = Object.values(modEarned).reduce((a,b)=>a+b, 0);
-  const validMods = Object.values(modStatus).filter(s=>s==='V').length;
-  document.getElementById('summary').innerHTML = `
-    <div class="summary-box"><div class="val">${genMoy.toFixed(2)}</div><div class="lbl">Moyenne générale</div></div>
-    <div class="summary-box"><div class="val ${semStatus==='Validé'?'status-V':'status-NV'}">${semStatus}</div><div class="lbl">Statut</div></div>
-    <div class="summary-box"><div class="val">${earnedCr}/${totalCr}</div><div class="lbl">Crédits obtenus</div></div>
-    <div class="summary-box"><div class="val">${validMods}/4</div><div class="lbl">Modules validés</div></div>
-  `;
-
-  document.getElementById('resultCard').style.display = 'block';
-  showMsg('Résultats calculés avec succès !', 'ok');
-  document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});
-}
-</script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
