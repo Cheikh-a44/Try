@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>دفتر الدين</title>
-  <link rel="stylesheet" href="style.css?v=3">
+  <title>Debt-book</title>
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 
@@ -16,14 +16,13 @@
   <!-- شاشة تسجيل الدخول / التسجيل -->
   <div id="authScreen" class="screen">
     <div class="auth-container">
-      <h1 class="auth-title">دفتر الدين</h1>
+      <h1 class="auth-title">Debt-book</h1>
 
       <div class="auth-tabs">
         <button id="loginTabBtn" class="auth-tab active">تسجيل الدخول</button>
         <button id="signupTabBtn" class="auth-tab">حساب جديد</button>
       </div>
 
-      <!-- نموذج الدخول -->
       <div id="loginForm" class="auth-form active">
         <input id="loginEmail" type="email" placeholder="البريد الإلكتروني" autocomplete="email">
         <input id="loginPassword" type="password" placeholder="كلمة السر" autocomplete="current-password">
@@ -31,7 +30,6 @@
         <p id="loginError" class="auth-error"></p>
       </div>
 
-      <!-- نموذج التسجيل -->
       <div id="signupForm" class="auth-form">
         <input id="signupName" type="text" placeholder="الاسم" autocomplete="name">
         <input id="signupEmail" type="email" placeholder="البريد الإلكتروني" autocomplete="email">
@@ -47,7 +45,7 @@
   <div id="homeScreen" class="screen">
     <header class="app-header">
       <button id="logoutBtn" class="header-btn">خروج</button>
-      <h1>دفتر الدين</h1>
+      <h1>Debt-book</h1>
       <button id="archiveBtn" class="header-btn">الأرشيف</button>
     </header>
 
@@ -101,17 +99,18 @@
     <div class="modal-content">
       <h3>نوع الدين</h3>
       <div class="modal-buttons column">
-        <button id="cashBtn" class="type-btn">سيولة</button>
+        <button id="cashBtn" class="type-btn">نقدا</button>
         <button id="tradeBtn" class="type-btn">تجارة</button>
         <button id="cancelType" class="btn-cancel">إلغاء</button>
       </div>
     </div>
   </div>
 
-  <!-- نافذة سيولة -->
+  <!-- نافذة نقدا -->
   <div id="cashModal" class="modal">
     <div class="modal-content">
-      <h3>إدخال سيولة</h3>
+      <h3>إدخال نقدا</h3>
+      <input type="text" id="cashName" placeholder="نوع النقد (اختياري)">
       <input type="number" id="cashAmount" placeholder="الرقم" inputmode="decimal">
       <div class="modal-buttons">
         <button id="cancelCash" class="btn-cancel">إلغاء</button>
@@ -124,7 +123,7 @@
   <div id="tradeModal" class="modal">
     <div class="modal-content">
       <h3>إدخال تجارة</h3>
-      <input type="text" id="tradeName" placeholder="اسم المادة">
+      <input type="text" id="tradeName" placeholder="اسم المادة (اختياري)">
       <input type="number" id="tradeQty" placeholder="العدد" inputmode="decimal">
       <input type="number" id="tradePrice" placeholder="سعر الواحد" inputmode="decimal">
       <div class="modal-buttons">
@@ -144,6 +143,17 @@
     </div>
   </div>
 
-  <script type="module" src="script.js?v=3"></script>
+  <!-- نافذة تأكيد مخصصة -->
+  <div id="confirmModal" class="modal">
+    <div class="modal-content">
+      <p id="confirmMessage" class="confirm-message"></p>
+      <div class="modal-buttons">
+        <button id="confirmCancel" class="btn-cancel">إلغاء</button>
+        <button id="confirmOk" class="btn-confirm">موافق</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="script.js?v=5"></script>
 </body>
 </html>
