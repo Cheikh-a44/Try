@@ -259,20 +259,43 @@ body {
   border-radius: 10px;
   border-right: 4px solid #3498db;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
 }
 
 .debt-item.trade { border-right-color: #e67e22; }
+
+.debt-item .debt-content {
+  flex: 1;
+  min-width: 0;
+}
 
 .debt-item .debt-desc {
   font-size: 15px;
   margin-bottom: 6px;
   font-weight: 600;
+  word-wrap: break-word;
 }
 
 .debt-item .debt-date {
   font-size: 12px;
   color: #888;
 }
+
+.delete-debt {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.delete-debt:hover { background: #c0392b; }
 
 /* ===================
    الأزرار العائمة
