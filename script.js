@@ -73,7 +73,11 @@ function formatDateTime(ts) {
   return (
     d.toLocaleDateString("fr-FR") +
     " - " +
-    d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+    d.toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    })
   );
 }
 
@@ -90,6 +94,20 @@ function authErrorMsg(code) {
     "auth/missing-password": "أدخل كلمة السر",
   };
   return map[code] || "حدث خطأ، حاول مرة أخرى";
+}
+
+function escapeHtml(s) {
+  return String(s).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[c],
+  );
 }
 
 /* ======================
@@ -181,7 +199,6 @@ onAuthStateChanged(auth, (user) => {
     startDataListeners(user.uid);
   } else {
     stopDataListeners();
-    // تفريغ الحقول
     document.getElementById("loginEmail").value = "";
     document.getElementById("loginPassword").value = "";
     document.getElementById("signupName").value = "";
@@ -308,9 +325,12 @@ function renderDebts() {
     return;
   }
 
-  person.activeDebts.forEach((d) => {
+  person.activeDebts.forEach((d, index) => {
     const item = document.createElement("div");
     item.className = "debt-item" + (d.type === "trade" ? " trade" : "");
+
+    const content = document.createElement("div");
+    content.className = "debt-content";
 
     const desc = document.createElement("div");
     desc.className = "debt-desc";
@@ -322,11 +342,30 @@ function renderDebts() {
     if (d.type === "cash") {
       desc.textContent = `سيولة: ${d.amount}`;
     } else {
-      desc.textContent = `${d.name}: ${d.qty} × ${d.price}`;
+      if (d.name && d.name.trim()) {
+        desc.textContent = `${d.name}: ${d.qty} × ${d.price}`;
+      } else {
+        desc.textContent = `${d.qty} × ${d.price}`;
+      }
     }
 
-    item.appendChild(desc);
-    item.appendChild(date);
+    content.appendChild(desc);
+    content.appendChild(date);
+
+    const delBtn = document.createElement("button");
+    delBtn.className = "delete-debt";
+    delBtn.textContent = "حذف";
+    delBtn.onclick = async (e) => {
+      e.stopPropagation();
+      if (!confirm("حذف هذا الدين؟")) return;
+      const updated = person.activeDebts.filter((_, i) => i !== index);
+      await updateDoc(doc(db, PEOPLE_COL, currentPersonId), {
+        activeDebts: updated,
+      });
+    };
+
+    item.appendChild(content);
+    item.appendChild(delBtn);
     list.appendChild(item);
   });
 }
@@ -423,7 +462,11 @@ function buildPlainText(personName, items, total, ts) {
     if (d.type === "cash") {
       text += `${i + 1}) سيولة: ${d.amount}\n`;
     } else {
-      text += `${i + 1}) ${d.name}: ${d.qty} × ${d.price} = ${d.qty * d.price}\n`;
+      if (d.name && d.name.trim()) {
+        text += `${i + 1}) ${d.name}: ${d.qty} × ${d.price} = ${d.qty * d.price}\n`;
+      } else {
+        text += `${i + 1}) ${d.qty} × ${d.price} = ${d.qty * d.price}\n`;
+      }
     }
   });
   text += "--------------------\n";
@@ -432,19 +475,6 @@ function buildPlainText(personName, items, total, ts) {
 }
 
 function buildResultHtml(personName, items, total, ts) {
-  const escapeHtml = (s) =>
-    String(s).replace(
-      /[&<>"']/g,
-      (c) =>
-        ({
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#39;",
-        })[c],
-    );
-
   let html = `<span class="result-name">${escapeHtml(personName)}</span>`;
   html += `<span class="result-date">${formatDateTime(ts)}</span>`;
 
@@ -452,7 +482,11 @@ function buildResultHtml(personName, items, total, ts) {
     if (d.type === "cash") {
       html += `<span class="item-line">${i + 1}) سيولة: ${d.amount}</span>`;
     } else {
-      html += `<span class="item-line">${i + 1}) ${escapeHtml(d.name)}: ${d.qty} × ${d.price} = ${d.qty * d.price}</span>`;
+      if (d.name && d.name.trim()) {
+        html += `<span class="item-line">${i + 1}) ${escapeHtml(d.name)}: ${d.qty} × ${d.price} = ${d.qty * d.price}</span>`;
+      } else {
+        html += `<span class="item-line">${i + 1}) ${d.qty} × ${d.price} = ${d.qty * d.price}</span>`;
+      }
     }
   });
 
@@ -544,7 +578,6 @@ document.getElementById("confirmTrade").onclick = async () => {
   const qty = parseFloat(document.getElementById("tradeQty").value);
   const price = parseFloat(document.getElementById("tradePrice").value);
 
-  if (!name) return alert("أدخل اسم المادة");
   if (!qty || !price || qty <= 0 || price <= 0)
     return alert("أدخل قيماً صحيحة");
 
