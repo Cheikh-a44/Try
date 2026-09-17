@@ -39,6 +39,7 @@ const db = getFirestore(app);
 
 const PEOPLE_COL = "debt_people";
 const ARCHIVE_COL = "debt_archive";
+const DEFAULT_CASH_LABEL = "نقدا";
 
 let people = [];
 let archives = [];
@@ -108,6 +109,40 @@ function escapeHtml(s) {
         "'": "&#39;",
       })[c],
   );
+}
+
+/* الحصول على التسمية الفعلية لدين نقدي */
+function getCashLabel(debt) {
+  if (debt.name && debt.name.trim()) return debt.name.trim();
+  return DEFAULT_CASH_LABEL;
+}
+
+/* ======================
+   نافذة تأكيد مخصصة بالعربية
+   ====================== */
+function customConfirm(message) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById("confirmModal");
+    document.getElementById("confirmMessage").textContent = message;
+    modal.classList.add("active");
+
+    const okBtn = document.getElementById("confirmOk");
+    const cancelBtn = document.getElementById("confirmCancel");
+
+    const newOk = okBtn.cloneNode(true);
+    const newCancel = cancelBtn.cloneNode(true);
+    okBtn.parentNode.replaceChild(newOk, okBtn);
+    cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+
+    newOk.addEventListener("click", () => {
+      modal.classList.remove("active");
+      resolve(true);
+    });
+    newCancel.addEventListener("click", () => {
+      modal.classList.remove("active");
+      resolve(false);
+    });
+  });
 }
 
 /* ======================
@@ -182,9 +217,8 @@ document.getElementById("signupBtn").onclick = async () => {
 };
 
 document.getElementById("logoutBtn").onclick = async () => {
-  if (confirm("تسجيل الخروج؟")) {
-    await signOut(auth);
-  }
+  const ok = await customConfirm("تسجيل الخروج؟");
+  if (ok) await signOut(auth);
 };
 
 /* ======================
@@ -289,9 +323,8 @@ function renderPeople(filter = "") {
     delBtn.textContent = "حذف";
     delBtn.onclick = async (e) => {
       e.stopPropagation();
-      if (confirm(`حذف "${person.name}" نهائياً؟`)) {
-        await deleteDoc(doc(db, PEOPLE_COL, person.id));
-      }
+      const ok = await customConfirm(`حذف "${person.name}" نهائياً؟`);
+      if (ok) await deleteDoc(doc(db, PEOPLE_COL, person.id));
     };
 
     card.appendChild(nameEl);
@@ -340,7 +373,7 @@ function renderDebts() {
     date.textContent = formatDate(d.createdAt);
 
     if (d.type === "cash") {
-      desc.textContent = `سيولة: ${d.amount}`;
+      desc.textContent = `${getCashLabel(d)}: ${d.amount}`;
     } else {
       if (d.name && d.name.trim()) {
         desc.textContent = `${d.name}: ${d.qty} × ${d.price}`;
@@ -357,7 +390,8 @@ function renderDebts() {
     delBtn.textContent = "حذف";
     delBtn.onclick = async (e) => {
       e.stopPropagation();
-      if (!confirm("حذف هذا الدين؟")) return;
+      const ok = await customConfirm("حذف هذا الدين؟");
+      if (!ok) return;
       const updated = person.activeDebts.filter((_, i) => i !== index);
       await updateDoc(doc(db, PEOPLE_COL, currentPersonId), {
         activeDebts: updated,
@@ -435,9 +469,8 @@ function renderArchive() {
     delBtn.className = "btn-delete-archive";
     delBtn.textContent = "حذف";
     delBtn.onclick = async () => {
-      if (confirm("حذف هذا الحساب من الأرشيف؟")) {
-        await deleteDoc(doc(db, ARCHIVE_COL, arch.id));
-      }
+      const ok = await customConfirm("حذف هذا الحساب من الأرشيف؟");
+      if (ok) await deleteDoc(doc(db, ARCHIVE_COL, arch.id));
     };
 
     actions.appendChild(viewBtn);
@@ -460,7 +493,7 @@ function buildPlainText(personName, items, total, ts) {
   text += "--------------------\n";
   items.forEach((d, i) => {
     if (d.type === "cash") {
-      text += `${i + 1}) سيولة: ${d.amount}\n`;
+      text += `${i + 1}) ${getCashLabel(d)}: ${d.amount}\n`;
     } else {
       if (d.name && d.name.trim()) {
         text += `${i + 1}) ${d.name}: ${d.qty} × ${d.price} = ${d.qty * d.price}\n`;
@@ -480,7 +513,7 @@ function buildResultHtml(personName, items, total, ts) {
 
   items.forEach((d, i) => {
     if (d.type === "cash") {
-      html += `<span class="item-line">${i + 1}) سيولة: ${d.amount}</span>`;
+      html += `<span class="item-line">${i + 1}) ${escapeHtml(getCashLabel(d))}: ${d.amount}</span>`;
     } else {
       if (d.name && d.name.trim()) {
         html += `<span class="item-line">${i + 1}) ${escapeHtml(d.name)}: ${d.qty} × ${d.price} = ${d.qty * d.price}</span>`;
@@ -543,6 +576,7 @@ document.getElementById("cancelType").onclick = () => closeModal("typeModal");
 
 document.getElementById("cashBtn").onclick = () => {
   closeModal("typeModal");
+  document.getElementById("cashName").value = "";
   document.getElementById("cashAmount").value = "";
   openModal("cashModal");
 };
@@ -550,11 +584,12 @@ document.getElementById("cashBtn").onclick = () => {
 document.getElementById("cancelCash").onclick = () => closeModal("cashModal");
 
 document.getElementById("confirmCash").onclick = async () => {
+  const name = document.getElementById("cashName").value.trim();
   const amount = parseFloat(document.getElementById("cashAmount").value);
   if (!amount || amount <= 0) return alert("أدخل رقماً صحيحاً");
 
   const person = people.find((p) => p.id === currentPersonId);
-  const newDebt = { type: "cash", amount, createdAt: Date.now() };
+  const newDebt = { type: "cash", name, amount, createdAt: Date.now() };
   const updated = [...(person.activeDebts || []), newDebt];
 
   await updateDoc(doc(db, PEOPLE_COL, currentPersonId), {
@@ -633,7 +668,11 @@ document.getElementById("calcBtn").onclick = async () => {
 document.getElementById("closeResult").onclick = () =>
   closeModal("resultModal");
 
+/* ======================
+   إغلاق النوافذ بالنقر خارجها (ما عدا نافذة التأكيد)
+   ====================== */
 document.querySelectorAll(".modal").forEach((m) => {
+  if (m.id === "confirmModal") return;
   m.addEventListener("click", (e) => {
     if (e.target === m) m.classList.remove("active");
   });
