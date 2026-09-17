@@ -8,10 +8,47 @@
 </head>
 <body>
 
+  <div id="loadingScreen">
+    <div class="spinner"></div>
+    <p>جاري التحميل...</p>
+  </div>
+
+  <!-- شاشة تسجيل الدخول / التسجيل -->
+  <div id="authScreen" class="screen">
+    <div class="auth-container">
+      <h1 class="auth-title">دفتر الدين</h1>
+
+      <div class="auth-tabs">
+        <button id="loginTabBtn" class="auth-tab active">تسجيل الدخول</button>
+        <button id="signupTabBtn" class="auth-tab">حساب جديد</button>
+      </div>
+
+      <!-- نموذج الدخول -->
+      <div id="loginForm" class="auth-form active">
+        <input id="loginEmail" type="email" placeholder="البريد الإلكتروني" autocomplete="email">
+        <input id="loginPassword" type="password" placeholder="كلمة السر" autocomplete="current-password">
+        <button id="loginBtn" class="auth-submit">دخول</button>
+        <p id="loginError" class="auth-error"></p>
+      </div>
+
+      <!-- نموذج التسجيل -->
+      <div id="signupForm" class="auth-form">
+        <input id="signupName" type="text" placeholder="الاسم" autocomplete="name">
+        <input id="signupEmail" type="email" placeholder="البريد الإلكتروني" autocomplete="email">
+        <input id="signupPassword" type="password" placeholder="كلمة السر" autocomplete="new-password">
+        <input id="signupPassword2" type="password" placeholder="تأكيد كلمة السر" autocomplete="new-password">
+        <button id="signupBtn" class="auth-submit">تسجيل</button>
+        <p id="signupError" class="auth-error"></p>
+      </div>
+    </div>
+  </div>
+
   <!-- الشاشة الرئيسية -->
-  <div id="homeScreen" class="screen active">
+  <div id="homeScreen" class="screen">
     <header class="app-header">
+      <button id="logoutBtn" class="header-btn">خروج</button>
       <h1>دفتر الدين</h1>
+      <button id="archiveBtn" class="header-btn">الأرشيف</button>
     </header>
 
     <div class="search-box">
@@ -38,6 +75,15 @@
     </div>
   </div>
 
+  <!-- شاشة الأرشيف -->
+  <div id="archiveScreen" class="screen">
+    <header class="app-header">
+      <button id="backFromArchive" class="back-btn">→</button>
+      <h1>الأرشيف</h1>
+    </header>
+    <div id="archiveList" class="archive-list"></div>
+  </div>
+
   <!-- نافذة إدخال الاسم -->
   <div id="nameModal" class="modal">
     <div class="modal-content">
@@ -55,18 +101,18 @@
     <div class="modal-content">
       <h3>نوع الدين</h3>
       <div class="modal-buttons column">
-        <button id="cashBtn" class="type-btn">💵 سيولة</button>
-        <button id="tradeBtn" class="type-btn">📦 تجارة</button>
+        <button id="cashBtn" class="type-btn">سيولة</button>
+        <button id="tradeBtn" class="type-btn">تجارة</button>
         <button id="cancelType" class="btn-cancel">إلغاء</button>
       </div>
     </div>
   </div>
 
-  <!-- نافذة إدخال سيولة -->
+  <!-- نافذة سيولة -->
   <div id="cashModal" class="modal">
     <div class="modal-content">
       <h3>إدخال سيولة</h3>
-      <input type="number" id="cashAmount" placeholder="الرقم">
+      <input type="number" id="cashAmount" placeholder="الرقم" inputmode="decimal">
       <div class="modal-buttons">
         <button id="cancelCash" class="btn-cancel">إلغاء</button>
         <button id="confirmCash" class="btn-confirm">تم</button>
@@ -74,12 +120,13 @@
     </div>
   </div>
 
-  <!-- نافذة إدخال تجارة -->
+  <!-- نافذة تجارة -->
   <div id="tradeModal" class="modal">
     <div class="modal-content">
       <h3>إدخال تجارة</h3>
-      <input type="number" id="tradeQty" placeholder="العدد">
-      <input type="number" id="tradePrice" placeholder="سعر الواحد">
+      <input type="text" id="tradeName" placeholder="اسم المادة">
+      <input type="number" id="tradeQty" placeholder="العدد" inputmode="decimal">
+      <input type="number" id="tradePrice" placeholder="سعر الواحد" inputmode="decimal">
       <div class="modal-buttons">
         <button id="cancelTrade" class="btn-cancel">إلغاء</button>
         <button id="confirmTrade" class="btn-confirm">تم</button>
@@ -87,7 +134,7 @@
     </div>
   </div>
 
-  <!-- نافذة الحساب -->
+  <!-- نافذة النتيجة -->
   <div id="resultModal" class="modal">
     <div class="modal-content result-content">
       <div id="resultArea" class="result-area"></div>
@@ -97,6 +144,6 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
