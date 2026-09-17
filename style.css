@@ -148,10 +148,10 @@ body {
 .app-header {
   background: #2c3e50;
   color: #fff;
-  padding: 14px;
+  padding: 12px 10px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -159,9 +159,10 @@ body {
 }
 
 .app-header h1 {
-  font-size: 18px;
+  font-size: 16px;
   flex: 1;
   text-align: center;
+  white-space: nowrap;
 }
 
 .back-btn {
@@ -180,9 +181,9 @@ body {
   background: rgba(255,255,255,0.15);
   color: #fff;
   border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 13px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 12px;
   cursor: pointer;
   font-weight: 600;
   white-space: nowrap;
@@ -234,13 +235,18 @@ body {
 }
 
 .person-card .delete-person {
-  background: #e74c3c;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 13px;
+  background: transparent;
+  color: #555;
+  border: 1px solid #999;
+  border-radius: 3px;
+  padding: 5px 10px;
+  font-size: 12px;
   cursor: pointer;
+}
+
+.person-card .delete-person:hover {
+  border-color: #333;
+  color: #000;
 }
 
 /* ===================
@@ -285,17 +291,20 @@ body {
 }
 
 .delete-debt {
-  background: #e74c3c;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 6px 10px;
+  background: transparent;
+  color: #555;
+  border: 1px solid #999;
+  border-radius: 3px;
+  padding: 5px 10px;
   font-size: 12px;
   cursor: pointer;
   white-space: nowrap;
 }
 
-.delete-debt:hover { background: #c0392b; }
+.delete-debt:hover {
+  border-color: #333;
+  color: #000;
+}
 
 /* ===================
    الأزرار العائمة
@@ -408,16 +417,33 @@ body {
 
 .archive-card .archive-actions button {
   flex: 1;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  font-size: 14px;
+  padding: 8px;
+  border-radius: 3px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
 }
 
-.btn-view { background: #ecf0f1; color: #333; }
-.btn-delete-archive { background: #e74c3c; color: #fff; }
+.btn-view {
+  background: transparent;
+  color: #333;
+  border: 1px solid #999;
+}
+
+.btn-view:hover {
+  border-color: #333;
+}
+
+.btn-delete-archive {
+  background: transparent;
+  color: #555;
+  border: 1px solid #999;
+}
+
+.btn-delete-archive:hover {
+  border-color: #333;
+  color: #000;
+}
 
 /* ===================
    النوافذ المنبثقة
@@ -462,6 +488,14 @@ body {
 
 .modal-content input:focus { border-color: #2c3e50; }
 
+.confirm-message {
+  text-align: center;
+  font-size: 15px;
+  color: #333;
+  padding: 8px 0;
+  line-height: 1.6;
+}
+
 .modal-buttons { display: flex; gap: 10px; }
 .modal-buttons.column { flex-direction: column; }
 
@@ -497,7 +531,6 @@ body {
   border: 1px solid #eee;
   border-radius: 10px;
   padding: 18px;
-  font-size: 13px;
   line-height: 2;
   max-height: 60vh;
   overflow-y: auto;
@@ -526,8 +559,11 @@ body {
 
 .result-area .item-line {
   display: block;
-  padding: 3px 0;
+  padding: 6px 0;
+  font-size: 16px;
+  font-weight: 600;
   font-family: 'Courier New', monospace;
+  color: #333;
 }
 
 .result-area .result-total {
