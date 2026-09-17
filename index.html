@@ -1,55 +1,102 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ISET Rosso - Consultation des notes</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>دفتر الدين</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-  <div class="container">
-    <h1>ISET Rosso</h1>
-    <p>Institut Supérieur d'Enseignement Technologique</p>
+  <!-- الشاشة الرئيسية -->
+  <div id="homeScreen" class="screen active">
+    <header class="app-header">
+      <h1>دفتر الدين</h1>
+    </header>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="ابحث عن اسم...">
+    </div>
+
+    <div id="peopleList" class="people-list"></div>
+
+    <button id="addPersonBtn" class="fab">+</button>
   </div>
-</header>
 
-<div class="main-content">
-  <div class="container">
-    <div id="annonceContainer" class="annonce-container"></div>
+  <!-- شاشة الدين -->
+  <div id="personScreen" class="screen">
+    <header class="app-header">
+      <button id="backBtn" class="back-btn">→</button>
+      <h1 id="personName"></h1>
+    </header>
 
-    <div class="result-card">
-      <h2 class="section-title">Consulter votre résultat</h2>
+    <div id="debtList" class="debt-list"></div>
 
-      <div class="dept-selector">
-        <button class="dept-btn active" data-dept="PPV">PPV</button>
-        <button class="dept-btn" data-dept="TC">TC</button>
-        <button class="dept-btn" data-dept="GAB">GAB</button>
-        <button class="dept-btn" data-dept="GEM">GEM</button>
-        <button class="dept-btn" data-dept="PSA">PSA</button>
-        <button class="dept-btn" data-dept="STA">STA</button>
-      </div>
+    <div class="bottom-actions">
+      <button id="addDebtBtn" class="fab">+</button>
+      <button id="calcBtn" class="calc-btn">حساب الجميع</button>
+    </div>
+  </div>
 
-      <div class="search-box">
-        <input type="text" id="studentIdInput" placeholder="Entrez votre numéro d'étudiant...">
-        <button id="searchBtn" title="Rechercher"><i class="fas fa-search"></i></button>
-      </div>
-
-      <div id="studentResultContainer" style="display:none;"></div>
-      <div id="noResultMessage" style="display:none;" class="empty-state">
-        <h3>Aucun résultat trouvé</h3>
-        <p>Vérifiez votre numéro d'étudiant et le département sélectionné</p>
+  <!-- نافذة إدخال الاسم -->
+  <div id="nameModal" class="modal">
+    <div class="modal-content">
+      <h3>إضافة شخص جديد</h3>
+      <input type="text" id="newNameInput" placeholder="اكتب الاسم">
+      <div class="modal-buttons">
+        <button id="cancelName" class="btn-cancel">إلغاء</button>
+        <button id="confirmName" class="btn-confirm">تم</button>
       </div>
     </div>
   </div>
-</div>
 
-<footer class="footer">
-  <p>© 2026 Institut Supérieur d'Enseignement Technologique de Rosso</p>
-</footer>
+  <!-- نافذة اختيار نوع الدين -->
+  <div id="typeModal" class="modal">
+    <div class="modal-content">
+      <h3>نوع الدين</h3>
+      <div class="modal-buttons column">
+        <button id="cashBtn" class="type-btn">💵 سيولة</button>
+        <button id="tradeBtn" class="type-btn">📦 تجارة</button>
+        <button id="cancelType" class="btn-cancel">إلغاء</button>
+      </div>
+    </div>
+  </div>
 
-<script type="module" src="app.js"></script>
+  <!-- نافذة إدخال سيولة -->
+  <div id="cashModal" class="modal">
+    <div class="modal-content">
+      <h3>إدخال سيولة</h3>
+      <input type="number" id="cashAmount" placeholder="الرقم">
+      <div class="modal-buttons">
+        <button id="cancelCash" class="btn-cancel">إلغاء</button>
+        <button id="confirmCash" class="btn-confirm">تم</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة إدخال تجارة -->
+  <div id="tradeModal" class="modal">
+    <div class="modal-content">
+      <h3>إدخال تجارة</h3>
+      <input type="number" id="tradeQty" placeholder="العدد">
+      <input type="number" id="tradePrice" placeholder="سعر الواحد">
+      <div class="modal-buttons">
+        <button id="cancelTrade" class="btn-cancel">إلغاء</button>
+        <button id="confirmTrade" class="btn-confirm">تم</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة الحساب -->
+  <div id="resultModal" class="modal">
+    <div class="modal-content result-content">
+      <div id="resultArea" class="result-area"></div>
+      <div class="modal-buttons">
+        <button id="closeResult" class="btn-confirm">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
