@@ -60,7 +60,10 @@ function switchScreen(id) {
 
 function openModal(id) {
   document.getElementById(id).classList.add("active");
+  // إضافة عنصر في سجل التنقل لإغلاق النافذة بزر الرجوع
+  history.pushState({ modal: id }, "");
 }
+
 function closeModal(id) {
   document.getElementById(id).classList.remove("active");
 }
@@ -111,11 +114,39 @@ function escapeHtml(s) {
   );
 }
 
-/* الحصول على التسمية الفعلية لدين نقدي */
 function getCashLabel(debt) {
   if (debt.name && debt.name.trim()) return debt.name.trim();
   return DEFAULT_CASH_LABEL;
 }
+
+/* ======================
+   معالج زر الرجوع في الهاتف
+   ====================== */
+function goHome() {
+  currentPersonId = null;
+  document
+    .querySelectorAll(".screen")
+    .forEach((s) => s.classList.remove("active"));
+  document.getElementById("homeScreen").classList.add("active");
+}
+
+window.addEventListener("popstate", () => {
+  // 1. إن كانت هناك نافذة منبثقة مفتوحة → أغلقها
+  const openModalEl = document.querySelector(".modal.active");
+  if (openModalEl) {
+    openModalEl.classList.remove("active");
+    return;
+  }
+
+  // 2. إن كنا في شاشة شخص أو أرشيف → عد للرئيسية
+  const currentScreen = document.querySelector(".screen.active")?.id;
+  if (currentScreen === "personScreen" || currentScreen === "archiveScreen") {
+    goHome();
+    return;
+  }
+
+  // 3. إن كنا في الشاشة الرئيسية → لا تفعل شيئاً (سيخرج المتصفح طبيعياً)
+});
 
 /* ======================
    نافذة تأكيد مخصصة بالعربية
@@ -344,6 +375,8 @@ function openPerson(id) {
   document.getElementById("personName").textContent = person.name;
   renderDebts();
   switchScreen("personScreen");
+  // إضافة عنصر في سجل التنقل للعودة إلى الرئيسية بزر الرجوع
+  history.pushState({ screen: "person" }, "");
 }
 
 function renderDebts() {
@@ -554,19 +587,17 @@ document.getElementById("confirmName").onclick = async () => {
   closeModal("nameModal");
 };
 
-document.getElementById("backBtn").onclick = () => {
-  currentPersonId = null;
-  switchScreen("homeScreen");
-};
+// زر الرجوع في رأس الشاشة → يعود بالتاريخ خطوة
+document.getElementById("backBtn").onclick = () => history.back();
 
+// زر الأرشيف → يفتح الشاشة ويسجّل خطوة في التاريخ
 document.getElementById("archiveBtn").onclick = () => {
   renderArchive();
   switchScreen("archiveScreen");
+  history.pushState({ screen: "archive" }, "");
 };
 
-document.getElementById("backFromArchive").onclick = () => {
-  switchScreen("homeScreen");
-};
+document.getElementById("backFromArchive").onclick = () => history.back();
 
 /* ======================
    إضافة دين
