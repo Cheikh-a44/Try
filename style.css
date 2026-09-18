@@ -142,6 +142,20 @@ body {
   min-height: 18px;
 }
 
+.forgot-link {
+  background: transparent;
+  border: none;
+  color: #2c3e50;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-align: center;
+  padding: 4px;
+  font-family: inherit;
+}
+
+.forgot-link:hover { color: #1a252f; }
+
 /* ===================
    رأس التطبيق
    =================== */
@@ -163,6 +177,8 @@ body {
   flex: 1;
   text-align: center;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .back-btn {
@@ -181,15 +197,21 @@ body {
   background: rgba(255,255,255,0.15);
   color: #fff;
   border: none;
-  padding: 6px 8px;
+  padding: 6px 10px;
   border-radius: 6px;
   font-size: 12px;
   cursor: pointer;
   font-weight: 600;
   white-space: nowrap;
+  min-width: 60px;
 }
 
 .header-btn:hover { background: rgba(255,255,255,0.25); }
+
+.hidden-btn {
+  visibility: hidden;
+  pointer-events: none;
+}
 
 /* ===================
    البحث والأشخاص
@@ -430,9 +452,7 @@ body {
   border: 1px solid #999;
 }
 
-.btn-view:hover {
-  border-color: #333;
-}
+.btn-view:hover { border-color: #333; }
 
 .btn-delete-archive {
   background: transparent;
@@ -494,6 +514,7 @@ body {
   color: #333;
   padding: 8px 0;
   line-height: 1.6;
+  white-space: pre-line;
 }
 
 .modal-buttons { display: flex; gap: 10px; }
@@ -520,6 +541,49 @@ body {
 }
 
 .type-btn:hover { background: #dfe6e9; }
+
+/* أزرار الإعدادات */
+.settings-btn {
+  background: #ecf0f1;
+  color: #333;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+}
+
+.settings-btn:hover { background: #dfe6e9; }
+
+.settings-danger {
+  background: #fdecea;
+  color: #c0392b;
+}
+
+.settings-danger:hover {
+  background: #fbd5d0;
+}
+
+/* استرجاع كلمة السر */
+.forgot-hint {
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  line-height: 1.7;
+  padding: 0 4px;
+}
+
+.forgot-message {
+  text-align: center;
+  font-size: 13px;
+  min-height: 18px;
+  padding: 4px 0;
+}
+
+.forgot-message.success { color: #27ae60; }
+.forgot-message.error { color: #e74c3c; }
 
 /* ===================
    نتيجة الحساب
