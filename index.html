@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Debt-book</title>
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 
@@ -28,6 +28,7 @@
         <input id="loginPassword" type="password" placeholder="كلمة السر" autocomplete="current-password">
         <button id="loginBtn" class="auth-submit">دخول</button>
         <p id="loginError" class="auth-error"></p>
+        <button id="forgotPasswordBtn" class="forgot-link">نسيت كلمة السر؟</button>
       </div>
 
       <div id="signupForm" class="auth-form">
@@ -44,9 +45,9 @@
   <!-- الشاشة الرئيسية -->
   <div id="homeScreen" class="screen">
     <header class="app-header">
-      <button id="logoutBtn" class="header-btn">خروج</button>
-      <h1>Debt-book</h1>
-      <button id="archiveBtn" class="header-btn">الأرشيف</button>
+      <button id="settingsBtn" class="header-btn">إعدادات</button>
+      <h1 id="homeTitle">Debt-book</h1>
+      <button class="header-btn hidden-btn" disabled></button>
     </header>
 
     <div class="search-box">
@@ -133,6 +134,31 @@
     </div>
   </div>
 
+  <!-- نافذة الإعدادات -->
+  <div id="settingsModal" class="modal">
+    <div class="modal-content">
+      <h3>الإعدادات</h3>
+      <button id="settingsArchiveBtn" class="settings-btn">الأرشيف</button>
+      <button id="settingsLogoutBtn" class="settings-btn">تسجيل الخروج</button>
+      <button id="settingsDeleteBtn" class="settings-btn settings-danger">حذف حسابي نهائياً</button>
+      <button id="cancelSettings" class="btn-cancel">إغلاق</button>
+    </div>
+  </div>
+
+  <!-- نافذة استرجاع كلمة السر -->
+  <div id="forgotModal" class="modal">
+    <div class="modal-content">
+      <h3>استرجاع كلمة السر</h3>
+      <p class="forgot-hint">أدخل بريدك الإلكتروني، وسنرسل لك رابطاً لإعادة تعيين كلمة السر.</p>
+      <input type="email" id="forgotEmail" placeholder="البريد الإلكتروني" autocomplete="email">
+      <div class="modal-buttons">
+        <button id="cancelForgot" class="btn-cancel">إلغاء</button>
+        <button id="confirmForgot" class="btn-confirm">إرسال</button>
+      </div>
+      <p id="forgotMessage" class="forgot-message"></p>
+    </div>
+  </div>
+
   <!-- نافذة النتيجة -->
   <div id="resultModal" class="modal">
     <div class="modal-content result-content">
@@ -154,6 +180,6 @@
     </div>
   </div>
 
-  <script type="module" src="script.js?v=4"></script>
+  <script type="module" src="script.js?v=5"></script>
 </body>
 </html>
